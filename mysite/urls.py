@@ -23,6 +23,6 @@ urlpatterns = [
     path('', include("fanlore.urls")),
     path('admin/', admin.site.urls),
     # path('', TemplateView.as_view(template_name="login/index.html")),
-    path("login/", TemplateView.as_view(template_name="login/index.html"), name="login"),
+    # path("login/", TemplateView.as_view(template_name="login/index.html"), name="login"),
     path('accounts/', include('allauth.urls')),
 ]
