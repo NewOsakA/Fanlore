@@ -11,9 +11,8 @@ class Content(models.Model):
     description = models.TextField()
     topic_img = models.FileField(upload_to='content_images/')
     collaborator = models.ForeignKey(User, on_delete=models.CASCADE)
-    content_files = models.ManyToManyField('File', null=True)
     vote = models.IntegerField(default=0)
-    comments = models.ManyToManyField(Comment)
+    comments = models.ManyToManyField(Comment, blank=True)
     category = models.IntegerField(choices=Category.choices, default=Category.GENERIC)
 
     def __str__(self):
