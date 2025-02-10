@@ -2,11 +2,11 @@ from django.db import models
 
 
 class Category(models.IntegerChoices):
-    TECHNOLOGY = 1, 'Technology'
-    ART = 2, 'Art'
-    ENTERTAINMENT = 3, 'Entertainment'
-    SCIENCE = 4, 'Science'
-    LITERATURE = 5, 'Literature'
+    GENERIC = 1, 'Generic'
+    GAMES = 2, 'Games'
+    FANART = 3, 'FanArt'
+    LORE = 4, 'Lore'
+    VIDEO = 5, 'Video'
 
     def __str__(self):
-        return self.get_display_name()
+        return self.label  # Returns the display name of the choice

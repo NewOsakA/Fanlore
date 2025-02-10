@@ -9,6 +9,5 @@ class User(models.Model):
     email = models.EmailField(unique=True)
     password = models.CharField(max_length=255)
     joined_date = models.DateTimeField(default=datetime.now)
-
-    class Meta:
-        abstract = True
+    followed_fandoms = models.JSONField(default=list)
+    is_creator = models.BooleanField(default=False)

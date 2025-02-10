@@ -2,6 +2,7 @@ from django.db import models
 import uuid
 from .comment import Comment
 from .category import Category
+from .user import User
 
 
 class Content(models.Model):
@@ -9,11 +10,11 @@ class Content(models.Model):
     title = models.CharField(max_length=255)
     description = models.TextField()
     topic_img = models.FileField(upload_to='content_images/')
-    collaborator = models.ForeignKey('Creator', on_delete=models.CASCADE)
-    content_files = models.ManyToManyField('File')
+    collaborator = models.ForeignKey(User, on_delete=models.CASCADE)
+    content_files = models.ManyToManyField('File', null=True)
     vote = models.IntegerField(default=0)
     comments = models.ManyToManyField(Comment)
-    category = models.IntegerField(choices=Category.choices, default=Category.ART)
+    category = models.IntegerField(choices=Category.choices, default=Category.GENERIC)
 
     def __str__(self):
         return self.title
