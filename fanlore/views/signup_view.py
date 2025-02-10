@@ -6,7 +6,7 @@ from ..forms.user_signup_form import SignUpForm
 
 class SignUpView(CreateView):
     form_class = SignUpForm
-    template_name = 'signup.html'
+    template_name = 'login/signup.html'
     success_url = reverse_lazy('login')
 
     def dispatch(self, request, *args, **kwargs):
