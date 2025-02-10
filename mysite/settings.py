@@ -65,9 +65,15 @@ AUTHENTICATION_BACKENDS = [
 
 SITE_ID = 2
 LOGIN_REDIRECT_URL = '/'
+LOGOUT_REDIRECT_URL = '/' 
+SOCIALACCOUNT_LOGIN_ON_GET = True
+SOCIALACCOUNT_EMAIL_VERIFICATION = "none"
 ACCOUNT_EMAIL_VERIFICATION = "none"
 ACCOUNT_AUTHENTICATION_METHOD = "username"
 ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_LOGOUT_ON_GET = True
+
+
 
 SOCIALACCOUNT_PROVIDERS = {
     'google': {
@@ -78,7 +84,8 @@ SOCIALACCOUNT_PROVIDERS = {
         'AUTH_PARAMS': {
             'access_type': 'online',
             'prompt': 'select_account',
-        }
+        },
+        'LOGIN_ON_GET': True,
     }
 }
 
