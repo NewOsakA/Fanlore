@@ -1,7 +1,7 @@
 from django.urls import reverse_lazy
 from django.shortcuts import redirect
 from django.views.generic import CreateView
-from ..forms import SignUpForm
+from ..forms.user_signup_form import SignUpForm
 
 
 class SignUpView(CreateView):
@@ -15,6 +15,5 @@ class SignUpView(CreateView):
         return super().dispatch(request, *args, **kwargs)
 
     def form_valid(self, form):
-        user = form.save()  # Create the user
-        user.backend = 'django.contrib.auth.backends.ModelBackend'  # Set the backend
+        form.save()  # Create the user
         return super().form_valid(form)
