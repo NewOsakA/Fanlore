@@ -5,3 +5,4 @@ from .comment import Comment
 from .category import Category
 from .badge import Badge
 from .file import File
+from .user import User
