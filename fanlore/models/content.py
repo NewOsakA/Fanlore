@@ -2,7 +2,7 @@ from django.db import models
 import uuid
 from .comment import Comment
 from .category import Category
-from .user import User
+from django.contrib.auth.models import User
 
 
 class Content(models.Model):

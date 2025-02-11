@@ -1,6 +1,6 @@
 from django.db import models
 import uuid
-from .user import User
+from django.contrib.auth.models import User
 from .content import Content
 
 

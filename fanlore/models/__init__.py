@@ -1,4 +1,3 @@
-from .user import User
 from .report import Report
 from .event import Event
 from .content import Content

@@ -1,18 +1,12 @@
 from django.contrib.auth.views import LoginView
-from django.urls import reverse_lazy
-from django import forms
-from django.contrib.auth.forms import AuthenticationForm
-
-
-class CustomLoginForm(AuthenticationForm):
-    """Custom login form with styled inputs."""
-    username = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Username'}))
-    password = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Password'}))
+from django.shortcuts import redirect
 
 
 class SignInView(LoginView):
-    """Login view using Django's built-in authentication system."""
     template_name = "login/signin.html"
-    form_class = CustomLoginForm
-    redirect_authenticated_user = True
-    next_page = reverse_lazy("home")
+
+    def get(self, request, *args, **kwargs):
+        """Redirect authenticated user to home"""
+        if request.user.is_authenticated:
+            return redirect("home")  # Redirect if user is already logged in
+        return super().get(request, *args, **kwargs)
