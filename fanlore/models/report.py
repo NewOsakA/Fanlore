@@ -1,6 +1,6 @@
 from django.db import models
 import uuid
-from django.contrib.auth.models import User
+from django.conf import settings
 from .content import Content
 
 
@@ -9,7 +9,7 @@ class Report(models.Model):
     content = models.ForeignKey(Content, on_delete=models.CASCADE)
     topic = models.CharField(max_length=255)
     reason = models.TextField()
-    reported_by = models.ForeignKey(User, null=True, blank=True, on_delete=models.SET_NULL)
+    reported_by = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET_NULL)
     reported_date = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):

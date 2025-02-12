@@ -44,6 +44,8 @@ tmpPostgres = urlparse(os.getenv("DATABASE_URL"))
 # Application definition
 
 INSTALLED_APPS = [
+    'cloudinary',
+    'cloudinary_storage',
     'fanlore',
     'django.contrib.sites',  # Required for django-allauth
     'allauth',
@@ -72,7 +74,6 @@ ACCOUNT_EMAIL_VERIFICATION = "none"
 ACCOUNT_AUTHENTICATION_METHOD = "username"
 ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_LOGOUT_ON_GET = True
-
 
 
 SOCIALACCOUNT_PROVIDERS = {
@@ -171,13 +172,23 @@ USE_I18N = True
 
 USE_TZ = True
 
+AUTH_USER_MODEL = "fanlore.User"
 
 # Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/4.2/howto/static-files/
-
 STATIC_URL = 'static/'
 
-# Default primary key field type
-# https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
+# Cloudinary Configuration (.env)
+CLOUDINARY_STORAGE = {
+    'CLOUD_NAME': config('CLOUDINARY_CLOUD_NAME'),
+    'API_KEY': config('CLOUDINARY_API_KEY'),
+    'API_SECRET': config('CLOUDINARY_API_SECRET'),
+}
 
+DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+
+# Media Files
+MEDIA_URL = '/media/'
+
+
+# Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'

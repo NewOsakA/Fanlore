@@ -9,3 +9,5 @@ environ
 python-dotenv
 gunicorn
 whitenoise
+cloudinary
+django-cloudinary-storage
