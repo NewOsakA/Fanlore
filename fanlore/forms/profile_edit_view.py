@@ -49,6 +49,11 @@ class ProfileUpdateForm(forms.ModelForm):
         }
 
     def save(self, commit=True):
+        """
+        Saves the updated user profile.
+        - Updates password if a new one is provided.
+        - Uploads and replaces profile image in Cloudinary.
+        """
         user = super().save(commit=False)
         new_password1 = self.cleaned_data.get("new_password1")
         profile_image = self.cleaned_data.get("profile_image")
