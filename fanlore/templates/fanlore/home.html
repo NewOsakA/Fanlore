@@ -4,6 +4,7 @@
     <div class="container my-5">
         <h1 class="text-center mb-4">Welcome to FanLore</h1>
 
+
         <!-- Featured Content Section -->
         <section class="featured-content">
             <h2 class="mb-3">Featured Content</h2>
@@ -33,6 +34,64 @@
                 <p class="text-center">No content available.</p>
                 {% endfor %}
             </div>
+        </section>
+
+        <!-- Announcements Section -->
+        <section class="announcements mt-5">
+            <h2>Latest Announcements</h2>
+            <div id="announcementCarousel" class="carousel slide" data-bs-ride="carousel">
+                <div class="carousel-inner">
+                    {% for announcement in announcements %}
+                        <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                            <div class="d-block w-100 p-3 bg-info text-white">
+                                <h4>{{ announcement.title }}</h4>
+                                <p>{{ announcement.message }}</p>
+                            </div>
+                        </div>
+                    {% empty %}
+                        <div class="carousel-item active">
+                            <div class="d-block w-100 p-3 bg-warning text-dark">
+                                <h4>No announcements available.</h4>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+                <button class="carousel-control-prev" type="button" data-bs-target="#announcementCarousel" data-bs-slide="prev">
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Previous</span>
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#announcementCarousel" data-bs-slide="next">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Next</span>
+                </button>
+            </div>
+        </section>
+
+        <!-- Popular Categories Section -->
+        <section class="popular-categories mt-5">
+            <h2 class="mb-3">Popular Categories</h2>
+            <div class="row">
+                {% for category in categories %}
+                    <div class="col-md-3 mb-3">
+                        <div class="card text-white bg-dark">
+                            <div class="card-body">
+                                <h5 class="card-title">{{ category.name }}</h5>
+                                <p class="card-text">{{ category.description }}</p>
+                                <a href="{% url 'category_detail' category.id %}" class="btn btn-light">Explore</a>
+                            </div>
+                        </div>
+                    </div>
+                {% empty %}
+                    <p>No categories available at the moment.</p>
+                {% endfor %}
+            </div>
+        </section>
+
+        <!-- Call to Action Section -->
+        <section class="cta mt-5 text-center">
+            <h2>Join the community</h2>
+            <p>Become a part of the FanLore community, share your passion, and explore content from creators around the world!</p>
+            <a href="{% url 'content_list' %}" class="btn btn-success">Sign Up Now</a>
         </section>
     </div>
 {% endblock %}
