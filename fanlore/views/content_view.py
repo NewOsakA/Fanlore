@@ -13,7 +13,7 @@ class ContentDetailView(DetailView, FormView):
     template_name = 'fanlore/content_detail.html'
     context_object_name = 'content'
     form_class = CommentForm
-    success_url = reverse_lazy('home')
+    success_url = reverse_lazy('content_list')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

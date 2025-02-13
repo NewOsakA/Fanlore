@@ -1,10 +1,14 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
-from django.contrib.auth.models import User
+from fanlore.models import User
 from django.core.exceptions import ValidationError
 
 
 class SignUpForm(UserCreationForm):
+    """
+    Form for user registration, extending Django's built-in UserCreationForm.
+    Uses the custom 'fanlore.User' model instead of 'auth.User'.
+    """
     email = forms.EmailField(required=True)
 
     class Meta:

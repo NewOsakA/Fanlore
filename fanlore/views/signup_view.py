@@ -14,7 +14,7 @@ class SignUpView(CreateView):
     def get(self, request, *args, **kwargs):
         """Redirect authenticated user to home"""
         if request.user.is_authenticated:
-            return redirect('home')
+            return redirect('content_list')
         return super().get(request, *args, **kwargs)
 
     def form_valid(self, form):
@@ -22,6 +22,6 @@ class SignUpView(CreateView):
         user = form.save()
         backend = get_backends()[0]  # Get configured authentication backend
         user.backend = f"{backend.__module__}.{backend.__class__.__name__}"
-        login(self.request, user)  # auto Login the user
+        login(self.request, user)
         messages.success(self.request, "Signup successful! Welcome.")
-        return redirect('home')
+        return redirect('content_list')
