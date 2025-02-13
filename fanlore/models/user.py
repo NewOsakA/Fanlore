@@ -7,8 +7,12 @@ class User(AbstractUser):
     followed_fandoms = models.JSONField(default=list, null=True, blank=True)
     is_creator = models.BooleanField(default=False)
     bio = models.TextField(blank=True, null=True)
-    profile_image = cloudinary.models.CloudinaryField('image', blank=True,
-                                                      null=True)
+    profile_image = cloudinary.models.CloudinaryField(
+        "image",
+        folder="user_profile_image/",
+        blank=True,
+        null=True
+    )
 
     groups = models.ManyToManyField(Group, related_name="fanlore_user_groups",
                                     blank=True)
