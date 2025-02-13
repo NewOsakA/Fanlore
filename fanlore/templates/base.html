@@ -42,7 +42,6 @@
             overflow-y: auto;
             padding: 20px;
             transition: margin-left 0.3s ease-in-out;
-<!--            background-color: lightgray; /* Just to visualize */-->
         }
 
         .collapsed .main-content {
@@ -51,6 +50,7 @@
         }
     </style>
 </head>
+
 <body>
     <!-- Fixed Navbar -->
     <nav class="navbar navbar-dark bg-black px-3">
@@ -67,7 +67,6 @@
             <a href="signin" class="btn btn-primary">Sign In</a>
         {% endif %}
     </nav>
-
 
     <div class="d-flex" id="pageContainer">
         <!-- Sidebar with Collapse -->
@@ -114,6 +113,24 @@
             {% block content %}
             {% endblock %}
         </div>
+
+        <!-- Toast Notification -->
+        <div class="toast-container position-fixed bottom-0 end-0 p-3">
+            <div id="authToast" class="toast align-items-center text-bg-dark border-0" role="alert" aria-live="assertive" aria-atomic="true">
+                <div class="d-flex">
+                    <div class="toast-body" id="toastMessage">
+                        <!-- Toast messages will be inserted here dynamically -->
+                        {% if messages %}
+                            {% for message in messages %}
+                                <div>{{ message }}</div>
+                            {% endfor %}
+                        {% endif %}
+                    </div>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                </div>
+            </div>
+        </div>
+
     </div>
 
     <script>
@@ -121,6 +138,26 @@
             document.getElementById('pageContainer').classList.toggle('collapsed');
         });
 
+        document.addEventListener("DOMContentLoaded", function () {
+            {% if messages %}
+                {% for message in messages %}
+                    setTimeout(function() {
+                        showToast("{{ message }}");
+                    }, 500);
+                {% endfor %}
+            {% endif %}
+        });
+
+        function showToast(message) {
+            const toastElement = document.getElementById('authToast');
+            const toastMessage = document.getElementById('toastMessage');
+
+            toastMessage.innerHTML = message; // Insert message dynamically
+            const toast = new bootstrap.Toast(toastElement, {
+                delay: 10000
+            });
+            toast.show();
+        }
     </script>
 </body>
 </html>

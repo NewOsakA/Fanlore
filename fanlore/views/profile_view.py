@@ -1,6 +1,8 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import TemplateView
 
+from fanlore.models import Content
+
 
 class ProfileView(LoginRequiredMixin, TemplateView):
     """
@@ -15,4 +17,9 @@ class ProfileView(LoginRequiredMixin, TemplateView):
         """
         context = super().get_context_data(**kwargs)
         context["user"] = self.request.user
+
+        # Fetch content created by the user
+        context["content_list"] = Content.objects.filter(collaborator=self.request.user)
+
         return context
+

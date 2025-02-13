@@ -12,7 +12,7 @@
             {% else %}
                 <img src="https://via.placeholder.com/150" class="rounded-circle" alt="Profile Picture">
             {% endif %}
-            <h5 class="mt-2">{{ user.first_name }} {{ user.last_name }}</h5>
+            <h5 class="mt-2">{{ user.username }}</h5>
 
             <!-- Display User Bio -->
             {% if user.bio %}
@@ -51,6 +51,37 @@
                 <a href="{% url 'profile_edit' %}" class="btn btn-dark mt-2">Edit Profile</a>
             </div>
         </form>
+    </div>
+
+    <!-- User Content Section -->
+    <div class="card shadow mt-4 p-4">
+        <h4 class="mb-3">Your Content</h4>
+
+        {% if content_list %}
+            <ul class="list-group">
+                {% for content in content_list %}
+                    <li class="list-group-item position-relative">
+                        <h5>{{ content.title }}</h5>
+                        <p class="text-muted">{{ content.time_since_creation }}</p>
+                        <p>{{ content.description }}</p>
+                        {% if content.topic_img %}
+                            <img src="{{ content.topic_img.url }}" class="img-fluid" alt="Content Image">
+                        {% else %}
+                            <p>No image available for this content.</p>
+                        {% endif %}
+                        <p><strong>Category:</strong> {{ content.get_category_display }}</p>
+
+                        <!-- Delete Button -->
+                        <form action="{% url 'content_delete' content.id %}" method="post" class="position-absolute bottom-0 end-0 p-2">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                        </form>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>No content added yet.</p>
+        {% endif %}
     </div>
 </div>
 {% endblock %}

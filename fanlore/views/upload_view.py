@@ -4,6 +4,7 @@ from django.urls import reverse_lazy
 from ..models import Content, File
 from ..forms.upload_content_form import ContentUploadForm
 
+
 class ContentUploadView(LoginRequiredMixin, CreateView):
     model = Content
     form_class = ContentUploadForm
