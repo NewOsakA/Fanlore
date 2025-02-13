@@ -44,7 +44,7 @@
         <a class="navbar-brand text-white" href="/">FanLore</a>
         <input class="form-control w-25" type="search" placeholder="Search">
         {% if user.is_authenticated %}
-            <button class="btn btn-light">Create Post</button>
+            <a href="/upload" class="btn btn-light">Create Post</a>
         {% else %}
             <a href="signin" class="btn btn-primary">Sign In</a>
         {% endif %}
