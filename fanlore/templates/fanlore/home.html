@@ -9,19 +9,27 @@
         <section class="featured-content">
             <h2 class="mb-3">Featured Content</h2>
             <div class="row">
-                {% for content in featured_contents %}
-                    <div class="col-md-4">
-                        <div class="card">
-                            <img src="{{ content.topic_img.url }}" class="card-img-top" alt="{{ content.title }}">
+                {% for content in content_list %}
+                <div class="card mb-3">
+                    <div class="row g-0">
+                        <div class="col-md-8">
                             <div class="card-body">
                                 <h5 class="card-title">{{ content.title }}</h5>
                                 <p class="card-text">{{ content.description|truncatewords:20 }}</p>
-                                <a href="{% url 'content_detail' content.id %}" class="btn btn-primary">Read More</a>
+                                <p class="text-muted">
+                                    <i class="bi bi-clock"></i> {{ content.time_since_creation }} |
+                                    <i class="bi bi-hand-thumbs-up"></i> {{ content.vote }} votes
+                                </p>
+                                <p class="text-muted">Create by: {{ content.collaborator.username }}</p>
                             </div>
                         </div>
+                        <div class="col-md-4">
+                            <img src="{{ content.topic_img.url }}" class="img-fluid rounded-end" alt="{{ content.title }}">
+                        </div>
                     </div>
+                </div>
                 {% empty %}
-                    <p>No featured content at the moment.</p>
+                <p class="text-center">No content available.</p>
                 {% endfor %}
             </div>
         </section>
