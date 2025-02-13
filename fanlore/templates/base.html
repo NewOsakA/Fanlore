@@ -18,31 +18,49 @@
             z-index: 1000;
         }
 
-        /* Sidebar fixed on the left */
+        /* Sidebar styling */
         .sidebar {
             position: fixed;
-            top: 60px; /* Below the navbar */
+            top: 60px; /* Below navbar */
             left: 0;
-            width: 250px;
-            height: calc(100vh - 60px); /* Full height minus navbar height */
-            overflow-y: auto; /* Scrollable sidebar content */
+            width: 200px;
+            height: calc(100vh - 60px);
+            overflow-y: auto;
+            transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
+        }
+
+        .collapsed .sidebar {
+            transform: translateX(-100%);
+            opacity: 0;
         }
 
         /* Main content area */
         .main-content {
-            margin-left: 250px; /* Sidebar width */
-            margin-top: 60px; /* Navbar height */
-            height: calc(100vh - 60px); /* Full height minus navbar height */
-            overflow-y: auto; /* Make main content scrollable */
+            margin-left: 200px; /* Default sidebar width */
+            margin-top: 60px;
+            height: calc(100vh - 60px);
+            overflow-y: auto;
             padding: 20px;
+            transition: margin-left 0.3s ease-in-out;
+<!--            background-color: lightgray; /* Just to visualize */-->
+        }
+
+        .collapsed .main-content {
+            margin-left: 0 !important;
+            width: 100%;
         }
     </style>
 </head>
 <body>
     <!-- Fixed Navbar -->
     <nav class="navbar navbar-dark bg-black px-3">
-        <a class="navbar-brand text-white" href="/">FanLore</a>
-        <input class="form-control w-25" type="search" placeholder="Search">
+        <div class="d-flex align-items-center">
+            <button class="btn btn-outline-light me-2" id="toggleSidebar">
+                <i class="fas fa-bars"></i>
+            </button>
+            <a class="navbar-brand text-white" href="/">FanLore</a>
+        </div>
+        <input class="form-control w-50" type="search" placeholder="Search">
         {% if user.is_authenticated %}
             <a href="/upload" class="btn btn-light">Create Post</a>
         {% else %}
@@ -50,20 +68,20 @@
         {% endif %}
     </nav>
 
-    <div class="d-flex">
-        <!-- Fixed Sidebar -->
-        <div class="bg-light p-3 sidebar">
+
+    <div class="d-flex" id="pageContainer">
+        <!-- Sidebar with Collapse -->
+        <div class="bg-light p-3 sidebar" id="sidebar">
             <div class="mb-3">
                 {% if user.is_authenticated %}
-                    <a href="profile" class="text-dark text-decoration-none">
-                        <i class="fas fa-user-circle"></i> <strong>{{user.username}}</strong>
+                    <a href="{% url 'profile' %}" class="text-dark text-decoration-none">
+                        <i class="fas fa-user-circle"></i> <strong>{{ user.username }}</strong>
                     </a>
                 {% else %}
                     <a href="signin" class="text-dark text-decoration-none">
                         <i class="fas fa-user-circle"></i> <strong>Username</strong>
                     </a>
                 {% endif %}
-
             </div>
             <ul class="nav flex-column">
                 <li class="nav-item"><a class="nav-link" href="#">Friends</a></li>
@@ -92,10 +110,17 @@
         </div>
 
         <!-- Main Content (Scrollable) -->
-        <div class="container main-content">
+        <div class="container-fluid main-content">
             {% block content %}
             {% endblock %}
         </div>
     </div>
+
+    <script>
+        document.getElementById('toggleSidebar').addEventListener('click', function() {
+            document.getElementById('pageContainer').classList.toggle('collapsed');
+        });
+
+    </script>
 </body>
 </html>
