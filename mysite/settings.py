@@ -44,20 +44,24 @@ tmpPostgres = urlparse(os.getenv("DATABASE_URL"))
 # Application definition
 
 INSTALLED_APPS = [
-    'cloudinary',
-    'cloudinary_storage',
+
     'fanlore',
-    'django.contrib.sites',  # Required for django-allauth
-    'allauth',
-    'allauth.account',
-    'allauth.socialaccount',
-    'allauth.socialaccount.providers.google',  # Add providers as needed
+    'django.contrib.sites',
+
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.google',
+
+    'cloudinary',
+    'cloudinary_storage',
 ]
 
 AUTHENTICATION_BACKENDS = [
