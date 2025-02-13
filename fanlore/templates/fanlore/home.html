@@ -24,8 +24,8 @@
                                     <p class="text-muted">Created by: {{ content.collaborator.username }}</p>
                                 </div>
                             </div>
-                            <div class="col-md-4">
-                                <img src="{{ content.topic_img.url }}" class="img-fluid rounded-end" alt="{{ content.title }}">
+                            <div class="col-md-4 d-flex align-items-center">
+                                <img src="{{ content.topic_img.url }}" class="img-fluid rounded-end content-image" alt="{{ content.title }}">
                             </div>
                         </div>
                     </div>
@@ -94,4 +94,12 @@
             <a href="{% url 'content_list' %}" class="btn btn-success">Sign Up Now</a>
         </section>
     </div>
+    <style>
+        .content-image {
+            width: 100%;          /* Ensures it fits the column */
+            height: 200px;        /* Fixed height for uniform size */
+            object-fit: cover;    /* Crops images to fit the dimensions */
+            border-radius: 5px;   /* Optional for rounded corners */
+        }
+    </style>
 {% endblock %}

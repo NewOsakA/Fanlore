@@ -12,3 +12,4 @@ whitenoise
 cloudinary
 django-cloudinary-storage
 Pillow
+django-widget-tweaks

@@ -26,3 +26,9 @@ class ContentUploadForm(forms.ModelForm):
     class Meta:
         model = Content
         fields = ['title', 'description', 'topic_img', 'content_files']
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Add 'form-control' class to all fields
+        for field in self.fields.values():
+            field.widget.attrs['class'] = 'form-control'

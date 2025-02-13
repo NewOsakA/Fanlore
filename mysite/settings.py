@@ -62,6 +62,8 @@ INSTALLED_APPS = [
 
     'cloudinary',
     'cloudinary_storage',
+
+    'widget_tweaks',
 ]
 
 AUTHENTICATION_BACKENDS = [

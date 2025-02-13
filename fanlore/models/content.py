@@ -1,4 +1,6 @@
 import uuid
+
+import cloudinary.models
 from django.utils import timezone
 
 from django.conf import settings
@@ -13,7 +15,13 @@ class Content(models.Model):
                           primary_key=True)
     title = models.CharField(max_length=255)
     description = models.TextField()
-    topic_img = models.FileField(upload_to='content_images/')
+    topic_img = cloudinary.models.CloudinaryField(
+        "image",
+        folder="content_images/",
+        blank=True,
+        null=True
+    )
+    content_files = models.JSONField(default=list, blank=True, null=True)
     collaborator = models.ForeignKey(settings.AUTH_USER_MODEL,
                                      on_delete=models.CASCADE)
     vote = models.IntegerField(default=0)
