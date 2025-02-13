@@ -56,7 +56,7 @@ class ProfileUpdateForm(forms.ModelForm):
         if new_password1:
             user.set_password(new_password1)
 
-        if profile_image:
+        if profile_image and isinstance(profile_image, forms.ImageField):
             public_id = f"user_profile_image/{user.id}"
             cloudinary.uploader.destroy(public_id)
 
