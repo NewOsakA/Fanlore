@@ -13,6 +13,13 @@ class User(AbstractUser):
         blank=True,
         null=True
     )
+    profile_background_image = cloudinary.models.CloudinaryField(
+        "image",
+        folder="user_profile_background_image/",
+        blank=True,
+        null=True
+    )
+    friends = models.ManyToManyField("self", symmetrical=True, blank=True)
 
     groups = models.ManyToManyField(Group, related_name="fanlore_user_groups",
                                     blank=True)
