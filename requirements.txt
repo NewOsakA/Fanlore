@@ -3,3 +3,13 @@ django-allauth
 python-decouple
 pyjwt
 cryptography
+psycopg[binary]
+dj-database-url
+environ
+python-dotenv
+gunicorn
+whitenoise
+cloudinary
+django-cloudinary-storage
+Pillow
+django-widget-tweaks

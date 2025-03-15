@@ -1,14 +1,21 @@
+import cloudinary.models
+from django.contrib.auth.models import AbstractUser, Group, Permission
 from django.db import models
-import uuid
-from datetime import datetime
 
 
-class User(models.Model):
-    uid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
-    username = models.CharField(max_length=255, unique=True)
-    email = models.EmailField(unique=True)
-    password = models.CharField(max_length=255)
-    joined_date = models.DateTimeField(default=datetime.now)
+class User(AbstractUser):
+    followed_fandoms = models.JSONField(default=list, null=True, blank=True)
+    is_creator = models.BooleanField(default=False)
+    bio = models.TextField(blank=True, null=True)
+    profile_image = cloudinary.models.CloudinaryField(
+        "image",
+        folder="user_profile_image/",
+        blank=True,
+        null=True
+    )
 
-    class Meta:
-        abstract = True
+    groups = models.ManyToManyField(Group, related_name="fanlore_user_groups",
+                                    blank=True)
+    user_permissions = models.ManyToManyField(Permission,
+                                              related_name="fanlore_user_permissions",
+                                              blank=True)

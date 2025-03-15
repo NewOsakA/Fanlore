@@ -1,0 +1,193 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="content-container">
+    <!-- Left side: Main Content -->
+    <div class="content-left">
+        <h1>{{ content.title }}</h1>
+        <p class="meta">
+            {{ content.time_since_creation }} by <span class="author">{{ content.collaborator.username }}</span>
+        </p>
+
+        {% if content.topic_img %}
+            <img class="content-image" src="{{ content.topic_img.url }}" alt="{{ content.title }}">
+        {% endif %}
+
+        <p class="description">{{ content.description }}</p>
+
+        <h3>{{ comments.count }} comments</h3>
+        <ul>
+            {% for comment in comments %}
+                <li><strong>{{ comment.commentator_name }}</strong>: {{ comment.comment_text }}</li>
+            {% empty %}
+                <li>No comments yet.</li>
+            {% endfor %}
+        </ul>
+
+
+        <form method="post" class="comment-form">
+            {% csrf_token %}
+            <label for="{{ form.comment_text.id_for_label }}">Comment</label>
+            {{ form.comment_text }}
+            <button type="submit">Comment</button>
+        </form>
+
+    </div>
+
+    <!-- Right side: Stats & Contributors -->
+    <div class="content-right">
+        <div class="stats">
+            <p><strong>{{ content.views }} Views</strong></p>
+            <p><strong>{{ content.vote }} Up Vote</strong></p>
+            <p><strong>{{ content.shares }} Share</strong></p>
+        </div>
+
+        <div class="tags">
+            {% for tag in content.tags.all %}
+                <span class="tag">#{{ tag.name }}</span>
+            {% endfor %}
+        </div>
+
+        <div class="contributors">
+            <h4>Contributor:</h4>
+            {% for contributor in content.contributors.all %}
+                <div class="contributor">
+                    <img src="{{ contributor.profile_img.url }}" alt="{{ contributor.username }}" class="avatar">
+                    <span>{{ contributor.username }}</span>
+                </div>
+            {% endfor %}
+        </div>
+
+        <button class="vote-button">⬆️ Up Vote to this content</button>
+
+        <div class="posting-rules">
+            <h4>Posting Rules</h4>
+            <p><strong>1. Submissions must be verifiable.</strong> Please link directly to a reliable source that supports your claim.</p>
+            <p><strong>2. No personal opinions, anecdotes, or subjective statements.</strong></p>
+            <p><strong>3. No recent sources.</strong> Any source less than two months old is not allowed.</p>
+        </div>
+    </div>
+</div>
+
+<style>
+    .content-container {
+        display: flex;
+        gap: 20px;
+    }
+    .content-left {
+        width: 65%;
+    }
+    .content-left h1 {
+        font-size: 2em;
+        margin-bottom: 5px;
+    }
+    .meta {
+        color: gray;
+        font-size: 0.9em;
+    }
+    .author {
+        color: red;
+    }
+    .content-image {
+        width: 100%;
+        max-height: 400px;
+        object-fit: cover;
+        border-radius: 10px;
+    }
+    .description {
+        font-size: 1.1em;
+        margin-top: 10px;
+    }
+    .comment-section {
+        margin-top: 15px;
+    }
+    .comment {
+        border-bottom: 1px solid #ddd;
+        padding: 10px 0;
+    }
+
+    .comment-form {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 5px;
+    }
+
+    .comment-form label {
+        font-weight: bold;
+    }
+
+    .comment-form textarea {
+        width: 100%;
+        max-width: 500px;
+        height: 120px;
+        font-size: 14px;
+        padding: 8px;
+        border-radius: 5px;
+        border: 1px solid #ccc;
+        resize: vertical;
+    }
+
+    .comment-form button {
+        background-color: #d9534f;
+        color: white;
+        border: none;
+        padding: 8px 12px;
+        cursor: pointer;
+        border-radius: 5px;
+        margin-top: 5px;
+    }
+
+    .comment-form button:hover {
+        background-color: #c9302c;
+    }
+    .content-right {
+        width: 35%;
+        background: #f8f8f8;
+        padding: 15px;
+        border-radius: 10px;
+    }
+    .stats p {
+        font-size: 1.2em;
+        margin: 5px 0;
+    }
+    .tags {
+        margin-top: 10px;
+    }
+    .tag {
+        background: #ddd;
+        padding: 5px;
+        border-radius: 5px;
+        margin-right: 5px;
+        font-size: 0.9em;
+    }
+    .contributors {
+        margin-top: 15px;
+    }
+    .contributor {
+        display: flex;
+        align-items: center;
+        margin-top: 5px;
+    }
+    .avatar {
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        margin-right: 10px;
+    }
+    .vote-button {
+        background: red;
+        color: white;
+        padding: 10px;
+        width: 100%;
+        margin-top: 10px;
+        border: none;
+        cursor: pointer;
+        font-size: 1em;
+    }
+    .posting-rules {
+        margin-top: 20px;
+        font-size: 0.9em;
+    }
+</style>
+{% endblock %}

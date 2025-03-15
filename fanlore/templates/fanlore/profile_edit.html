@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="container">
+    <div class="card shadow p-4">
+        <h4 class="mb-3">Edit Profile</h4>
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+
+            <!-- Profile Image Preview -->
+            <div class="text-center">
+                {% if user.profile_image %}
+                    <img src="{{ user.profile_image.url }}" class="rounded-circle" width="150" height="150" alt="Profile Picture">
+                {% else %}
+                    <img src="{% static 'fanlore/images/user-circle.png' %}" class="rounded-circle" width="150" height="150" alt="Default Profile Picture">
+                {% endif %}
+
+                <div class="mt-2">
+                    <label class="form-label">Upload New Profile Picture</label>
+                    <input type="file" name="profile_image" class="form-control">
+                </div>
+            </div>
+
+            <hr>
+
+            <!-- Dynamic Form Fields Loop -->
+            {% for field in form %}
+                <div class="mb-3">
+                    {% if field.name == "profile_image" %}
+
+                    {% else %}
+                        <label class="form-label">{{ field.label }}</label>
+                        {{ field }}
+                    {% endif %}
+
+                    {% if field.help_text %}
+                        <small class="form-text text-muted">{{ field.help_text }}</small>
+                    {% endif %}
+                    {% for error in field.errors %}
+                        <div class="text-danger">{{ error }}</div>
+                    {% endfor %}
+                </div>
+            {% endfor %}
+
+            <button type="submit" class="btn btn-dark w-100 mb-3">Save Changes</button>
+            <a href="{% url 'profile' %}" class="btn btn-light w-100 border">Cancel</a>
+        </form>
+    </div>
+</div>
+{% endblock %}

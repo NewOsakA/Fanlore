@@ -1,0 +1,50 @@
+{% extends 'base_auth.html' %}
+
+{% block title %}Sign In{% endblock %}
+
+{% block content %}
+{% load socialaccount %}
+{% load static %}
+<h2 class="mb-3">Welcome back!</h2>
+<p>Enter your credentials to access your account</p>
+
+
+<form method="POST">
+    {% csrf_token %}
+    <div class="mb-3">
+        <label>Username</label>
+        <input type="text" class="form-control" name="username" placeholder="Enter your username" required>
+    </div>
+    <div class="mb-2">
+        <label>Password</label>
+        <a href="#" class="float-end text-primary small">Forgot password?</a>
+        <input type="password" class="form-control" name="password" placeholder="Enter your password" required>
+    </div>
+    <div class="mb-3">
+        <input type="checkbox" name="remember"> Remember Me
+    </div>
+    <button type="submit" class="btn-auth">Login</button>
+</form>
+
+
+<!-- Django Form -->
+<!--<form method="POST">-->
+<!--    {% csrf_token %}-->
+<!--    {{ form.as_p }}  &lt;!&ndash; Render form fields with paragraph tags &ndash;&gt;-->
+<!--    <button type="submit">Login</button>-->
+<!--</form>-->
+
+
+<div class="text-center mt-3">
+    <div class="d-flex justify-content-between align-items-center">
+        <hr class="w-45"> <span class="px-2 small">Or</span> <hr class="w-45">
+    </div>
+</div>
+
+<a href="{% provider_login_url 'google' %}" class="google-btn mt-3" style="color: black; text-decoration: none;">
+    <img src="{% static 'fanlore/images/google-logo.png' %}" alt="Google">
+    Continue with Google
+</a>
+
+<p class="text-center mt-3">Don't have an account? <a href="{% url 'signup' %}" class="text-primary">Sign Up</a></p>
+{% endblock %}
