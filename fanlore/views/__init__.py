@@ -6,3 +6,6 @@ from .profile_edit_view import ProfileEditView
 from .upload_view import ContentUploadView
 from .content_view import ContentDetailView
 from .delete_view import ContentDeleteView
+from .friendlist_view import FriendListView
+from .add_friend_view import AddFriendView
+from .remove_friends_view import RemoveFriendView

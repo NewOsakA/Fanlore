@@ -4,9 +4,9 @@
 {% block content %}
 <div class="container">
     <div class="card shadow p-4">
-        <h4 class="mb-3">User Profile</h4>
+        <h4 class="mb-3">{{ user.username }}'s Profile</h4>
 
-        <!-- Profile Image and Bio Section -->
+        <!-- Profile Image and Bio -->
         <div class="text-center">
             {% if user.profile_image %}
                 <img src="{{ user.profile_image.url }}" class="rounded-circle" width="150" height="150" alt="Profile Picture">
@@ -25,42 +25,29 @@
         <hr>
 
         <!-- User Details -->
-        <form class="mt-4">
-            <div class="row mb-3">
-                <div class="col">
-                    <label class="form-label">First Name</label>
-                    <input type="text" class="form-control" value="{{ user.first_name }}" readonly>
+        <div class="mt-4">
+            <label class="form-label"><strong>First Name:</strong> {{ user.first_name }}</label><br>
+            <label class="form-label"><strong>Last Name:</strong> {{ user.last_name }}</label><br>
+            <label class="form-label"><strong>Username:</strong> {{ user.username }}</label><br>
+            <label class="form-label"><strong>Email:</strong> {{ user.email }}</label><br>
+
+            <!-- Show "Edit Profile" button only if it's the logged-in user's profile -->
+            {% if is_own_profile %}
+                <div>
+                    <a href="{% url 'profile_edit' %}" class="btn btn-dark mt-2">Edit Profile</a>
                 </div>
-                <div class="col">
-                    <label class="form-label">Last Name</label>
-                    <input type="text" class="form-control" value="{{ user.last_name }}" readonly>
-                </div>
-            </div>
-
-            <div class="mb-3">
-                <label class="form-label">Username</label>
-                <input type="text" class="form-control" value="{{ user.username }}" readonly>
-            </div>
-
-            <div class="mb-3">
-                <label class="form-label">Email Address</label>
-                <input type="email" class="form-control" value="{{ user.email }}" readonly>
-            </div>
-
-            <div>
-                <a href="{% url 'profile_edit' %}" class="btn btn-dark mt-2">Edit Profile</a>
-            </div>
-        </form>
+            {% endif %}
+        </div>
     </div>
 
     <!-- User Content Section -->
     <div class="card shadow mt-4 p-4">
-        <h4 class="mb-3">Your Content</h4>
+        <h4 class="mb-3">{{ user.username }}'s Content</h4>
 
         {% if content_list %}
             <ul class="list-group">
                 {% for content in content_list %}
-                    <li class="list-group-item position-relative">
+                    <li class="list-group-item">
                         <h5>{{ content.title }}</h5>
                         <p class="text-muted">{{ content.time_since_creation }}</p>
                         <p>{{ content.description }}</p>
@@ -70,12 +57,6 @@
                             <p>No image available for this content.</p>
                         {% endif %}
                         <p><strong>Category:</strong> {{ content.get_category_display }}</p>
-
-                        <!-- Delete Button -->
-                        <form action="{% url 'content_delete' content.id %}" method="post" class="position-absolute bottom-0 end-0 p-2">
-                            {% csrf_token %}
-                            <button type="submit" class="btn btn-danger btn-sm">Delete</button>
-                        </form>
                     </li>
                 {% endfor %}
             </ul>
