@@ -42,7 +42,7 @@ class ContentFile(models.Model):
     id = models.UUIDField(default=uuid.uuid4, editable=False, unique=True, primary_key=True)
     content = models.ForeignKey(
         Content,
-        related_name='attached_files',  # Unique related_name
+        related_name='attached_files',
         on_delete=models.CASCADE
     )
     file = cloudinary.models.CloudinaryField(

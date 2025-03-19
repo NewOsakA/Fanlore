@@ -1,3 +1,5 @@
+import os
+
 from django.views.generic.edit import CreateView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
@@ -39,12 +41,16 @@ class ContentUploadView(LoginRequiredMixin, CreateView):
         content_files = self.request.FILES.getlist('content_files')
         for file in content_files:
             try:
+                filename, ext = os.path.splitext(
+                    file.name)  # Extract base name and extension
+                public_id = f"{content.id}_{filename}"  # Avoid duplicate extensions
+
                 # Upload each file to Cloudinary
                 with file.open('rb') as f:
                     uploaded_file = cloudinary.uploader.upload(
                         f,
                         folder="content_files/",
-                        public_id=f"{content.id}_{file.name}",
+                        public_id=public_id,  # Use the cleaned public_id
                         overwrite=True,
                         resource_type="auto"
                     )

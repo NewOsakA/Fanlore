@@ -15,6 +15,30 @@
 
         <p class="description">{{ content.description }}</p>
 
+        <!-- Display Content Files -->
+        <div class="content-files">
+            <h3>Attached Files</h3>
+            {% if content.attached_files.all %}
+                <div class="file-grid">
+                    {% for file in content.attached_files.all %}
+                        <div class="file-card">
+                            <a href="{{ file.file }}" target="_blank" class="file-link">
+                                <div class="file-icon">
+                                    <i class="fas fa-file"></i>
+                                </div>
+                                <div class="file-name">
+                                    {{ file.file|slice:"40" }}{% if file.file|length > 40 %}...{% endif %}
+                                </div>
+                            </a>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p>No files attached.</p>
+            {% endif %}
+        </div>
+
+        <!-- Comments Section -->
         <h3>{{ comments.count }} comments</h3>
         <ul>
             {% for comment in comments %}
@@ -24,14 +48,13 @@
             {% endfor %}
         </ul>
 
-
+        <!-- Comment Form -->
         <form method="post" class="comment-form">
             {% csrf_token %}
             <label for="{{ form.comment_text.id_for_label }}">Comment</label>
             {{ form.comment_text }}
             <button type="submit">Comment</button>
         </form>
-
     </div>
 
     <!-- Right side: Stats & Contributors -->
@@ -189,5 +212,50 @@
         margin-top: 20px;
         font-size: 0.9em;
     }
+
+    /* Styles for Content Files */
+    .content-files {
+        margin-top: 20px;
+        margin-bottom: 20px;
+    }
+    .file-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        gap: 15px;
+    }
+    .file-card {
+        background: #fff;
+        border: 1px solid #ddd;
+        border-radius: 10px;
+        padding: 10px;
+        text-align: center;
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .file-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+    .file-icon {
+        font-size: 2em;
+        color: #666;
+    }
+    .file-name {
+        margin-top: 10px;
+        font-size: 0.9em;
+        color: #333;
+        word-break: break-word;
+    }
+    .file-link {
+        text-decoration: none;
+        color: inherit;
+    }
+    .file-image {
+        width: 100%;
+        max-height: 150px;
+        object-fit: cover;
+        border-radius: 5px;
+        margin-top: 10px;
+    }
 </style>
+
 {% endblock %}
