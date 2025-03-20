@@ -3,66 +3,93 @@
 
 {% block content %}
 <div class="container">
-    <div class="card shadow p-4">
-        <h4 class="mb-3">{{ user.username }}'s Profile</h4>
-
-        <!-- Profile Image and Bio -->
-        <div class="text-center">
-            {% if user.profile_image %}
-                <img src="{{ user.profile_image.url }}" class="rounded-circle" width="150" height="150" alt="Profile Picture">
+    <!-- Profile Header -->
+    <div class="card shadow p-4 position-relative">
+        <div class="cover-image bg-secondary" style="height: 200px; background-size: cover; background-position: center;">
+            {% if user.cover_image %}
+                <img src="{{ user.cover_image.url }}" class="img-fluid w-100 h-100" style="object-fit: cover;">
             {% else %}
-                <img src="{% static 'fanlore/images/user-circle.png' %}" class="rounded-circle" width="150" height="150" alt="Default Profile Picture">
-            {% endif %}
-            <h5 class="mt-2">{{ user.username }}</h5>
-
-            <!-- Display User Bio -->
-            {% if user.bio %}
-                <p class="mt-2 text-muted">{{ user.bio }}</p>
-            {% else %}
-                <p class="mt-2 text-muted">No bio available.</p>
+                <img src="{% static 'fanlore/images/default-cover.png' %}" class="img-fluid w-100 h-100" style="object-fit: cover;">
             {% endif %}
         </div>
-        <hr>
 
-        <!-- User Details -->
-        <div class="mt-4">
-            <label class="form-label"><strong>First Name:</strong> {{ user.first_name }}</label><br>
-            <label class="form-label"><strong>Last Name:</strong> {{ user.last_name }}</label><br>
-            <label class="form-label"><strong>Username:</strong> {{ user.username }}</label><br>
-            <label class="form-label"><strong>Email:</strong> {{ user.email }}</label><br>
-
-            <!-- Show "Edit Profile" button only if it's the logged-in user's profile -->
-            {% if is_own_profile %}
-                <div>
-                    <a href="{% url 'profile_edit' %}" class="btn btn-dark mt-2">Edit Profile</a>
-                </div>
-            {% endif %}
-        </div>
-    </div>
-
-    <!-- User Content Section -->
-    <div class="card shadow mt-4 p-4">
-        <h4 class="mb-3">{{ user.username }}'s Content</h4>
-
-        {% if content_list %}
-            <ul class="list-group">
-                {% for content in content_list %}
-                    <li class="list-group-item">
-                        <h5>{{ content.title }}</h5>
-                        <p class="text-muted">{{ content.time_since_creation }}</p>
-                        <p>{{ content.description }}</p>
-                        {% if content.topic_img %}
-                            <img src="{{ content.topic_img.url }}" class="img-fluid" alt="Content Image">
-                        {% else %}
-                            <p>No image available for this content.</p>
-                        {% endif %}
-                        <p><strong>Category:</strong> {{ content.get_category_display }}</p>
-                    </li>
-                {% endfor %}
-            </ul>
+        {% if is_own_profile %}
+            <div class="text-end">
+                <a href="{% url 'profile_edit' %}" class="btn btn-dark mt-3">Edit Profile</a>
+            </div>
         {% else %}
-            <p>No content added yet.</p>
+            <div class="text-end">
+                <button class="btn btn-dark mt-3" style="opacity: 0; pointer-events: none;">Invisible Button</button>
+            </div>
         {% endif %}
+
+        <div class="profile-info d-flex align-items-center">
+            <div class="profile-image position-absolute" style="top: 120px; left: 40px;">
+                {% if user.profile_image %}
+                    <img src="{{ user.profile_image.url }}" class="rounded-circle border border-white" width="180" height="180" style="object-fit: cover;">
+                {% else %}
+                    <img src="{% static 'fanlore/images/user-circle.png' %}" class="rounded-circle border border-white" width="180" height="180">
+                {% endif %}
+            </div>
+            <div class="ms-3 mt-5">
+                <h2 class="fw-bold">{{ user.username }}</h2>
+                {% if user.bio %}
+                    <p class="text-muted">{{ user.bio }}</p>
+                {% else %}
+                    {% if is_own_profile %}
+                        <p class="text-muted">No bio available. <a href="{% url 'profile_edit' %}" class="text-decoration-none">Edit bio</a></p>
+                    {% endif %}
+                {% endif %}
+            </div>
+        </div>
+
+
     </div>
+
+    <!-- User Details and Posts -->
+    <div class="row mt-4 d-flex">
+        <!-- Left Column: User Details -->
+        <div class="col-md-4 d-flex flex-column flex-shrink-0" style="max-width: 300px;">
+            <div class="card shadow p-4 w-100">
+                <h5 class="fw-bold">User Information</h5>
+                <p><strong>First Name:</strong> {{ user.first_name }}</p>
+                <p><strong>Last Name:</strong> {{ user.last_name }}</p>
+                <p><strong>Email:</strong> {{ user.email }}</p>
+            </div>
+        </div>
+
+        <!-- Right Column: User Content -->
+        <div class="col-md-8 d-flex flex-column flex-grow-1">
+            <div class="card shadow p-4">
+                <h4 class="mb-3 fw-bold">{{ user.username }}'s Posts</h4>
+
+                {% if content_list %}
+                    <div class="d-flex flex-column gap-3">
+                        {% for content in content_list %}
+                            <div class="card p-3 shadow-sm">
+                                <h5 class="fw-bold">{{ content.title }}</h5>
+                                <p class="text-muted small">{{ content.time_since_creation }}</p>
+                                <p>{{ content.description }}</p>
+                                {% if content.topic_img %}
+                                    <img src="{{ content.topic_img.url }}" class="img-fluid rounded" alt="Content Image">
+                                {% endif %}
+                                <p><strong>Category:</strong> {{ content.get_category_display }}</p>
+
+                                <!-- Like, Comment, Share -->
+                                <div class="d-flex justify-content-between mt-3">
+                                    <button class="btn btn-light"><i class="fas fa-thumbs-up"></i> Like</button>
+                                    <button class="btn btn-light"><i class="fas fa-comment"></i> Comment</button>
+                                    <button class="btn btn-light"><i class="fas fa-share"></i> Share</button>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p>No posts yet.</p>
+                {% endif %}
+            </div>
+        </div>
+</div>
+
 </div>
 {% endblock %}
