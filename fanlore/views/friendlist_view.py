@@ -1,7 +1,8 @@
-from django.db.models import Q
 from django.contrib.auth import get_user_model
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import ListView
+
+from fanlore.models import FriendRequest
 
 User = get_user_model()
 
@@ -15,20 +16,24 @@ class FriendListView(LoginRequiredMixin, ListView):
         context = super().get_context_data(**kwargs)
         search_query = self.request.GET.get("q", "").strip()
 
-        # Retrieve user's friends
         friends = self.request.user.friends.all()
+        added_friends = friends.filter(
+            username__icontains=search_query) if search_query else friends
 
-        # Filter friends based on search query
-        added_friends = friends.filter(username__icontains=search_query) if search_query else friends
-
-        # Filter users who are NOT friends
-        non_friends = User.objects.exclude(id__in=friends).exclude(id=self.request.user.id)
-        non_friends = non_friends.filter(username__icontains=search_query) if search_query else []
-
-        # Add results to context
+        non_friends = User.objects.exclude(id__in=friends).exclude(
+            id=self.request.user.id)
+        non_friends = non_friends.filter(
+            username__icontains=search_query) if search_query else []
         context.update({
             "search_query": search_query,
             "added_friends": added_friends,
             "non_friends": non_friends,
+            "incoming_requests": FriendRequest.objects.filter(
+                to_user=self.request.user),
+            "sent_requests": FriendRequest.objects.filter(
+                from_user=self.request.user),
+            "sent_user_ids": set(FriendRequest.objects.filter(
+                from_user=self.request.user).values_list("to_user_id",
+                                                         flat=True)),
         })
         return context
