@@ -2,7 +2,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import ListView
 
-from fanlore.models import FriendRequest
+from fanlore.models import FriendRequest, Category
 
 User = get_user_model()
 
@@ -36,4 +36,6 @@ class FriendListView(LoginRequiredMixin, ListView):
                 from_user=self.request.user).values_list("to_user_id",
                                                          flat=True)),
         })
+        context["categories"] = Category.choices  # Pass the categories to the template
+
         return context

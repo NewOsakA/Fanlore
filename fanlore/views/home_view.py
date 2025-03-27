@@ -1,6 +1,7 @@
 from django.views.generic import ListView
 from django.http import HttpResponse
-from ..models import Content
+from django.shortcuts import render
+from ..models import Content, Category
 
 
 class HomeView(ListView):
@@ -17,8 +18,11 @@ class HomeView(ListView):
         """
         return Content.objects.all()  # Fetch all Content objects for now
 
-    def home(request):
+    def get_context_data(self, **kwargs):
         """
-        A simple view to return a message or redirect to the homepage.
+        Add categories to the context data to pass them into the template.
         """
-        return HttpResponse("Welcome to FanLore!")
+        context = super().get_context_data(**kwargs)
+        context["categories"] = Category.choices  # Pass the categories to the template
+        return context
+

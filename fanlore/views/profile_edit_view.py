@@ -3,7 +3,7 @@ from django.views.generic import UpdateView
 from django.contrib import messages
 from django.urls import reverse_lazy
 from django.shortcuts import redirect
-from ..models import User
+from ..models import User, Category
 from ..forms.profile_edit_view import ProfileUpdateForm
 from django.contrib.auth import update_session_auth_hash
 
@@ -33,3 +33,11 @@ class ProfileEditView(LoginRequiredMixin, UpdateView):
         """Handle form errors."""
         messages.error(self.request, "Please correct the errors below.")
         return self.render_to_response(self.get_context_data(form=form))
+
+    def get_context_data(self, **kwargs):
+        """
+        Add categories to the context data to pass them into the template.
+        """
+        context = super().get_context_data(**kwargs)
+        context["categories"] = Category.choices  # Pass the categories to the template
+        return context

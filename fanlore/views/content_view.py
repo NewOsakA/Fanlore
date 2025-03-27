@@ -4,7 +4,7 @@ from django.urls import reverse, reverse_lazy
 from django.views import View
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_protect
-from ..models import Content, Comment
+from ..models import Content, Comment, Category
 from ..forms import CommentForm
 
 
@@ -19,6 +19,7 @@ class ContentDetailView(DetailView, FormView):
         context = super().get_context_data(**kwargs)
         context['comments'] = self.object.comments.all()  # Fetch related comments
         context['form'] = self.get_form()  # Add form to context
+        context["categories"] = Category.choices
         return context
 
     def post(self, request, *args, **kwargs):
