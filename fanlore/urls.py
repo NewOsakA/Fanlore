@@ -28,4 +28,11 @@ urlpatterns = [
          name="cancel-friend-request"),
     path('delete_content/<uuid:content_id>/',
          views.ContentDeleteView.as_view(), name='content_delete'),
+    path("event/<int:pk>/", views.EventDetailView.as_view(),
+         name="event-detail"),
+    path("event/<int:event_id>/submit/", views.EventSubmitView.as_view(),
+         name="event-submit"),
+    path("events/", views.EventListView.as_view(), name="event-list"),
+    path("events/create/", views.EventCreateView.as_view(),
+         name="event-create"),
 ]

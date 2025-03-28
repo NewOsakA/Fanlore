@@ -62,7 +62,8 @@ INSTALLED_APPS = [
 
     'cloudinary',
     'cloudinary_storage',
-
+    "markdownfield",
+    'pagedown',
     'widget_tweaks',
 ]
 
@@ -195,6 +196,6 @@ DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 # Media Files
 MEDIA_URL = '/media/'
 
-
 # Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+

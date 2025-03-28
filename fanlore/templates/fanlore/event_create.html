@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+{% load static %}
+{% load widget_tweaks %}
+
+{% block extra_head %}
+    {{ form.media }}
+    <style>
+/* Prevent overflow and wrap toolbar buttons nicely */
+.wmd-panel {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    min-width: unset !important;
+    box-sizing: border-box;
+    overflow-x: hidden;
+}
+
+.wmd-button-bar {
+    background-color: #f8f9fa;
+    border: 1px solid #ced4da;
+    border-bottom: none;
+    border-radius: 6px 6px 0 0;
+    padding: 6px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    overflow: hidden;
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+/* Optional: Editor body styling */
+.wmd-input {
+    background-color: #f4f4f4;
+    border-radius: 0 0 6px 6px;
+    border: 1px solid #ced4da;
+    border-top: none;
+    padding: 10px;
+    font-family: inherit;
+    width: 100%;
+    box-sizing: border-box;
+}
+</style>
+
+{% endblock %}
+
+
+{% block content %}
+<div class="container mt-4">
+    <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white">
+            <h4 class="mb-0">Create New Event</h4>
+        </div>
+        <div class="card-body">
+            <form method="post">
+                {% csrf_token %}
+
+                <div class="mb-3">
+                    <label for="{{ form.title.id_for_label }}" class="form-label">Title</label>
+                    {{ form.title|add_class:"form-control" }}
+                </div>
+
+                <div class="mb-3">
+                    <label for="{{ form.description.id_for_label }}" class="form-label">Description</label>
+                    {{ form.description }}
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="{{ form.submission_start.id_for_label }}" class="form-label">Submission Start</label>
+                        {{ form.submission_start|add_class:"form-control" }}
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="{{ form.submission_end.id_for_label }}" class="form-label">Submission End</label>
+                        {{ form.submission_end|add_class:"form-control" }}
+                    </div>
+                </div>
+
+                <div class="form-check mb-2">
+                    {{ form.allow_text|add_class:"form-check-input" }}
+                    <label class="form-check-label" for="{{ form.allow_text.id_for_label }}">Allow Text</label>
+                </div>
+
+                <div class="form-check mb-2">
+                    {{ form.allow_file|add_class:"form-check-input" }}
+                    <label class="form-check-label" for="{{ form.allow_file.id_for_label }}">Allow File</label>
+                </div>
+
+                <div class="form-check mb-4">
+                    {{ form.show_submissions|add_class:"form-check-input" }}
+                    <label class="form-check-label" for="{{ form.show_submissions.id_for_label }}">Show Submissions</label>
+                </div>
+
+                <button type="submit" class="btn btn-success w-100">Create Event</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

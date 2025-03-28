@@ -12,3 +12,7 @@ from .sent_friend_request_view import FriendRequestCreateView
 from .signin_view import SignInView
 from .signup_view import SignUpView
 from .upload_view import ContentUploadView
+from .event_detail_view import EventDetailView
+from .event_submit_view import EventSubmitView
+from .event_list_view import EventListView
+from .event_create_view import EventCreateView

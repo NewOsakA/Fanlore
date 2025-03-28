@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+{% load static %}
+{% load widget_tweaks %}
+{% block content %}
+<div class="container mt-4">
+    <h1 class="ab-3">{{ event.title }}</h1>
+    <p class="text-muted">Created by {{ event.creator.username }}</p>
+
+    {% if event.submission_start or event.submission_end %}
+        <p class="text-secondary">
+            Submissions:
+            {% if event.submission_start %} Opens {{ event.submission_start|date:"M d, Y H:i" }} {% endif %}
+            {% if event.submission_end %} – Closes {{ event.submission_end|date:"M d, Y H:i" }} {% endif %}
+        </p>
+    {% endif %}
+
+    <hr>
+
+    <div class="markdown-body">
+        {{ event.description_rendered|safe }}
+    </div>
+
+    <hr>
+
+    {% if can_submit %}
+        {% if user_submission %}
+            <div class="alert alert-success">You have already submitted to this event.</div>
+        {% elif submission_form %}
+            <div class="card mt-4">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">Submit to this Event</h4>
+                </div>
+                <div class="card-body">
+                    <form method="post" enctype="multipart/form-data" action="{% url 'event-submit' event.id %}">
+                        {% csrf_token %}
+
+                        {% if event.allow_text %}
+                            <div class="mb-3">
+                                <label for="id_text_response" class="form-label"><strong>Text Response</strong></label>
+                                {{ submission_form.text_response|add_class:"form-control" }}
+                            </div>
+                        {% endif %}
+
+                        {% if event.allow_file %}
+                            <div class="mb-3">
+                                <label for="id_file_upload" class="form-label"><strong>Upload File</strong></label>
+                                {{ submission_form.file_upload|add_class:"form-control" }}
+                            </div>
+                        {% endif %}
+
+                        <button type="submit" class="btn btn-success w-100">Submit</button>
+                    </form>
+                </div>
+            </div>
+        {% endif %}
+    {% elif not user.is_authenticated %}
+        <div class="alert alert-info">Please log in to submit to this event.</div>
+    {% elif not event.allow_text and not event.allow_file %}
+        <div class="alert alert-warning">Submissions are not allowed for this event.</div>
+    {% elif not is_open %}
+        <div class="alert alert-info">Submissions are closed or not open yet.</div>
+    {% endif %}
+
+    {% if event.show_submissions and event.allow_text or event.show_submissions and event.allow_file %}
+        <hr>
+        <h5 class="mt-4">Submitted Entries</h5>
+        {% if submissions %}
+            <ul class="list-group">
+                {% for entry in submissions %}
+                    <li class="list-group-item">
+                        <strong>{{ entry.user.username }}</strong> submitted:
+                        {% if entry.text_response %}
+                            <p>{{ entry.text_response }}</p>
+                        {% endif %}
+                        {% if entry.file_upload %}
+                            <a href="{{ entry.file_upload.url }}" target="_blank">Download File</a>
+                        {% endif %}
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p class="text-muted">No submissions yet.</p>
+        {% endif %}
+    {% endif %}
+</div>
+{% endblock %}

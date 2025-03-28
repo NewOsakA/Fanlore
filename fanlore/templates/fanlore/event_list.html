@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="container mt-4">
+    <h2 class="mb-4">All Events</h2>
+
+    {% if events %}
+        <div class="list-group">
+            {% for event in events %}
+                <a href="{% url 'event-detail' event.id %}" class="list-group-item list-group-item-action">
+                    <div class="d-flex justify-content-between">
+                        <h5 class="mb-1">{{ event.title }}</h5>
+                        <small>{{ event.created_at|date:"F j, Y" }}</small>
+                    </div>
+                    <p class="mb-1">{{ event.description|truncatewords:20 }}</p>
+                    <small>
+                        Submissions:
+                        {% if event.submission_start %}
+                            Opens {{ event.submission_start|date:"M d, Y H:i" }}
+                        {% else %}
+                            Open now
+                        {% endif %}
+                        {% if event.submission_end %}
+                            – Closes {{ event.submission_end|date:"M d, Y H:i" }}
+                        {% endif %}
+                    </small>
+                </a>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="alert alert-warning mt-4">
+            No events available.
+        </div>
+    {% endif %}
+</div>
+
+{% endblock %}

@@ -13,3 +13,6 @@ cloudinary
 django-cloudinary-storage
 Pillow
 django-widget-tweaks
+django-markdownfield
+markdown
+django-pagedown
