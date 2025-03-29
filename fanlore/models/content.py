@@ -4,7 +4,6 @@ from django.utils import timezone
 from django.conf import settings
 from django.db import models
 from .category import Category
-from .comment import Comment
 
 
 class Content(models.Model):
@@ -21,7 +20,6 @@ class Content(models.Model):
     collaborator = models.ForeignKey(settings.AUTH_USER_MODEL,
                                      on_delete=models.CASCADE)
     vote = models.IntegerField(default=0)
-    comments = models.ManyToManyField(Comment, blank=True)
     category = models.IntegerField(choices=Category.choices, default=Category.GENERIC)
     create_at = models.DateTimeField(default=timezone.now, null=True)
 
@@ -30,13 +28,26 @@ class Content(models.Model):
         diff = now - self.create_at
         total_seconds = diff.total_seconds()
 
-        if int(total_seconds // 3600) < 1:
-            return f"{int(total_seconds // 60)} minutes ago"
-        return f"{int(total_seconds // 3600)} hours ago"
+        years = int(total_seconds // 31536000)
+        months = int((total_seconds % 31536000) // 2592000)
+        days = int((total_seconds % 2592000) // 86400)
+        hours = int((total_seconds % 86400) // 3600)
+        minutes = int((total_seconds % 3600) // 60)
+
+        if years > 0:
+            return f"{years} year{'s' if years > 1 else ''} ago"
+        if months > 0:
+            return f"{months} month{'s' if months > 1 else ''} ago"
+        if days > 0:
+            return f"{days} day{'s' if days > 1 else ''} ago"
+        if hours > 0:
+            return f"{hours} hour{'s' if hours > 1 else ''} ago"
+        if minutes > 0:
+            return f"{minutes} minute{'s' if minutes > 1 else ''} ago"
+        return "Just now"
 
     def __str__(self):
         return self.title
-
 
 class ContentFile(models.Model):
     id = models.UUIDField(default=uuid.uuid4, editable=False, unique=True, primary_key=True)

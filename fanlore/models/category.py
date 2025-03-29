@@ -9,4 +9,4 @@ class Category(models.IntegerChoices):
     VIDEO = 5, 'Video'
 
     def __str__(self):
-        return self.label  # Returns the display name of the choice
+        return self.label
