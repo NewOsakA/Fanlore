@@ -8,22 +8,35 @@
         <div class="list-group">
             {% for event in events %}
                 <a href="{% url 'event-detail' event.id %}" class="list-group-item list-group-item-action">
-                    <div class="d-flex justify-content-between">
-                        <h5 class="mb-1">{{ event.title }}</h5>
-                        <small>{{ event.created_at|date:"F j, Y" }}</small>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="flex-grow-1">
+                            <h5 class="mb-1 fw-bold">{{ event.title }}</h5>
+                            <p class="mb-1 text-muted">{{ event.short_description }}</p>
+                            <small class="d-block text-secondary">
+                                By {{ event.creator.username }}<br>
+                                {% if event.submission_start and event.submission_end %}
+                                    {% if event.submission_end < now %}
+                                        Submissions: Closed
+                                    {% elif event.submission_start > now %}
+                                        Submissions: Opens {{ event.submission_start|date:"M d, Y H:i" }} – Closes {{ event.submission_end|date:"M d, Y H:i" }}
+                                    {% else %}
+                                        Submissions: Open now – Closes {{ event.submission_end|date:"M d, Y H:i" }}
+                                    {% endif %}
+                                {% elif event.submission_start %}
+                                    Submissions: Opens {{ event.submission_start|date:"M d, Y H:i" }}
+                                {% elif event.submission_end %}
+                                    Submissions: Closes {{ event.submission_end|date:"M d, Y H:i" }}
+                                {% else %}
+                                    Submissions: Open now
+                                {% endif %}
+                            </small>
+                        </div>
+
+                        {% if event.banner_image %}
+                            <img src="{{ event.banner_image.url }}" alt="Banner" class="img-thumbnail ms-3"
+                                 style="max-height: 120px; width: auto;">
+                        {% endif %}
                     </div>
-                    <p class="mb-1">{{ event.description|truncatewords:20 }}</p>
-                    <small>
-                        Submissions:
-                        {% if event.submission_start %}
-                            Opens {{ event.submission_start|date:"M d, Y H:i" }}
-                        {% else %}
-                            Open now
-                        {% endif %}
-                        {% if event.submission_end %}
-                            – Closes {{ event.submission_end|date:"M d, Y H:i" }}
-                        {% endif %}
-                    </small>
                 </a>
             {% endfor %}
         </div>

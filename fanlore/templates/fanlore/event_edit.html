@@ -5,7 +5,6 @@
 {% block extra_head %}
     {{ form.media }}
     <style>
-        /* Prevent overflow and wrap toolbar buttons nicely */
         .wmd-panel {
             width: 100% !important;
             max-width: 100% !important;
@@ -29,7 +28,6 @@
             box-sizing: border-box;
         }
 
-        /* Optional: Editor body styling */
         .wmd-input {
             background-color: #f4f4f4;
             border-radius: 0 0 6px 6px;
@@ -50,12 +48,11 @@
     </style>
 {% endblock %}
 
-
 {% block content %}
 <div class="container mt-4">
     <div class="card shadow-sm">
-        <div class="card-header bg-primary text-white">
-            <h4 class="mb-0">Create New Event</h4>
+        <div class="card-header bg-warning text-dark">
+            <h4 class="mb-0">Edit Event</h4>
         </div>
         <div class="card-body">
             <form method="post" enctype="multipart/form-data">
@@ -107,7 +104,7 @@
                     <label class="form-check-label" for="{{ form.show_submissions.id_for_label }}">Show Submissions</label>
                 </div>
 
-                <button type="submit" class="btn btn-success w-100">Create Event</button>
+                <button type="submit" class="btn btn-warning w-100">Update Event</button>
             </form>
         </div>
     </div>

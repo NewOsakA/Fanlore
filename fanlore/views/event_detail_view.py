@@ -23,14 +23,23 @@ class EventDetailView(DetailView):
 
         user_submission = None
         if user.is_authenticated:
-            user_submission = EventSubmission.objects.filter(event=event, user=user).first()
+            user_submission = EventSubmission.objects.filter(event=event,
+                                                             user=user).first()
 
         show_submissions = event.show_submissions or is_creator
         submissions = event.submissions.all() if show_submissions else []
 
         submission_form = None
-        if can_submit and not user_submission and user.is_authenticated:
-            submission_form = EventSubmissionForm(event=event)
+        # views/event_detail_view.py
+
+        if can_submit and user.is_authenticated:
+            if user_submission:
+                # Pass instance to pre-fill the form for editing
+                submission_form = EventSubmissionForm(instance=user_submission,
+                                                      event=event)
+            else:
+                # New submission
+                submission_form = EventSubmissionForm(event=event)
 
         context.update({
             "is_open": is_open,

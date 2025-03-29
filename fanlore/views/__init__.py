@@ -16,3 +16,4 @@ from .event_detail_view import EventDetailView
 from .event_submit_view import EventSubmitView
 from .event_list_view import EventListView
 from .event_create_view import EventCreateView
+from .event_update_view import EventUpdateView

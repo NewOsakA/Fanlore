@@ -1,9 +1,42 @@
 {% extends "base.html" %}
 {% load static %}
 {% load widget_tweaks %}
+
+{% block extra_head %}
+<style>
+<style>
+    .markdown-body img {
+        max-width: 100%;
+        height: auto;
+        display: block;
+        margin: 1rem auto;
+        border-radius: 8px;
+    }
+
+    .banner-image {
+        width: 100%;
+        height: 220px; /* or 250px for taller */
+        object-fit: cover;
+        border-radius: 10px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+
+    .card-body img, .card-body video {
+        max-height: 500px;
+        object-fit: contain;
+    }
+</style>
+{% endblock %}
+
 {% block content %}
 <div class="container mt-4">
-    <h1 class="ab-3">{{ event.title }}</h1>
+    <div class="d-flex justify-content-between align-items-center mb-2">
+        <h1 class="mb-0">{{ event.title }}</h1>
+
+        {% if request.user == event.creator %}
+            <a href="{% url 'event-edit' event.id %}" class="btn btn-outline-primary btn-md">Edit</a>
+        {% endif %}
+    </div>
     <p class="text-muted">Created by {{ event.creator.username }}</p>
 
     {% if event.submission_start or event.submission_end %}
@@ -13,8 +46,11 @@
             {% if event.submission_end %} – Closes {{ event.submission_end|date:"M d, Y H:i" }} {% endif %}
         </p>
     {% endif %}
-
     <hr>
+    {% if event.banner_image %}
+        <img src="{{ event.banner_image.url }}" alt="Banner Image" class="banner-image">
+        <hr>
+    {% endif %}
 
     <div class="markdown-body">
         {{ event.description_rendered|safe }}
@@ -23,64 +59,133 @@
     <hr>
 
     {% if can_submit %}
-        {% if user_submission %}
-            <div class="alert alert-success">You have already submitted to this event.</div>
-        {% elif submission_form %}
-            <div class="card mt-4">
-                <div class="card-header bg-primary text-white">
-                    <h4 class="mb-0">Submit to this Event</h4>
+        {% if submission_form %}
+            {% if user_submission %}
+                <!-- EDIT Button -->
+                <button class="btn btn-outline-primary mb-3" onclick="toggleEditForm()">Edit Your Submission</button>
+
+                <!-- Edit Form (Toggleable) -->
+                <div id="edit-form-card" class="card mt-2" style="display: none;">
+                    <div class="card-header bg-primary text-white">
+                        <h4 class="mb-0">Edit Your Submission</h4>
+                    </div>
+                    <div class="card-body">
+                        <form method="post" enctype="multipart/form-data" action="{% url 'event-submit' event.id %}">
+                            {% csrf_token %}
+                            {% if event.allow_text %}
+                                <div class="mb-3">
+                                    <label class="form-label"><strong>Text Response</strong></label>
+                                    {{ submission_form.text_response|add_class:"form-control" }}
+                                </div>
+                            {% endif %}
+                            {% if event.allow_file %}
+                                <div class="mb-3">
+                                    <label class="form-label"><strong>Upload File</strong></label>
+                                    {{ submission_form.file_upload|add_class:"form-control" }}
+                                </div>
+                            {% endif %}
+                            <button type="submit" class="btn btn-success w-100">Update Submission</button>
+                        </form>
+                    </div>
                 </div>
-                <div class="card-body">
-                    <form method="post" enctype="multipart/form-data" action="{% url 'event-submit' event.id %}">
-                        {% csrf_token %}
-
-                        {% if event.allow_text %}
-                            <div class="mb-3">
-                                <label for="id_text_response" class="form-label"><strong>Text Response</strong></label>
-                                {{ submission_form.text_response|add_class:"form-control" }}
-                            </div>
-                        {% endif %}
-
-                        {% if event.allow_file %}
-                            <div class="mb-3">
-                                <label for="id_file_upload" class="form-label"><strong>Upload File</strong></label>
-                                {{ submission_form.file_upload|add_class:"form-control" }}
-                            </div>
-                        {% endif %}
-
-                        <button type="submit" class="btn btn-success w-100">Submit</button>
-                    </form>
+            {% else %}
+                <!-- First-time Submission Form -->
+                <div class="card mt-4">
+                    <div class="card-header bg-primary text-white">
+                        <h4 class="mb-0">Submit to this Event</h4>
+                    </div>
+                    <div class="card-body">
+                        <form method="post" enctype="multipart/form-data" action="{% url 'event-submit' event.id %}">
+                            {% csrf_token %}
+                            {% if event.allow_text %}
+                                <div class="mb-3">
+                                    <label class="form-label"><strong>Text Response</strong></label>
+                                    {{ submission_form.text_response|add_class:"form-control" }}
+                                </div>
+                            {% endif %}
+                            {% if event.allow_file %}
+                                <div class="mb-3">
+                                    <label class="form-label"><strong>Upload File</strong></label>
+                                    {{ submission_form.file_upload|add_class:"form-control" }}
+                                </div>
+                            {% endif %}
+                            <button type="submit" class="btn btn-success w-100">Submit</button>
+                        </form>
+                    </div>
                 </div>
-            </div>
+            {% endif %}
         {% endif %}
     {% elif not user.is_authenticated %}
         <div class="alert alert-info">Please log in to submit to this event.</div>
     {% elif not event.allow_text and not event.allow_file %}
         <div class="alert alert-warning">Submissions are not allowed for this event.</div>
-    {% elif not is_open %}
-        <div class="alert alert-info">Submissions are closed or not open yet.</div>
+    {% elif not has_started %}
+        <div class="alert alert-info">Submissions are not open yet.</div>
+    {% elif has_ended %}
+        <div class="alert alert-info">Submissions are closed.</div>
     {% endif %}
+
 
     {% if event.show_submissions and event.allow_text or event.show_submissions and event.allow_file %}
         <hr>
-        <h5 class="mt-4">Submitted Entries</h5>
-        {% if submissions %}
-            <ul class="list-group">
-                {% for entry in submissions %}
-                    <li class="list-group-item">
-                        <strong>{{ entry.user.username }}</strong> submitted:
-                        {% if entry.text_response %}
-                            <p>{{ entry.text_response }}</p>
-                        {% endif %}
-                        {% if entry.file_upload %}
-                            <a href="{{ entry.file_upload.url }}" target="_blank">Download File</a>
-                        {% endif %}
-                    </li>
-                {% endfor %}
-            </ul>
-        {% else %}
-            <p class="text-muted">No submissions yet.</p>
-        {% endif %}
+        <h5 class="mt-5 mb-4">📥 Submitted Entries</h5>
+        <div class="d-flex flex-column gap-4">
+            {% for entry in submissions %}
+                <div class="card shadow-sm">
+                    <div class="card-body d-flex">
+                        <!-- Profile Sidebar -->
+                        <div style="width: 160px; text-align: center;">
+                            <img src="{% if entry.user.profile_image %}{{ entry.user.profile_image.url }}{% else %}{% static 'fanlore/images/user-circle.png' %}{% endif %}"
+                                 alt="{{ entry.user.username }}'s profile"
+                                 class="rounded-circle mb-2"
+                                 style="width: 80px; height: 80px; object-fit: cover;">
+                            <div class="fw-bold">{{ entry.user.username }}</div>
+                            <div class="text-muted small">
+                                {% if entry.user == event.creator %}
+                                Creator
+                                {% else %}
+                                Member
+                                {% endif %}
+                            </div>
+                            <div class="text-muted small">
+                                {{ entry.submitted_at|date:"M d, Y H:i" }}
+                            </div>
+                        </div>
+
+
+                        <!-- Submission Content -->
+                        <div class="flex-grow-1">
+                            {% if entry.text_response %}
+                                <p>{{ entry.text_response }}</p>
+                            {% endif %}
+
+                            {% if entry.file_upload %}
+                                {% with entry.file_upload.url as file_url %}
+                                    {% if ".mp4" in file_url or ".webm" in file_url or ".ogg" in file_url %}
+                                        <video controls class="w-100 rounded shadow-sm mt-2">
+                                            <source src="{{ file_url }}">
+                                            Your browser does not support the video tag.
+                                        </video>
+                                    {% elif ".jpg" in file_url or ".jpeg" in file_url or ".png" in file_url or ".gif" in file_url %}
+                                        <img src="{{ file_url }}" class="img-fluid rounded shadow-sm mt-2" alt="Submitted Image">
+                                    {% else %}
+                                        <a href="{{ entry.file_upload.url }}" target="_blank">Download File</a>
+                                            📄 View File
+                                        </a>
+                                    {% endif %}
+                                {% endwith %}
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
     {% endif %}
 </div>
+<script>
+    function toggleEditForm() {
+        const form = document.getElementById('edit-form-card');
+        form.style.display = form.style.display === 'none' ? 'block' : 'none';
+    }
+</script>
 {% endblock %}
