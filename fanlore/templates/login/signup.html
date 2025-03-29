@@ -56,6 +56,11 @@
     </div>
 </div>
 
+<a href="{% provider_login_url 'google' %}" class="google-btn mt-3" style="color: black; text-decoration: none;">
+    <img src="{% static 'fanlore/images/google-logo.png' %}" alt="Google">
+    Continue with Google
+</a>
+
 <p class="text-center mt-3">
     Have an account? <a href="{% url 'signin' %}" class="text-primary">Sign In</a>
 </p>
