@@ -20,6 +20,8 @@ urlpatterns = [
          name="remove-friend"),
     path("profile_edit/", views.ProfileEditView.as_view(),
          name="profile_edit"),
+    path('profile/bookmarks/', views.BookmarkedPostsView.as_view(),
+         name='bookmarked_post'),
     path('upload/', views.ContentUploadView.as_view(), name='upload_content'),
     path('post/<uuid:pk>/', views.ContentDetailView.as_view(),
          name='view_post'),
@@ -36,4 +38,6 @@ urlpatterns = [
     path("events/create/", views.EventCreateView.as_view(),
          name="event-create"),
     path("events/<int:pk>/edit/", views.EventUpdateView.as_view(), name="event-edit"),
+    path('toggle-bookmark/', views.ToggleBookmarkView.as_view(), name='toggle_bookmark'),
+
 ]
