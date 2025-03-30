@@ -1,0 +1,151 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block extra_head %}
+<style>
+    .profile-img {
+        width: 80px;
+        height: 80px;
+        object-fit: cover;
+    }
+
+    .submission-media {
+        max-width: 100%;
+        max-height: 400px;
+        object-fit: contain;
+        display: block;
+        margin-top: 1rem;
+        border-radius: 8px;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .review-button {
+        min-width: 150px;
+        white-space: nowrap;
+    }
+
+    .submission-text {
+        word-break: break-word;
+        overflow-wrap: break-word;
+        white-space: pre-wrap;
+    }
+
+    @media (max-width: 767px) {
+        .card-body {
+            flex-direction: column !important;
+            align-items: center !important;
+            text-align: center;
+        }
+
+        .review-button {
+            width: 100%;
+            margin-top: 1rem;
+        }
+
+        .profile-sidebar {
+            width: 100% !important;
+            text-align: center;
+        }
+
+        .submission-media {
+            max-width: 100%;
+            height: auto;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2 class="mb-0">🎯 Event Creator Dashboard – {{ event.title }}</h2>
+        <a href="{% url 'event-detail' event.id %}" class="btn btn-outline-secondary">Back</a>
+    </div>
+
+    <p class="text-muted">Total: {{ total_submissions }} | Unreviewed: {{ remaining_reviews }}</p>
+
+    <form method="get" class="row g-2 mb-4">
+        <div class="col-lg-4">
+            <input type="text" name="search" placeholder="Search by username" value="{{ search_query }}" class="form-control">
+        </div>
+        <div class="col-lg-2">
+            <select name="review" class="form-select">
+                <option value="">All</option>
+                <option value="reviewed" {% if review_filter == "reviewed" %}selected{% endif %}>Reviewed</option>
+                <option value="unreviewed" {% if review_filter == "unreviewed" %}selected{% endif %}>Unreviewed</option>
+            </select>
+        </div>
+        <div class="col-lg-2">
+            <select name="sort" class="form-select">
+                <option value="latest" {% if sort_order == "latest" %}selected{% endif %}>Latest</option>
+                <option value="oldest" {% if sort_order == "oldest" %}selected{% endif %}>Oldest</option>
+            </select>
+        </div>
+        <div class="col-lg-2">
+            <button class="btn btn-primary w-100">Apply</button>
+        </div>
+    </form>
+
+    {% if submissions %}
+        <h5 class="mb-4">📥 Submitted Entries</h5>
+        <div class="d-flex flex-column gap-4">
+            {% for entry in submissions %}
+                <div class="card shadow-sm">
+                    <div class="card-body d-flex flex-md-row gap-4 align-items-start justify-content-between">
+                        <!-- Profile Sidebar -->
+                        <div class="profile-sidebar" style="width: 160px; text-align: center;">
+                            <img src="{% if entry.user.profile_image %}{{ entry.user.profile_image.url }}{% else %}{% static 'fanlore/images/user-circle.png' %}{% endif %}"
+                                 alt="{{ entry.user.username }}'s profile"
+                                 class="rounded-circle mb-2 profile-img">
+                            <div class="fw-bold">
+                                <a href="{% url 'friend-profile' entry.user.id %}" class="text-dark text-decoration-none">
+                                    {{ entry.user.username }}
+                                </a>
+                            </div>
+                            <div class="text-muted small">
+                                {% if entry.user == event.creator %}Creator{% else %}Member{% endif %}
+                            </div>
+                            <div class="text-muted small">
+                                {{ entry.submitted_at|date:"M d, Y H:i" }}
+                            </div>
+                        </div>
+
+                        <!-- Submission Content -->
+                        <div class="flex-grow-1 text-start text-md-start">
+                            {% if entry.text_response %}
+                                <p class="submission-text">{{ entry.text_response }}</p>
+                            {% endif %}
+                            {% if entry.file_upload %}
+                                {% with entry.file_upload.url as file_url %}
+                                    {% if ".mp4" in file_url or ".webm" in file_url or ".ogg" in file_url %}
+                                        <video controls class="submission-media">
+                                            <source src="{{ file_url }}">
+                                            Your browser does not support the video tag.
+                                        </video>
+                                    {% elif ".jpg" in file_url or ".jpeg" in file_url or ".png" in file_url or ".gif" in file_url %}
+                                        <img src="{{ file_url }}" class="submission-media" alt="Submitted Image">
+                                    {% else %}
+                                        <a href="{{ file_url }}" target="_blank" class="btn btn-outline-secondary mt-2">📄 View File</a>
+                                    {% endif %}
+                                {% endwith %}
+                            {% endif %}
+                        </div>
+
+                        <!-- Review Button -->
+                        <div class="text-end">
+                            <form method="post" action="{% url 'submission-toggle-reviewed' entry.id %}">
+                                {% csrf_token %}
+                                <button class="btn {% if entry.reviewed %}btn-success{% else %}btn-outline-secondary{% endif %} review-button">
+                                    {% if entry.reviewed %}✓ Reviewed{% else %}Mark Reviewed{% endif %}
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p class="text-muted">No submissions match your filters.</p>
+    {% endif %}
+</div>
+{% endblock %}

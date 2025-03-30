@@ -19,6 +19,7 @@ class EventSubmission(models.Model):
         resource_type="auto"
     )
     submitted_at = models.DateTimeField(auto_now_add=True)
+    reviewed = models.BooleanField(default=False)
 
     class Meta:
         unique_together = ("event", "user")

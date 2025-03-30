@@ -8,14 +8,26 @@
         <form method="POST" enctype="multipart/form-data">
             {% csrf_token %}
 
-            <!-- Profile Image Preview -->
-            <div class="text-center">
+            <!-- Background Preview -->
+            <div class="text-center mb-4">
+                {% if user.profile_background_image %}
+                    <div class="mb-2">
+                        <img src="{{ user.profile_background_image.url }}" class="img-fluid rounded" alt="Background Image" style="max-height: 200px;">
+                    </div>
+                {% endif %}
+                <label class="form-label">Upload Background Image</label>
+                <input type="file" name="profile_background_image" class="form-control">
+            </div>
+
+            <hr>
+
+            <!-- Profile Image -->
+            <div class="text-center mb-4">
                 {% if user.profile_image %}
                     <img src="{{ user.profile_image.url }}" class="rounded-circle" width="150" height="150" alt="Profile Picture">
                 {% else %}
                     <img src="{% static 'fanlore/images/user-circle.png' %}" class="rounded-circle" width="150" height="150" alt="Default Profile Picture">
                 {% endif %}
-
                 <div class="mt-2">
                     <label class="form-label">Upload New Profile Picture</label>
                     <input type="file" name="profile_image" class="form-control">
@@ -24,23 +36,22 @@
 
             <hr>
 
-            <!-- Dynamic Form Fields Loop -->
+            <!-- Render Remaining Fields -->
             {% for field in form %}
-                <div class="mb-3">
-                    {% if field.name == "profile_image" %}
-
-                    {% else %}
+                {% if field.name == "profile_image" or field.name == "profile_background_image" %}
+                    {# Already rendered manually above #}
+                {% else %}
+                    <div class="mb-3">
                         <label class="form-label">{{ field.label }}</label>
                         {{ field }}
-                    {% endif %}
-
-                    {% if field.help_text %}
-                        <small class="form-text text-muted">{{ field.help_text }}</small>
-                    {% endif %}
-                    {% for error in field.errors %}
-                        <div class="text-danger">{{ error }}</div>
-                    {% endfor %}
-                </div>
+                        {% if field.help_text %}
+                            <small class="form-text text-muted">{{ field.help_text }}</small>
+                        {% endif %}
+                        {% for error in field.errors %}
+                            <div class="text-danger">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
             {% endfor %}
 
             <button type="submit" class="btn btn-dark w-100 mb-3">Save Changes</button>

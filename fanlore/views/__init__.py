@@ -17,6 +17,7 @@ from .event_submit_view import EventSubmitView
 from .event_list_view import EventListView
 from .event_create_view import EventCreateView
 from .event_update_view import EventUpdateView
-from .content_update_view import ContentUpdateView
 from .bookmark_list_view import BookmarkedPostsView
 from .bookmark_toggle_view import ToggleBookmarkView
+from .event_creator_dashboard_view import EventCreatorDashboardView
+from .event_toggle_reviewed_view import ToggleReviewedView
