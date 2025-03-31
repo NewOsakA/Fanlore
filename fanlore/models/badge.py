@@ -2,6 +2,9 @@ from django.db import models
 
 
 class Badge(models.Model):
+    """
+    Model class for Achievements and badges
+    """
     id = models.UUIDField(primary_key=True)
     name = models.CharField(max_length=255)
     description = models.TextField()

@@ -42,19 +42,24 @@
         </div>
 
         <!-- Profile Section -->
-        <div class="p-4 d-flex flex-column flex-md-row align-items-center align-items-md-start gap-4">
+        <div class="p-4 position-relative d-flex flex-column align-items-center align-items-md-start gap-3">
+            <!-- Edit Button (Top Right) -->
+            {% if is_own_profile %}
+                <a href="{% url 'profile_edit' %}" class="btn btn-dark position-absolute top-0 end-0 m-3">Edit Profile</a>
+            {% endif %}
+
             <!-- Profile Image -->
-            <div class="text-center text-md-start">
+            <div class="text-center">
                 {% if user.profile_image %}
-                    <img src="{{ user.profile_image.url }}" class="rounded-circle border border-white shadow" width="160" height="160" style="object-fit: cover; margin-top: -80px;">
+                    <img src="{{ user.profile_image.url }}" class="rounded-circle border border-white shadow" width="160" height="160" style="object-fit: cover; margin-top: -112px;">
                 {% else %}
-                    <img src="{% static 'fanlore/images/user-circle.png' %}" class="rounded-circle border border-white shadow" width="160" height="160" style="margin-top: -80px;">
+                    <img src="{% static 'fanlore/images/user-circle.png' %}" class="rounded-circle border border-white shadow" width="160" height="160" style="margin-top: -112px;">
                 {% endif %}
             </div>
 
-            <!-- Info -->
-            <div class="text-center text-md-start mt-3 mt-md-0 flex-grow-1">
-                <h3 class="fw-bold">{{ user.username }}</h3>
+            <!-- Info (Centered Below Profile Image) -->
+            <div class="ms-3">
+                <h3 class="fw-bold ms">{{ user.username }}</h3>
                 {% if user.bio %}
                     <p class="text-muted mb-1">{{ user.bio }}</p>
                 {% else %}
@@ -62,12 +67,10 @@
                         <p class="text-muted mb-1">No bio available. <a href="{% url 'profile_edit' %}" class="text-decoration-none">Edit bio</a></p>
                     {% endif %}
                 {% endif %}
-
-                {% if is_own_profile %}
-                    <a href="{% url 'profile_edit' %}" class="btn btn-dark mt-2">Edit Profile</a>
-                {% endif %}
             </div>
         </div>
+
+
     </div>
 
     <!-- User Details and Posts -->
@@ -114,6 +117,13 @@
                 {% else %}
                     <p class="text-muted">No posts yet.</p>
                 {% endif %}
+            </div>
+        </div>
+
+        <!-- Right: Achievement Box -->
+        <div class="col-lg-4">
+            <div class="card shadow p-4">
+                <h5 class="fw-bold mb-3">Achievements</h5>
             </div>
         </div>
     </div>

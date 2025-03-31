@@ -16,3 +16,4 @@ django-widget-tweaks
 django-markdownfield
 markdown
 django-pagedown
+django-markdownx
