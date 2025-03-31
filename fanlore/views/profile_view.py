@@ -3,6 +3,8 @@ from django.views.generic import TemplateView
 from django.shortcuts import get_object_or_404
 from fanlore.models import Content, Category
 from django.contrib.auth import get_user_model
+from fanlore.models import UserAchievement
+
 
 User = get_user_model()
 
@@ -29,6 +31,7 @@ class ProfileView(LoginRequiredMixin, TemplateView):
         context["user"] = user
         context["is_own_profile"] = user == self.request.user
         context["content_list"] = Content.objects.filter(collaborator=user)
-        context["categories"] = Category.choices  # Pass the categories to the template
+        context["categories"] = Category.choices
+        context["achievements"] = UserAchievement.objects.filter(user=user)
 
         return context

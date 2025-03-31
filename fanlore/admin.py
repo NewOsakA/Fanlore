@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from django.utils.html import mark_safe
 
-from .models import User, Tag
+from .models import User, Tag, UserAchievement, Achievement
 
 
 class CustomUserAdmin(UserAdmin):
@@ -56,5 +56,19 @@ class TagAdmin(admin.ModelAdmin):
     list_display = ("name", "created_at")
     search_fields = ("name",)
     ordering = ("-created_at",)
+
+
+@admin.register(Achievement)
+class AchievementAdmin(admin.ModelAdmin):
+    list_display = ("name", "description")
+    search_fields = ("name",)
+
+
+@admin.register(UserAchievement)
+class UserAchievementAdmin(admin.ModelAdmin):
+    list_display = ("user", "achievement", "date_earned")
+    search_fields = ("user__username", "achievement__name")
+    list_filter = ("achievement", "date_earned")
+
 
 admin.site.register(User, CustomUserAdmin)
