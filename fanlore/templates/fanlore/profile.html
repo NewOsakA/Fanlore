@@ -74,10 +74,48 @@
 
         <!-- Profile Section -->
         <div class="p-4 position-relative d-flex flex-column align-items-center align-items-md-start gap-3">
-            <!-- Edit Button (Top Right) -->
-            {% if is_own_profile %}
-                <a href="{% url 'profile_edit' %}" class="btn btn-dark position-absolute top-0 end-0 m-3">Edit Profile</a>
-            {% endif %}
+            <!-- Top Right Button (Edit or Friend Actions) -->
+            <div class="position-absolute top-0 end-0 m-3">
+                <!--Edit Profile Button-->
+                {% if is_own_profile %}
+                    <a href="{% url 'profile_edit' %}" class="btn btn-dark">Edit Profile</a>
+                {% else %}
+                    {% if is_friend %}
+                        <!--Friend Status and dropdown-->
+                        <div class="dropdown">
+                            <button class="btn btn-light border dropdown-toggle d-flex align-items-center gap-2"
+                                    type="button"
+                                    id="friendDropdown"
+                                    data-bs-toggle="dropdown"
+                                    aria-expanded="false">
+                                <i class="fas fa-user-check"></i> Friend
+                            </button>
+                            <ul class="dropdown-menu" aria-labelledby="friendDropdown">
+                                <li>
+                                    <form method="post" action="{% url 'remove-friend' user.id %}">
+                                        {% csrf_token %}
+                                        <button type="submit" class="dropdown-item text-danger">Remove Friend</button>
+                                    </form>
+                                </li>
+<!--                                <li><a class="dropdown-item" href="#">Block</a></li>-->
+                            </ul>
+                        </div>
+                    {% elif has_sent_request %}
+                        <!--Cancel Request Button-->
+                        <form method="post" action="{% url 'cancel-friend-request' has_sent_request.pk %}">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-outline-danger">Cancel Request</button>
+                        </form>
+                    {% else %}
+                        <!--Add Friend Button-->
+                        <form method="post" action="{% url 'add-friend' user.id %}">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-success">Add Friend</button>
+                        </form>
+                    {% endif %}
+                {% endif %}
+            </div>
+
 
             <!-- Profile Image -->
             <div class="text-center">
