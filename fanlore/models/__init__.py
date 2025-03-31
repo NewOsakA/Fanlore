@@ -10,3 +10,4 @@ from .friend_request import FriendRequest
 from .report import Report
 from .user import User
 from .bookmark import Bookmark
+from .tag import Tag
