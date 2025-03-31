@@ -1,12 +1,15 @@
 import os
+import logging
 
 from django.views.generic.edit import CreateView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
 import cloudinary.uploader
+
 from ..models import Content, ContentFile
 from ..forms.upload_content_form import ContentUploadForm
 
+logger = logging.getLogger(__name__)
 
 class ContentUploadView(LoginRequiredMixin, CreateView):
     model = Content
@@ -16,51 +19,44 @@ class ContentUploadView(LoginRequiredMixin, CreateView):
     login_url = '/signin'
 
     def form_valid(self, form):
-        # Save the Content instance
         content = form.save(commit=False)
         content.collaborator = self.request.user
         content.save()
 
-        # Handle the topic_img upload to Cloudinary
+        # Handle topic_img upload
         topic_img = self.request.FILES.get('topic_img')
         if topic_img:
             try:
-                with topic_img.open('rb') as file:
-                    uploaded_image = cloudinary.uploader.upload(
-                        file,
-                        folder="content_images/",
-                        public_id=str(content.id),
-                        overwrite=True,
-                        resource_type="image"
-                    )
-                    content.topic_img = uploaded_image.get("secure_url")
+                uploaded_image = cloudinary.uploader.upload(
+                    topic_img.read(),
+                    folder="content_images/",
+                    public_id=str(content.id),
+                    overwrite=True,
+                    resource_type="image"
+                )
+                content.topic_img = uploaded_image.get("secure_url")
             except Exception as e:
-                print(f"Error uploading topic image: {e}")
+                logger.error(f"Error uploading topic image: {e}")
 
-        # Handle multiple file uploads for content_files
+        # Handle content_files upload
         content_files = self.request.FILES.getlist('content_files')
         for file in content_files:
             try:
-                filename, ext = os.path.splitext(
-                    file.name)  # Extract base name and extension
-                public_id = f"{content.id}_{filename}"  # Avoid duplicate extensions
+                filename, _ = os.path.splitext(file.name)
+                public_id = f"{content.id}_{filename}"
 
-                # Upload each file to Cloudinary
-                with file.open('rb') as f:
-                    uploaded_file = cloudinary.uploader.upload(
-                        f,
-                        folder="content_files/",
-                        public_id=public_id,  # Use the cleaned public_id
-                        overwrite=True,
-                        resource_type="auto"
-                    )
-                    # Create a ContentFile instance for each uploaded file
-                    ContentFile.objects.create(
-                        content=content,
-                        file=uploaded_file.get("secure_url")
-                    )
+                uploaded_file = cloudinary.uploader.upload(
+                    file.read(),
+                    folder="content_files/",
+                    public_id=public_id,
+                    overwrite=True,
+                    resource_type="auto"
+                )
+                ContentFile.objects.create(
+                    content=content,
+                    file=uploaded_file.get("secure_url")
+                )
             except Exception as e:
-                print(f"Error uploading file {file.name}: {e}")
+                logger.error(f"Error uploading file {file.name}: {e}")
 
-        content.save()  # Save the content after assigning the image URL
         return super().form_valid(form)

@@ -5,7 +5,7 @@
     <!-- Left side: Main Content -->
     <div class="content-left">
         <h1>{{ content.title }}</h1>
-                <!-- The Bookmark Button -->
+        <!-- The Bookmark Button -->
         <button id="bookmark-toggle" class="btn btn-light" data-content-id="{{ content.id }}">
             <i class="fas fa-bookmark"></i>
         </button>
@@ -31,8 +31,9 @@
                         this.innerHTML = '<i class="fas fa-bookmark"></i> Bookmarked';
                         alert('Post bookmarked!');
                     } else {
-                        this.innerHTML = '<i class="far fa-bookmark"></i> Bookmark';
-                        alert('Bookmark removed!');
+                        bookmarkIcon.classList.remove('text-primary'); // Remove color when not bookmarked
+                        bookmarkIcon.classList.remove('fas'); // Make it an outline
+                        bookmarkIcon.classList.add('far');
                     }
                 })
                 .catch(error => {
@@ -40,6 +41,7 @@
                     alert('An error occurred. Please try again.');
                 });
             });
+
         </script>
         <p class="meta">
             {{ content.time_since_creation }} by <span class="author">{{ content.collaborator.username }}</span>
@@ -63,7 +65,7 @@
                                     <i class="fas fa-file"></i>
                                 </div>
                                 <div class="file-name">
-                                    {{ file.file|slice:"40" }}{% if file.file|length > 40 %}...{% endif %}
+                                    {{ file.file|slice:"10" }}{% if file.file|length > 10 %}...{% endif %}
                                 </div>
                             </a>
                         </div>
@@ -94,7 +96,6 @@
             </ul>
         </div>
 
-
         <!-- Comment Form -->
         {% if user.is_authenticated %}
         <form method="post" class="comment-form">
@@ -115,12 +116,16 @@
         {% endif %}
 
         <div class="stats">
-            <p><strong>{{ content.views }} Views</strong></p>
             <p><strong>{{ content.vote }} Up Vote</strong></p>
-            <p><strong>{{ content.shares }} Share</strong></p>
         </div>
 
-        <div class="tags">
+        <!-- Category Cover -->
+        <div class="category-cover" style="background-color: {% if content.category == 1 %} #ff6347 {% elif content.category == 2 %} #4682b4 {% elif content.category == 3 %} #32cd32 {% elif content.category == 4 %} #ffa500 {% elif content.category == 5 %} #8a2be2 {% endif %};">
+            <p class="category-name">{{ content.get_category_display }}</p>
+        </div>
+
+        <!-- Tags Section with Margin -->
+        <div class="tags" style="margin-top: 15px;">  <!-- Add margin-top here to separate it from the category -->
             {% for tag in content.tags.all %}
                 <span class="tag">#{{ tag.name }}</span>
             {% endfor %}
@@ -130,8 +135,8 @@
             <h4>Contributor:</h4>
             {% for contributor in content.contributors.all %}
                 <div class="contributor">
-                    <img src="{{ contributor.profile_img.url }}" alt="{{ contributor.username }}" class="avatar">
-                    <span>{{ contributor.username }}</span>
+                    <img src="{{ content.collaborator.profile_img }}" alt="{{ content.collaborator.username }}" class="avatar">
+                    <span>{{ content.collaborator }}</span>
                 </div>
             {% endfor %}
         </div>
@@ -232,7 +237,6 @@
         margin: 0;
     }
 
-
     .comment-avatar {
         width: 30px; /* Smaller size */
         height: 30px; /* Smaller size */
@@ -264,6 +268,26 @@
         margin-right: 5px;
         font-size: 0.9em;
     }
+    .category-cover {
+        display: inline-block;
+        padding: 15px 30px;
+        border-radius: 50px; /* Oval shape */
+        text-align: center;
+        font-size: 1.2em;
+        font-weight: bold;
+        color: white;
+        transition: transform 0.3s ease;
+    }
+
+    .category-name {
+        margin: 0;
+        padding: 0;
+    }
+
+    .category-cover:hover {
+        transform: scale(1.1);
+    }
+
     .contributors {
         margin-top: 15px;
     }
@@ -312,29 +336,19 @@
         transition: transform 0.2s, box-shadow 0.2s;
     }
     .file-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        transform: scale(1.05);
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     }
     .file-icon {
         font-size: 2em;
-        color: #666;
+        margin-bottom: 10px;
     }
     .file-name {
-        margin-top: 10px;
         font-size: 0.9em;
-        color: #333;
-        word-break: break-word;
     }
     .file-link {
         text-decoration: none;
-        color: inherit;
-    }
-    .file-image {
-        width: 100%;
-        max-height: 150px;
-        object-fit: cover;
-        border-radius: 5px;
-        margin-top: 10px;
+        color: #333;
     }
 </style>
 

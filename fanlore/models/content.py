@@ -3,24 +3,30 @@ import cloudinary.models
 from django.utils import timezone
 from django.conf import settings
 from django.db import models
+from markdownfield.models import MarkdownField, RenderedMarkdownField
+from markdownfield.validators import VALIDATOR_STANDARD
+from .tag import Tag
+
 from .category import Category
 
 
 class Content(models.Model):
     id = models.UUIDField(default=uuid.uuid4, editable=False, unique=True, primary_key=True)
     title = models.CharField(max_length=255)
-    description = models.TextField()
+    description = MarkdownField(rendered_field='description_rendered',
+                                validator=VALIDATOR_STANDARD)
+    description_rendered = RenderedMarkdownField()
     topic_img = cloudinary.models.CloudinaryField(
         "image",
         folder="content_images/",
         blank=True,
         null=True
     )
-    content_files = models.JSONField(default=list, blank=True, null=True)
     collaborator = models.ForeignKey(settings.AUTH_USER_MODEL,
                                      on_delete=models.CASCADE)
     vote = models.IntegerField(default=0)
     category = models.IntegerField(choices=Category.choices, default=Category.GENERIC)
+    tags = models.ManyToManyField(Tag, related_name="posts", blank=True)
     create_at = models.DateTimeField(default=timezone.now, null=True)
 
     def time_since_creation(self):
