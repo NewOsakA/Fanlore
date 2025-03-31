@@ -200,13 +200,47 @@
   <!-- Right Column -->
   <div class="right-column">
     <div class="box">
-      <h5>Box 1</h5>
-      <p>Content for the first box.</p>
+      <h5 class="mb-3">🤝 Recommended Friends</h5>
+      {% if recommended_friends %}
+        <div class="d-flex flex-column gap-3">
+          {% for friend in recommended_friends %}
+            <div class="d-flex align-items-center gap-2">
+              {% if friend.profile_image %}
+                <img src="{{ friend.profile_image.url }}"
+                     alt="{{ friend.username }}"
+                     class="rounded-circle"
+                     style="width: 36px; height: 36px; object-fit: cover;">
+              {% else %}
+                <img src="{% static 'fanlore/images/user-circle.png' %}"
+                     alt="Default"
+                     class="rounded-circle"
+                     style="width: 36px; height: 36px; object-fit: cover;">
+              {% endif %}
+              <div class="d-flex flex-column">
+                {% if user.is_authenticated %}
+                  <a href="{% url 'friend-profile' friend.id %}" class="text-decoration-none text-dark">
+                    {{ friend.username }}
+                  </a>
+                {% else %}
+                  <a href="{% url 'signin' %}?next=/" class="text-decoration-none fw-semibold text-dark">
+                    {{ friend.username }}
+                  </a>
+                {% endif %}
+                {% if friend.bio %}
+                  <small class="text-muted">{{ friend.bio|truncatewords:8 }}</small>
+                {% endif %}
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <p class="text-muted">No recommendations available.</p>
+      {% endif %}
     </div>
-    <div class="box">
-      <h5>Box 2</h5>
-      <p>Content for the second box.</p>
-    </div>
+      <div class="box">
+          <h5>Box 2</h5>
+          <p>Content for the second box.</p>
+      </div>
   </div>
 
   <!-- Toasts -->
