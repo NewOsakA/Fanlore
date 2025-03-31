@@ -1,11 +1,10 @@
-import cloudinary.uploader
 from django import forms
 from ..models import User
 
 
 class ProfileUpdateForm(forms.ModelForm):
     """
-    Form for updating user profile, including password change and image upload.
+    Form for updating user profile, including optional password change and image uploads.
     """
 
     old_password = forms.CharField(
@@ -57,42 +56,14 @@ class ProfileUpdateForm(forms.ModelForm):
 
     def save(self, commit=True):
         """
-        Saves the updated user profile.
-        - Updates password if provided.
-        - Uploads and replaces images in Cloudinary.
+        Saves the user profile. Image fields are handled automatically by CloudinaryField.
         """
         user = super().save(commit=False)
         new_password1 = self.cleaned_data.get("new_password1")
         new_password2 = self.cleaned_data.get("new_password2")
-        profile_image = self.cleaned_data.get("profile_image")
-        background_image = self.cleaned_data.get("profile_background_image")
 
         if new_password1 and new_password1 == new_password2:
             user.set_password(new_password1)
-
-        if profile_image:
-            public_id = f"user_profile_image/{user.id}"
-            cloudinary.uploader.destroy(public_id)
-            uploaded = cloudinary.uploader.upload(
-                profile_image,
-                folder="user_profile_image/",
-                public_id=str(user.id),
-                overwrite=True,
-                resource_type="image"
-            )
-            user.profile_image = uploaded['secure_url']
-
-        if background_image:
-            public_id = f"user_profile_background_image/{user.id}"
-            cloudinary.uploader.destroy(public_id)
-            uploaded = cloudinary.uploader.upload(
-                background_image,
-                folder="user_profile_background_image/",
-                public_id=str(user.id),
-                overwrite=True,
-                resource_type="image"
-            )
-            user.profile_background_image = uploaded['secure_url']
 
         if commit:
             user.save()
