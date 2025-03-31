@@ -75,14 +75,25 @@
         </div>
 
         <!-- Comments Section -->
-        <h3>{{ comments.count }} comment{% if comments.count != 1 %}s{% endif %}</h3>
-        <ul>
-            {% for comment in comments %}
-                <li><strong>{{ comment.commentator.username }}</strong> at {{ comment.created_at|timesince }}: {{ comment.comment_text }}</li>
-            {% empty %}
-                <li>No comments yet.</li>
-            {% endfor %}
-        </ul>
+        <div class="comment-section">
+            <h3>{{ comments.count }} Comment{% if comments.count != 1 %}s{% endif %}</h3>
+            <ul class="comment-list">
+                {% for comment in comments %}
+                    <li class="comment">
+                        <div class="comment-header">
+                            <!-- Display profile image if available -->
+                            <img src="{{ comment.user_profile_image }}" alt="{{ comment.commentator_name }}'s profile" class="comment-avatar">
+                            <strong class="commentator-name">{{ comment.commentator_name }}</strong>
+                            <span class="comment-time">{{ comment.time_since_comment }}</span>
+                        </div>
+                        <p class="comment-text">{{ comment.comment_text }}</p>
+                    </li>
+                {% empty %}
+                    <li>No comments yet.</li>
+                {% endfor %}
+            </ul>
+        </div>
+
 
         <!-- Comment Form -->
         {% if user.is_authenticated %}
@@ -90,7 +101,7 @@
             {% csrf_token %}
             <label for="{{ form.comment_text.id_for_label }}">Comment</label>
             {{ form.comment_text }}
-            <button type="submit">Submit Comment</button>
+            <button type="submit">Comment</button>
         </form>
         {% else %}
             <p>Please log in to comment.</p>
@@ -208,6 +219,31 @@
     .comment-form button:hover {
         background-color: #c9302c;
     }
+
+    .comment-header {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .comment-list {
+        list-style-type: none; /* Remove bullet points */
+        padding: 0;
+        margin: 0;
+    }
+
+
+    .comment-avatar {
+        width: 30px; /* Smaller size */
+        height: 30px; /* Smaller size */
+        border-radius: 50%;
+        object-fit: cover;
+    }
+
+    .commentator-name {
+        font-weight: bold;
+    }
+
     .content-right {
         width: 35%;
         background: #f8f8f8;

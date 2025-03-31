@@ -12,3 +12,4 @@ from .user import User
 from .user_achievement import UserAchievement
 from .bookmark import Bookmark
 from .tag import Tag
+from .bookmark import Bookmark

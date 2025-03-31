@@ -1,9 +1,7 @@
+from django.contrib.auth import get_user_model
 from django.views.generic import DetailView, FormView
-from django.shortcuts import get_object_or_404, redirect
+from django.shortcuts import redirect
 from django.urls import reverse, reverse_lazy
-from django.views import View
-from django.utils.decorators import method_decorator
-from django.views.decorators.csrf import csrf_protect
 from ..models import Content, Comment, Category
 from ..forms import CommentForm
 
@@ -17,9 +15,18 @@ class ContentDetailView(DetailView, FormView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['comments'] = self.object.comments.all()  # Fetch related comments
-        context['form'] = self.get_form()  # Add form to context
+        context['form'] = self.get_form()
         context["categories"] = Category.choices
+        context["comments"] = Comment.objects.filter(
+            content=self.object).order_by("-comment_at")
+
+        comments = context.get('comments')
+        for comment in comments:
+            # Fetch the user based on the commentator_name (username)
+            user = get_user_model().objects.filter(
+                username=comment.commentator_name).first()
+            comment.user_profile_image = user.profile_image.url if user and user.profile_image else 'default-avatar-url.jpg'
+
         return context
 
     def post(self, request, *args, **kwargs):
@@ -32,7 +39,6 @@ class ContentDetailView(DetailView, FormView):
             comment.content = self.object  # Link to the content
             comment.save()
             return redirect(
-                reverse('content_detail', kwargs={'pk': self.object.pk}))
+                reverse('view_post', kwargs={'pk': self.object.pk}))
 
         return self.render_to_response(self.get_context_data(form=form))
-

@@ -8,7 +8,7 @@ from .content import Content
 
 class Comment(models.Model):
     id = models.UUIDField(default=uuid.uuid4, editable=False, unique=True, primary_key=True)
-    content = models.ForeignKey(Content, related_name="comments", on_delete=models.CASCADE)
+    content = models.ForeignKey(Content, on_delete=models.CASCADE)
     commentator_name = models.CharField(max_length=255)
     comment_text = models.TextField()
     comment_at = models.DateTimeField(default=timezone.now, null=True)
