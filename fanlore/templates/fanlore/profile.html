@@ -128,7 +128,9 @@
 
             <!-- Info (Centered Below Profile Image) -->
             <div class="ms-3">
-                <h3 class="fw-bold ms">{{ user.username }}</h3>
+                <h3 class="fw-bold ms">{{ user.first_name }}</h3>
+                <p class="text-muted mt-1" style="font-size: 0.95rem;">@{{ user.username }}</p>
+
                 {% if user.bio %}
                     <p class="text-muted mb-1">{{ user.bio }}</p>
                 {% else %}
