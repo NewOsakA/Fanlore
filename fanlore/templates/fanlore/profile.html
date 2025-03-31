@@ -144,17 +144,43 @@
 
     <!-- User Details and Posts -->
     <div class="row g-4">
-        <!-- Left: User Info -->
-        <div class="col-lg-4">
+        <!-- Left Column: User Info + Achievements stacked -->
+        <div class="col-lg-4 d-flex flex-column gap-3">
+            <!-- User Info -->
             <div class="card shadow p-4">
                 <h5 class="fw-bold mb-3">User Information</h5>
                 <p><strong>First Name:</strong> {{ user.first_name }}</p>
                 <p><strong>Last Name:</strong> {{ user.last_name }}</p>
                 <p><strong>Email:</strong> {{ user.email }}</p>
             </div>
+
+            <!-- Achievements -->
+            <div class="card shadow p-4">
+                <h5 class="fw-bold mb-3">Achievements</h5>
+                {% if achievements %}
+                    <div class="d-flex flex-wrap gap-3">
+                        {% for ua in achievements %}
+                            {% if ua.achievement.icon %}
+                                <div class="achievement-icon-container">
+                                    <img src="{{ ua.achievement.icon.url }}"
+                                         alt="{{ ua.achievement.name }}"
+                                         class="rounded-circle shadow-sm"
+                                         style="width: 50px; height: 50px; object-fit: cover;">
+                                    <div class="achievement-tooltip">
+                                        <strong>{{ ua.achievement.name }}</strong><br>
+                                        {{ ua.achievement.description }}
+                                    </div>
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="text-muted">No achievements yet.</p>
+                {% endif %}
+            </div>
         </div>
 
-        <!-- Right: Posts -->
+        <!-- Right Column: Posts -->
         <div class="col-lg-8">
             <div class="card shadow p-4">
                 <h4 class="fw-bold mb-4">{{ user.username }}'s Posts</h4>
@@ -185,33 +211,6 @@
                     </div>
                 {% else %}
                     <p class="text-muted">No posts yet.</p>
-                {% endif %}
-            </div>
-        </div>
-
-        <!-- Right: Achievement Box -->
-        <div class="col-lg-4">
-            <div class="card shadow p-4">
-                <h5 class="fw-bold mb-3">Achievements</h5>
-                {% if achievements %}
-                    <div class="d-flex flex-wrap gap-3">
-                        {% for ua in achievements %}
-                            {% if ua.achievement.icon %}
-                                <div class="achievement-icon-container">
-                                    <img src="{{ ua.achievement.icon.url }}"
-                                         alt="{{ ua.achievement.name }}"
-                                         class="rounded-circle shadow-sm"
-                                         style="width: 50px; height: 50px; object-fit: cover;">
-                                    <div class="achievement-tooltip">
-                                        <strong>{{ ua.achievement.name }}</strong><br>
-                                        {{ ua.achievement.description }}
-                                    </div>
-                                </div>
-                            {% endif %}
-                        {% endfor %}
-                    </div>
-                {% else %}
-                    <p class="text-muted">No achievements yet.</p>
                 {% endif %}
             </div>
         </div>
