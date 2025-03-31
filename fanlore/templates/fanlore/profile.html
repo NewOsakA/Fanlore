@@ -73,15 +73,32 @@
         </div>
 
         <!-- Profile Section -->
-        <div class="p-4 position-relative d-flex flex-column align-items-center align-items-md-start gap-3">
-            <!-- Top Right Button (Edit or Friend Actions) -->
-            <div class="position-absolute top-0 end-0 m-3">
-                <!--Edit Profile Button-->
+        <div class="p-4 d-flex flex-column flex-md-row align-items-center justify-content-between gap-3" style="margin-top: -80px;">
+            <!-- Left side: Profile Image + Info -->
+            <div class="d-flex align-items-center gap-4 flex-column flex-md-row text-center text-md-start">
+                <!-- Profile Image -->
+                {% if user.profile_image %}
+                    <img src="{{ user.profile_image.url }}" class="rounded-circle border border-white shadow"
+                         width="140" height="140" style="object-fit: cover;">
+                {% else %}
+                    <img src="{% static 'fanlore/images/user-circle.png' %}"
+                         class="rounded-circle border border-white shadow"
+                         width="140" height="140">
+                {% endif %}
+
+                <!-- Name + Username -->
+                <div class="mt-0 pt-0 mt-md-5 pt-md-4">
+                    <h3 class="fw-bold mb-1">{{ user.first_name }}</h3>
+                    <p class="text-muted mb-0" style="font-size: 0.95rem;">@{{ user.username }}</p>
+                </div>
+            </div>
+
+            <!-- Right side: Button -->
+            <div class="text-center text-md-end mt-0 pt-0 mt-md-5 pt-md-5">
                 {% if is_own_profile %}
-                    <a href="{% url 'profile_edit' %}" class="btn btn-dark">Edit Profile</a>
+                    <a href="{% url 'profile_edit' %}" class="btn btn-dark mt-2 mt-md-0">Edit Profile</a>
                 {% else %}
                     {% if is_friend %}
-                        <!--Friend Status and dropdown-->
                         <div class="dropdown">
                             <button class="btn btn-light border dropdown-toggle d-flex align-items-center gap-2"
                                     type="button"
@@ -97,17 +114,14 @@
                                         <button type="submit" class="dropdown-item text-danger">Remove Friend</button>
                                     </form>
                                 </li>
-<!--                                <li><a class="dropdown-item" href="#">Block</a></li>-->
                             </ul>
                         </div>
                     {% elif has_sent_request %}
-                        <!--Cancel Request Button-->
                         <form method="post" action="{% url 'cancel-friend-request' has_sent_request.pk %}">
                             {% csrf_token %}
                             <button type="submit" class="btn btn-outline-danger">Cancel Request</button>
                         </form>
                     {% else %}
-                        <!--Add Friend Button-->
                         <form method="post" action="{% url 'add-friend' user.id %}">
                             {% csrf_token %}
                             <button type="submit" class="btn btn-success">Add Friend</button>
@@ -115,45 +129,26 @@
                     {% endif %}
                 {% endif %}
             </div>
-
-
-            <!-- Profile Image -->
-            <div class="text-center">
-                {% if user.profile_image %}
-                    <img src="{{ user.profile_image.url }}" class="rounded-circle border border-white shadow" width="160" height="160" style="object-fit: cover; margin-top: -112px;">
-                {% else %}
-                    <img src="{% static 'fanlore/images/user-circle.png' %}" class="rounded-circle border border-white shadow" width="160" height="160" style="margin-top: -112px;">
-                {% endif %}
-            </div>
-
-            <!-- Info (Centered Below Profile Image) -->
-            <div class="ms-3">
-                <h3 class="fw-bold ms">{{ user.first_name }}</h3>
-                <p class="text-muted mt-1" style="font-size: 0.95rem;">@{{ user.username }}</p>
-
-                {% if user.bio %}
-                    <p class="text-muted mb-1">{{ user.bio }}</p>
-                {% else %}
-                    {% if is_own_profile %}
-                        <p class="text-muted mb-1">No bio available. <a href="{% url 'profile_edit' %}" class="text-decoration-none">Edit bio</a></p>
-                    {% endif %}
-                {% endif %}
-            </div>
         </div>
-
-
     </div>
 
     <!-- User Details and Posts -->
     <div class="row g-4">
         <!-- Left Column: User Info + Achievements stacked -->
-        <div class="col-lg-4 d-flex flex-column gap-3">
+        <div class="col-xxl-4 d-flex flex-column gap-3">
             <!-- User Info -->
             <div class="card shadow p-4">
                 <h5 class="fw-bold mb-3">User Information</h5>
                 <p><strong>First Name:</strong> {{ user.first_name }}</p>
                 <p><strong>Last Name:</strong> {{ user.last_name }}</p>
                 <p><strong>Email:</strong> {{ user.email }}</p>
+                {% if user.bio %}
+                    <p><strong>Bio:</strong> {{ user.bio }}</p>
+                {% else %}
+                    {% if is_own_profile %}
+                        <p>No bio available. <a href="{% url 'profile_edit' %}" class="text-decoration-none">Edit bio</a></p>
+                    {% endif %}
+                {% endif %}
             </div>
 
             <!-- Achievements -->
@@ -183,7 +178,7 @@
         </div>
 
         <!-- Right Column: Posts -->
-        <div class="col-lg-8">
+        <div class="col-xxl-8">
             <div class="card shadow p-4">
                 <h4 class="fw-bold mb-4">{{ user.username }}'s Posts</h4>
 
