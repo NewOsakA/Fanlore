@@ -57,4 +57,6 @@ urlpatterns = [
          name="give-achievement"),
     path('toggle-bookmark/', views.ToggleBookmarkView.as_view(),
          name='toggle_bookmark'),
+    path("help/", views.HelpView.as_view(), name="help"),
+    path("category/<str:category_id>/", views.CategoryContentListView.as_view(), name="category-posts"),
 ]

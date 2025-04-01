@@ -10,5 +10,8 @@ from .bookmark_list_view import BookmarkedPostsView
 from .bookmark_toggle_view import ToggleBookmarkView
 from .content_update_view import ContentUpdateView
 from .give_achievement_view import GiveAchievementView
+from .help_view import HelpView
+from .category_content_list_view import CategoryContentListView
+
 from .event import *
 from .friend import *
