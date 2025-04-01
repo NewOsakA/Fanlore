@@ -46,7 +46,6 @@
         });
         </script>
 
-
         <p class="meta">
             {{ content.time_since_creation }} by <span class="author">{{ content.collaborator.username }}</span>
         </p>
@@ -64,12 +63,18 @@
                 <div class="file-grid">
                     {% for file in content.attached_files.all %}
                         <div class="file-card">
-                            <a href="{{ file.file }}" target="_blank" class="file-link">
+                            <a href="{{ file.file.url }}" target="_blank" class="file-link">
                                 <div class="file-icon">
                                     <i class="fas fa-file"></i>
                                 </div>
-                                <div class="file-name">
-                                    {{ file.file|slice:"10" }}{% if file.file|length > 10 %}...{% endif %}
+                                <div class="file_url">
+                                    {% with file_url=file.file.url %}
+                                        {% if file_url|length > 20 %}
+                                            {{ file_url|slice:":20" }}...
+                                        {% else %}
+                                            {{ file_url }}
+                                        {% endif %}
+                                    {% endwith %}
                                 </div>
                             </a>
                         </div>
@@ -115,7 +120,11 @@
 
     <!-- Right side: Stats & Contributors -->
     <div class="content-right">
+<<<<<<< Updated upstream
         {% if user == content.creator or user in content.collaborators.all %}
+=======
+        {% if user == content.collaborator or user == content.creator %}
+>>>>>>> Stashed changes
             <a href="{% url 'content_edit' content.id %}" class="edit-button">Edit Content</a>
         {% endif %}
 
