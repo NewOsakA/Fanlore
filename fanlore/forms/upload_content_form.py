@@ -4,7 +4,7 @@ from ..models import Content, Tag, Category
 
 
 class MultipleFileInput(forms.ClearableFileInput):
-    allow_multiple_selected = True  # Enable multiple file selection
+    allow_multiple_selected = True
 
 
 class MultipleFileField(forms.FileField):
@@ -25,7 +25,7 @@ class MultipleFileField(forms.FileField):
 
 class ContentUploadForm(forms.ModelForm):
     content_files = MultipleFileField(label='Upload Files', required=False)
-    description = forms.CharField(widget=PagedownWidget())  # Markdown support
+    description = forms.CharField(widget=PagedownWidget())  # keep PagedownWidget intact
     tags = forms.CharField(
         required=False,
         help_text="Enter tags separated by commas",
@@ -34,7 +34,7 @@ class ContentUploadForm(forms.ModelForm):
     category = forms.ChoiceField(
         choices=Category.choices,
         required=True,
-        widget=forms.Select(attrs={'class': 'form-control'})
+        widget=forms.Select()
     )
 
     class Meta:
@@ -43,9 +43,13 @@ class ContentUploadForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        # Add 'form-control' class to all fields
-        for field in self.fields.values():
-            field.widget.attrs['class'] = 'form-control'
+
+        # Add 'form-control' class to fields except the markdown field
+        for name, field in self.fields.items():
+            if not isinstance(field.widget, PagedownWidget):
+                field.widget.attrs['class'] = 'form-control'
+
+        # Enable multiple file selection
         self.fields['content_files'].widget.attrs['multiple'] = True
 
     def save(self, commit=True):
@@ -53,12 +57,12 @@ class ContentUploadForm(forms.ModelForm):
         if commit:
             content.save()
 
-            # Handle tags (automatic matching or creation)
+            # Handle tags
             tag_input = self.cleaned_data['tags']
             if tag_input:
                 tag_names = {t.strip() for t in tag_input.split(",") if t.strip()}
                 for tag_name in tag_names:
-                    tag, created = Tag.objects.get_or_create(name=tag_name)
+                    tag, _ = Tag.objects.get_or_create(name=tag_name)
                     content.tags.add(tag)
 
         return content

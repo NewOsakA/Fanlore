@@ -1,46 +1,97 @@
-{% extends 'base.html' %}
+{% extends "base.html" %}
+{% load static %}
+{% load widget_tweaks %}
+
+{% block extra_head %}
+  {{ form.media }}
+  <style>
+    .wmd-panel {
+        width: 100% !important;
+        max-width: 100% !important;
+        margin: 0 !important;
+        min-width: unset !important;
+        box-sizing: border-box;
+        overflow-x: hidden;
+    }
+
+    .wmd-button-bar {
+        background-color: #f8f9fa;
+        border: 1px solid #ced4da;
+        border-bottom: none;
+        border-radius: 6px 6px 0 0;
+        padding: 6px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        overflow: hidden;
+        max-width: 100%;
+        box-sizing: border-box;
+    }
+
+    .wmd-input {
+        background-color: #f4f4f4;
+        border-radius: 0 0 6px 6px;
+        border: 1px solid #ced4da;
+        border-top: none;
+        padding: 10px;
+        font-family: inherit;
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    .wmd-preview img {
+        max-width: 100%;
+        height: auto;
+        display: block;
+        margin: 1rem auto;
+    }
+  </style>
+{% endblock %}
 
 {% block content %}
-<div class="container mt-5">
-    <div class="card shadow-sm p-4">
-        <h1 class="text-center mb-4">Upload your work</h1>
+<div class="container mt-4">
+    <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white">
+            <h4 class="mb-0">Upload Your Work</h4>
+        </div>
+        <div class="card-body">
+            <form method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
 
-        <form method="POST" enctype="multipart/form-data">
-            {% csrf_token %}
+                <div class="mb-3">
+                    <label for="{{ form.title.id_for_label }}" class="form-label">Title</label>
+                    {{ form.title|add_class:"form-control" }}
+                </div>
 
-            <div class="form-group mb-3">
-                <label for="{{ form.title.id_for_label }}" class="form-label">Title</label>
-                {{ form.title }}
-            </div>
+                <div class="mb-3">
+                    <label for="{{ form.description.id_for_label }}" class="form-label">Description</label>
+                    {{ form.description }}
+                </div>
 
-            <div class="form-group mb-3">
-                <label for="{{ form.description.id_for_label }}" class="form-label">Description</label>
-                {{ form.description }}
-            </div>
+                <div class="mb-3">
+                    <label for="{{ form.category.id_for_label }}" class="form-label">Select Category</label>
+                    {{ form.category|add_class:"form-control" }}
+                </div>
 
-            <div class="form-group mb-3">
-                <label for="{{ form.category.id_for_label }}" class="form-label">Select Category</label>
-                {{ form.category }}
-            </div>
+                <div class="mb-3">
+                    <label for="{{ form.tags.id_for_label }}" class="form-label">Tags</label>
+                    {{ form.tags|add_class:"form-control" }}
+                    <small class="form-text text-muted">Enter tags separated by commas (e.g., fantasy, lore, game)</small>
+                </div>
 
-            <div class="form-group mb-3">
-                <label for="{{ form.tags.id_for_label }}" class="form-label">Tags</label>
-                {{ form.tags }}
-                <small class="form-text text-muted">Enter tags separated by commas (e.g., fantasy, lore, game)</small>
-            </div>
+                <div class="mb-3">
+                    <label for="{{ form.topic_img.id_for_label }}" class="form-label">Upload Cover Image</label>
+                    {{ form.topic_img }}
+                </div>
 
-            <div class="form-group mb-3">
-                <label for="{{ form.topic_img.id_for_label }}" class="form-label">Upload Cover Image</label>
-                {{ form.topic_img }}
-            </div>
+                <div class="mb-4">
+                    <label for="{{ form.content_files.id_for_label }}" class="form-label">Upload Files</label>
+                    {{ form.content_files }}
+                </div>
 
-            <div class="form-group mb-3">
-                <label for="{{ form.content_files.id_for_label }}" class="form-label">Upload Files</label>
-                {{ form.content_files }}
-            </div>
-
-            <button type="submit" class="btn btn-primary btn-block">Upload</button>
-        </form>
+                <button type="submit" class="btn btn-success w-100">Submit Content</button>
+            </form>
+        </div>
     </div>
 </div>
 {% endblock %}

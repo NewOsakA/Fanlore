@@ -51,7 +51,7 @@
             <img class="content-image" src="{{ content.topic_img.url }}" alt="{{ content.title }}">
         {% endif %}
 
-        <p class="description">{{ content.description }}</p>
+        <div class="description">{{ content.description_rendered|safe }}</div>
 
         <!-- Display Content Files -->
         <div class="content-files">
