@@ -41,10 +41,16 @@ class ProfileUpdateForm(forms.ModelForm):
         label="Profile Background Image"
     )
 
+    display_name = forms.CharField(
+        required=False,
+        widget=forms.TextInput(attrs={"class": "form-control"}),
+        label="Display Name"
+    )
+
     class Meta:
         model = User
         fields = [
-            "first_name", "last_name", "email", "username", "bio",
+            "display_name", "first_name", "last_name", "email", "username", "bio",
             "profile_image", "profile_background_image"
         ]
         widgets = {

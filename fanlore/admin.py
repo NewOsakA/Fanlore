@@ -11,6 +11,7 @@ class CustomUserAdmin(UserAdmin):
         ("Additional Info", {
             "fields": (
                 "bio",
+                "display_name",
                 "profile_image",
                 "followed_fandoms",
                 "is_creator",
@@ -22,6 +23,7 @@ class CustomUserAdmin(UserAdmin):
         ("Additional Info", {
             "fields": (
                 "bio",
+                "display_name",
                 "profile_image",
                 "followed_fandoms",
                 "is_creator",
@@ -32,6 +34,7 @@ class CustomUserAdmin(UserAdmin):
     list_display = (
         "username",
         "email",
+        "display_name",
         "is_creator",
         "bio",
         "profile_image_preview",

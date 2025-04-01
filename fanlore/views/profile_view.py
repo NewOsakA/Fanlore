@@ -38,7 +38,7 @@ class ProfileView(LoginRequiredMixin, TemplateView):
             "has_sent_request": sent_request,  # now the actual object or None
             "content_list": Content.objects.filter(collaborator=user),
             "categories": Category.choices,
-            "achievements": UserAchievement.objects.filter(user=user),
+            "achievements": UserAchievement.objects.filter(user=user).order_by("-date_earned"),
         })
 
         return context

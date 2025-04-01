@@ -4,6 +4,7 @@ from django.db import models
 
 
 class User(AbstractUser):
+    display_name = models.CharField(max_length=150, blank=True, null=True)
     followed_fandoms = models.JSONField(default=list, null=True, blank=True)
     is_creator = models.BooleanField(default=False)
     bio = models.TextField(blank=True, null=True)
@@ -26,3 +27,8 @@ class User(AbstractUser):
     user_permissions = models.ManyToManyField(Permission,
                                               related_name="fanlore_user_permissions",
                                               blank=True)
+
+    def save(self, *args, **kwargs):
+        if not self.display_name and self.first_name:
+            self.display_name = self.first_name
+        super().save(*args, **kwargs)
