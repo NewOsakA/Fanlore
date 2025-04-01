@@ -2,9 +2,8 @@ from django.contrib.auth import get_user_model
 from django.views.generic import DetailView, FormView
 from django.shortcuts import redirect
 from django.urls import reverse, reverse_lazy
-from ..models import Content, Comment, Category
+from ..models import Content, Comment, Category, Bookmark  # Import Bookmark model
 from ..forms import CommentForm
-
 
 class ContentDetailView(DetailView, FormView):
     model = Content
@@ -20,14 +19,19 @@ class ContentDetailView(DetailView, FormView):
         context["comments"] = Comment.objects.filter(
             content=self.object).order_by("-comment_at")
 
+        # ✅ Check if the user has bookmarked this content
+        context["is_bookmarked"] = Bookmark.objects.filter(
+            user=self.request.user, content=self.object).exists()
+
+        # Fetch user profile images for comments
         comments = context.get('comments')
         for comment in comments:
-            # Fetch the user based on the commentator_name (username)
             user = get_user_model().objects.filter(
                 username=comment.commentator_name).first()
             comment.user_profile_image = user.profile_image.url if user and user.profile_image else 'default-avatar-url.jpg'
 
         return context
+
 
     def post(self, request, *args, **kwargs):
         self.object = self.get_object()  # Get the content object

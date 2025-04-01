@@ -6,16 +6,22 @@
     <div class="content-left">
         <h1>{{ content.title }}</h1>
         <!-- The Bookmark Button -->
-        <button id="bookmark-toggle" class="btn btn-light" data-content-id="{{ content.id }}">
-            <i class="fas fa-bookmark"></i>
+         <button id="bookmark-toggle" class="btn btn-light" data-content-id="{{ content.id }}">
+            <i id="bookmark-icon"
+               class="{% if is_bookmarked %}fas text-primary{% else %}far{% endif %} fa-bookmark">
+            </i>
         </button>
 
         <script>
-            document.getElementById('bookmark-toggle').addEventListener('click', function() {
-                var contentId = this.getAttribute('data-content-id');
+        document.addEventListener("DOMContentLoaded", function() {
+            const bookmarkButton = document.getElementById("bookmark-toggle");
+            const bookmarkIcon = document.getElementById("bookmark-icon");
 
-                // Add CSRF token to the header
-                var csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+            if (!bookmarkButton) return;
+
+            bookmarkButton.addEventListener("click", function() {
+                const contentId = this.getAttribute("data-content-id");
+                const csrfToken = document.querySelector("[name=csrfmiddlewaretoken]").value;
 
                 fetch("{% url 'toggle_bookmark' %}", {
                     method: "POST",
@@ -23,26 +29,24 @@
                         "Content-Type": "application/json",
                         "X-CSRFToken": csrfToken
                     },
-                    body: JSON.stringify({ "content_id": contentId })
+                    body: JSON.stringify({ content_id: contentId })
                 })
                 .then(response => response.json())
                 .then(data => {
                     if (data.bookmarked) {
-                        this.innerHTML = '<i class="fas fa-bookmark"></i> Bookmarked';
-                        alert('Post bookmarked!');
+                        bookmarkIcon.classList.add("fas", "text-primary");
+                        bookmarkIcon.classList.remove("far");
                     } else {
-                        bookmarkIcon.classList.remove('text-primary'); // Remove color when not bookmarked
-                        bookmarkIcon.classList.remove('fas'); // Make it an outline
-                        bookmarkIcon.classList.add('far');
+                        bookmarkIcon.classList.remove("fas", "text-primary");
+                        bookmarkIcon.classList.add("far");
                     }
                 })
-                .catch(error => {
-                    console.error('Error:', error);
-                    alert('An error occurred. Please try again.');
-                });
+                .catch(error => console.error("Error:", error));
             });
-
+        });
         </script>
+
+
         <p class="meta">
             {{ content.time_since_creation }} by <span class="author">{{ content.collaborator.username }}</span>
         </p>
