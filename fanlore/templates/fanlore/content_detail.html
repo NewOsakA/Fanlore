@@ -1,82 +1,182 @@
 {% extends "base.html" %}
+{% load static %}
+{% load widget_tweaks %}
+
+<style>
+    .file-card {
+        transition: box-shadow 0.2s ease;
+    }
+
+    .file-card:hover {
+        box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .comment-avatar {
+        width: 40px;
+        height: 40px;
+        object-fit: cover;
+    }
+
+    .vote-button {
+        min-width: 60px;
+        justify-content: center;
+        padding: 6px 12px;
+    }
+
+    .badge {
+        font-size: 0.85rem;
+        border-radius: 6px;
+        padding: 6px 12px;
+    }
+
+    .creator-info img {
+        object-fit: cover;
+    }
+
+    .contributor-avatar {
+        width: 35px;
+        height: 35px;
+        object-fit: cover;
+        margin-right: 10px;
+    }
+
+    a:hover {
+        text-decoration: underline;
+    }
+
+    /* Shrink comment input field height */
+    textarea[name="comment_text"] {
+        min-height: 60px;
+        resize: vertical;
+    }
+
+    /* Optional: better styling for comments */
+    .comment-card {
+        border: 1px solid #e2e6ea;
+        border-radius: 0.5rem;
+        padding: 1rem;
+        background-color: #fff;
+        box-shadow: 0 0.1rem 0.25rem rgba(0, 0, 0, 0.03);
+    }
+</style>
 
 {% block content %}
-<div class="content-container">
-    <!-- Left side: Main Content -->
-    <div class="content-left">
-        <h1>{{ content.title }}</h1>
-        <!-- The Bookmark Button -->
-         <button id="bookmark-toggle" class="btn btn-light" data-content-id="{{ content.id }}">
-            <i id="bookmark-icon"
-               class="{% if is_bookmarked %}fas text-primary{% else %}far{% endif %} fa-bookmark">
-            </i>
-        </button>
+<div class="container mt-4">
+    <div class="content-full">
 
-        <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            const bookmarkButton = document.getElementById("bookmark-toggle");
-            const bookmarkIcon = document.getElementById("bookmark-icon");
+        <!-- Title -->
+        <h1 class="h3 mb-3">{{ content.title }}</h1>
 
-            if (!bookmarkButton) return;
+        <!-- Top Info Section -->
+        <div class="d-flex justify-content-between flex-wrap align-items-start mb-3">
 
-            bookmarkButton.addEventListener("click", function() {
-                const contentId = this.getAttribute("data-content-id");
-                const csrfToken = document.querySelector("[name=csrfmiddlewaretoken]").value;
+            <!-- Left: Creator + Category + Tags -->
+            <div>
+                <!-- Creator Info -->
+                <div class="d-flex align-items-center mb-2">
+                    <img src="{{ content.creator.profile_image.url|default:'default-avatar-url.jpg' }}"
+                         class="rounded-circle me-2" width="45" height="45" alt="Profile">
+                    <div>
+                        <div class="fw-semibold">
+                            <a href="{% url 'friend-profile' content.creator.id %}" class="text-decoration-none text-dark">
+                                👥 {{ content.creator.username }}
+                            </a>
+                        </div>
+                        <div class="text-muted small">{{ content.time_since_creation }}</div>
+                    </div>
+                </div>
 
-                fetch("{% url 'toggle_bookmark' %}", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                        "X-CSRFToken": csrfToken
-                    },
-                    body: JSON.stringify({ content_id: contentId })
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.bookmarked) {
-                        bookmarkIcon.classList.add("fas", "text-primary");
-                        bookmarkIcon.classList.remove("far");
-                    } else {
-                        bookmarkIcon.classList.remove("fas", "text-primary");
-                        bookmarkIcon.classList.add("far");
-                    }
-                })
-                .catch(error => console.error("Error:", error));
-            });
-        });
-        </script>
+                <!-- Category + Tags (Same Line) -->
+                <div class="d-flex flex-wrap align-items-center gap-2 mt-2">
+                    <!-- Category Badge -->
+                    <span class="badge rounded-pill text-white fw-semibold px-3 py-2" style="background-color:
+                        {% if content.category == 1 %}#ff6347
+                        {% elif content.category == 2 %}#4682b4
+                        {% elif content.category == 3 %}#32cd32
+                        {% elif content.category == 4 %}#ffa500
+                        {% elif content.category == 5 %}#8a2be2
+                        {% endif %};">
+                        📁 {{ content.get_category_display }}
+                    </span>
 
-        <p class="meta">
-            {{ content.time_since_creation }} by <span class="author">{{ content.collaborator.username }}</span>
-        </p>
+                    <!-- Tags -->
+                    {% for tag in content.tags.all %}
+                        <span class="badge rounded-pill bg-secondary text-white fw-semibold px-3 py-2">
+                            #{{ tag.name }}
+                        </span>
+                    {% endfor %}
+                </div>
+            </div>
 
+            <!-- Right: Like & Bookmark -->
+            <div class="d-flex align-items-start gap-2 mt-2 mt-md-0">
+                <button class="btn btn-outline-success d-flex align-items-center vote-button">
+                    <i class="fas fa-thumbs-up me-1"></i> {{ content.vote }}
+                </button>
+
+                <button id="bookmark-toggle" class="btn btn-outline-primary" data-content-id="{{ content.id }}">
+                    <i id="bookmark-icon"
+                       class="{% if is_bookmarked %}fas text-primary{% else %}far{% endif %} fa-bookmark">
+                    </i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Image -->
         {% if content.topic_img %}
-            <img class="content-image" src="{{ content.topic_img.url }}" alt="{{ content.title }}">
+            <img src="{{ content.topic_img.url }}" alt="{{ content.title }}" class="img-fluid rounded mb-4">
         {% endif %}
 
-        <div class="description">{{ content.description_rendered|safe }}</div>
+        <!-- Description -->
+        <div class="mb-5">
+            {{ content.description_rendered|safe }}
+        </div>
 
-        <!-- Display Content Files -->
-        <div class="content-files">
-            <h3>Attached Files</h3>
+        <!-- Contributors Section -->
+        {% if content.collaborators.all %}
+        <div class="mb-5">
+            <h5 class="fw-semibold mb-3">
+                <i class="fas fa-users text-primary me-1"></i> Contributors
+            </h5>
+            <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-3">
+                {% for contributor in content.collaborators.all %}
+                <div class="d-flex align-items-center">
+                    <img src="{{ contributor.profile_image.url|default:'default-avatar-url.jpg' }}"
+                         class="rounded-circle me-3" width="45" height="45" style="object-fit: cover;" alt="{{ contributor.username }}">
+                    <div class="fw-medium">
+                        <a href="{% url 'friend-profile' contributor.id %}" class="text-decoration-none text-dark">
+                            {{ contributor.username }}
+                        </a>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Attached Files -->
+        <div class="mb-5">
+            <h4>📎 Attached Files</h4>
             {% if content.attached_files.all %}
-                <div class="file-grid">
+                <div class="row g-3">
                     {% for file in content.attached_files.all %}
-                        <div class="file-card">
-                            <a href="{{ file.file.url }}" target="_blank" class="file-link">
-                                <div class="file-icon">
-                                    <i class="fas fa-file"></i>
+                        <div class="col-md-6 col-lg-4">
+                            <div class="card file-card h-100">
+                                <div class="card-body d-flex align-items-center">
+                                    <i class="fas fa-file fa-2x me-3 text-primary"></i>
+                                    <div class="file-url text-truncate">
+                                        <a href="{{ file.file.url }}" target="_blank" class="stretched-link text-decoration-none">
+                                            {% with file_url=file.file.url %}
+                                                {% if file_url|length > 30 %}
+                                                    {{ file_url|slice:":30" }}...
+                                                {% else %}
+                                                    {{ file_url }}
+                                                {% endif %}
+                                            {% endwith %}
+                                        </a>
+                                    </div>
                                 </div>
-                                <div class="file_url">
-                                    {% with file_url=file.file.url %}
-                                        {% if file_url|length > 20 %}
-                                            {{ file_url|slice:":20" }}...
-                                        {% else %}
-                                            {{ file_url }}
-                                        {% endif %}
-                                    {% endwith %}
-                                </div>
-                            </a>
+                            </div>
                         </div>
                     {% endfor %}
                 </div>
@@ -85,280 +185,109 @@
             {% endif %}
         </div>
 
-        <!-- Comments Section -->
-        <div class="comment-section">
-            <h3>{{ comments.count }} Comment{% if comments.count != 1 %}s{% endif %}</h3>
-            <ul class="comment-list">
-                {% for comment in comments %}
-                    <li class="comment">
-                        <div class="comment-header">
-                            <!-- Display profile image if available -->
-                            <img src="{{ comment.user_profile_image }}" alt="{{ comment.commentator_name }}'s profile" class="comment-avatar">
-                            <strong class="commentator-name">{{ comment.commentator_name }}</strong>
-                            <span class="comment-time">{{ comment.time_since_comment }}</span>
-                        </div>
-                        <p class="comment-text">{{ comment.comment_text }}</p>
-                    </li>
-                {% empty %}
-                    <li>No comments yet.</li>
-                {% endfor %}
+        <!-- Edit Button -->
+        {% if user == content.collaborator or user == content.creator %}
+            <div class="text-end mb-4">
+                <a href="{% url 'content_edit' content.id %}" class="btn btn-outline-secondary">✏️ Edit Content</a>
+            </div>
+        {% endif %}
+
+        <!-- Posting Rules -->
+        <div class="border p-3 rounded bg-light mb-5">
+            <h6>📌 Posting Rules</h6>
+            <ul class="mb-0">
+                <li><strong>1. Verifiable sources only.</strong> Link to a reliable source.</li>
+                <li><strong>2. No opinions or personal anecdotes.</strong></li>
+                <li><strong>3. No recent sources.</strong> Must be older than 2 months.</li>
             </ul>
         </div>
 
-        <!-- Comment Form -->
-        {% if user.is_authenticated %}
-        <form method="post" class="comment-form">
-            {% csrf_token %}
-            <label for="{{ form.comment_text.id_for_label }}">Comment</label>
-            {{ form.comment_text }}
-            <button type="submit">Comment</button>
-        </form>
-        {% else %}
-            <p>Please log in to comment.</p>
-        {% endif %}
-    </div>
+        <!-- Comments -->
+        <div class="mb-5">
+            <h4 class="mb-4"><i class="fas fa-comment-dots me-1"></i> {{ comments.count }} Comment{% if comments.count != 1 %}s{% endif %}</h4>
 
-    <!-- Right side: Stats & Contributors -->
-    <div class="content-right">
-        {% if user == content.collaborator or user == content.creator %}
-            <a href="{% url 'content_edit' content.id %}" class="edit-button">Edit Content</a>
-        {% endif %}
+            <ul class="list-unstyled">
+                {% for comment in comments %}
+                <li class="comment-card mb-3">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <div class="d-flex align-items-center">
+                            <img src="{{ comment.user_profile_image }}" alt="Profile"
+                                 class="rounded-circle me-3" width="40" height="40" style="object-fit: cover;">
+                            <div>
+                                <div class="fw-semibold">
+                                    {% if user.is_authenticated %}
+                                        <a href="{% url 'friend-profile' user.id %}" class="text-dark text-decoration-none">
+                                            {{ comment.commentator_name }}
+                                        </a>
+                                    {% else %}
+                                        {{ comment.commentator_name }}
+                                    {% endif %}
+                                </div>
+                                <small class="text-muted">{{ comment.time_since_comment }}</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="ps-5">
+                        <p class="mb-0">{{ comment.comment_text }}</p>
+                    </div>
+                </li>
+                {% empty %}
+                <li class="text-muted">No comments yet.</li>
+                {% endfor %}
+            </ul>
 
-        <div class="stats">
-            <p><strong>{{ content.vote }} Up Vote</strong></p>
+            {% if user.is_authenticated %}
+                <form method="post" class="mt-4">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="{{ form.comment_text.id_for_label }}" class="form-label fw-semibold">Your Comment</label>
+                        {{ form.comment_text|add_class:"form-control" }}
+                    </div>
+                    <div class="text-end">
+                        <button type="submit" class="btn btn-primary px-4">Comment</button>
+                    </div>
+                </form>
+            {% else %}
+                <p class="text-muted">Please <a href="{% url 'login' %}">log in</a> to comment.</p>
+            {% endif %}
         </div>
 
-        <!-- Category Cover -->
-        <div class="category-cover" style="background-color: {% if content.category == 1 %} #ff6347 {% elif content.category == 2 %} #4682b4 {% elif content.category == 3 %} #32cd32 {% elif content.category == 4 %} #ffa500 {% elif content.category == 5 %} #8a2be2 {% endif %};">
-            <p class="category-name">{{ content.get_category_display }}</p>
-        </div>
 
-        <!-- Tags Section with Margin -->
-        <div class="tags" style="margin-top: 15px;">  <!-- Add margin-top here to separate it from the category -->
-            {% for tag in content.tags.all %}
-                <span class="tag">#{{ tag.name }}</span>
-            {% endfor %}
-        </div>
-
-        <div class="contributors">
-            <h4>Contributor:</h4>
-            {% for contributor in content.contributors.all %}
-                <div class="contributor">
-                    <img src="{{ content.collaborator.profile_img }}" alt="{{ content.collaborator.username }}" class="avatar">
-                    <span>{{ content.collaborator }}</span>
-                </div>
-            {% endfor %}
-        </div>
-
-        <button class="vote-button">⬆️ Up Vote to this content</button>
-
-        <div class="posting-rules">
-            <h4>Posting Rules</h4>
-            <p><strong>1. Submissions must be verifiable.</strong> Please link directly to a reliable source that supports your claim.</p>
-            <p><strong>2. No personal opinions, anecdotes, or subjective statements.</strong></p>
-            <p><strong>3. No recent sources.</strong> Any source less than two months old is not allowed.</p>
-        </div>
     </div>
 </div>
 
-<style>
-    .content-container {
-        display: flex;
-        gap: 20px;
-    }
-    .content-left {
-        width: 65%;
-    }
-    .content-left h1 {
-        font-size: 2em;
-        margin-bottom: 5px;
-    }
-    .meta {
-        color: gray;
-        font-size: 0.9em;
-    }
-    .author {
-        color: red;
-    }
-    .content-image {
-        width: 100%;
-        max-height: 400px;
-        object-fit: cover;
-        border-radius: 10px;
-    }
-    .description {
-        font-size: 1.1em;
-        margin-top: 10px;
-    }
-    .comment-section {
-        margin-top: 15px;
-    }
-    .comment {
-        border-bottom: 1px solid #ddd;
-        padding: 10px 0;
-    }
+<!-- Bookmark Script -->
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const bookmarkButton = document.getElementById("bookmark-toggle");
+    const bookmarkIcon = document.getElementById("bookmark-icon");
 
-    .comment-form {
-        display: flex;
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 5px;
-    }
+    if (!bookmarkButton) return;
 
-    .comment-form label {
-        font-weight: bold;
-    }
+    bookmarkButton.addEventListener("click", function () {
+        const contentId = this.getAttribute("data-content-id");
+        const csrfToken = document.querySelector("[name=csrfmiddlewaretoken]").value;
 
-    .comment-form textarea {
-        width: 100%;
-        max-width: 500px;
-        height: 120px;
-        font-size: 14px;
-        padding: 8px;
-        border-radius: 5px;
-        border: 1px solid #ccc;
-        resize: vertical;
-    }
-
-    .comment-form button {
-        background-color: #d9534f;
-        color: white;
-        border: none;
-        padding: 8px 12px;
-        cursor: pointer;
-        border-radius: 5px;
-        margin-top: 5px;
-    }
-
-    .comment-form button:hover {
-        background-color: #c9302c;
-    }
-
-    .comment-header {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-    }
-
-    .comment-list {
-        list-style-type: none; /* Remove bullet points */
-        padding: 0;
-        margin: 0;
-    }
-
-    .comment-avatar {
-        width: 30px; /* Smaller size */
-        height: 30px; /* Smaller size */
-        border-radius: 50%;
-        object-fit: cover;
-    }
-
-    .commentator-name {
-        font-weight: bold;
-    }
-
-    .content-right {
-        width: 35%;
-        background: #f8f8f8;
-        padding: 15px;
-        border-radius: 10px;
-    }
-    .stats p {
-        font-size: 1.2em;
-        margin: 5px 0;
-    }
-    .tags {
-        margin-top: 10px;
-    }
-    .tag {
-        background: #ddd;
-        padding: 5px;
-        border-radius: 5px;
-        margin-right: 5px;
-        font-size: 0.9em;
-    }
-    .category-cover {
-        display: inline-block;
-        padding: 15px 30px;
-        border-radius: 50px; /* Oval shape */
-        text-align: center;
-        font-size: 1.2em;
-        font-weight: bold;
-        color: white;
-        transition: transform 0.3s ease;
-    }
-
-    .category-name {
-        margin: 0;
-        padding: 0;
-    }
-
-    .category-cover:hover {
-        transform: scale(1.1);
-    }
-
-    .contributors {
-        margin-top: 15px;
-    }
-    .contributor {
-        display: flex;
-        align-items: center;
-        margin-top: 5px;
-    }
-    .avatar {
-        width: 30px;
-        height: 30px;
-        border-radius: 50%;
-        margin-right: 10px;
-    }
-    .vote-button {
-        background: red;
-        color: white;
-        padding: 10px;
-        width: 100%;
-        margin-top: 10px;
-        border: none;
-        cursor: pointer;
-        font-size: 1em;
-    }
-    .posting-rules {
-        margin-top: 20px;
-        font-size: 0.9em;
-    }
-
-    /* Styles for Content Files */
-    .content-files {
-        margin-top: 20px;
-        margin-bottom: 20px;
-    }
-    .file-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-        gap: 15px;
-    }
-    .file-card {
-        background: #fff;
-        border: 1px solid #ddd;
-        border-radius: 10px;
-        padding: 10px;
-        text-align: center;
-        transition: transform 0.2s, box-shadow 0.2s;
-    }
-    .file-card:hover {
-        transform: scale(1.05);
-        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    }
-    .file-icon {
-        font-size: 2em;
-        margin-bottom: 10px;
-    }
-    .file-name {
-        font-size: 0.9em;
-    }
-    .file-link {
-        text-decoration: none;
-        color: #333;
-    }
-</style>
-
+        fetch("{% url 'toggle_bookmark' %}", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRFToken": csrfToken
+            },
+            body: JSON.stringify({ content_id: contentId })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.bookmarked) {
+                bookmarkIcon.classList.add("fas", "text-primary");
+                bookmarkIcon.classList.remove("far");
+            } else {
+                bookmarkIcon.classList.remove("fas", "text-primary");
+                bookmarkIcon.classList.add("far");
+            }
+        })
+        .catch(error => console.error("Error:", error));
+    });
+});
+</script>
 {% endblock %}
