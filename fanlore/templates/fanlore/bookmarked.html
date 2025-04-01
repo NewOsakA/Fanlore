@@ -4,7 +4,7 @@
     <div class="container">
         <!-- Bookmarked Posts Section -->
         <section class="bookmarked-posts py-5">
-            <h4 class="mb-3 fw-bold">{{ user.username }}'s Bookmarked Content</h4>
+            <h4 class="mb-3 fw-bold">Bookmarked Content</h4>
             <div class="row">
                 {% if content_list %}
                     {% for content in content_list %}
@@ -19,7 +19,7 @@
                                             <i class="bi bi-clock"></i> {{ content.time_since_creation }} |
                                             <i class="bi bi-hand-thumbs-up"></i> {{ content.vote }} votes
                                         </p>
-                                        <p class="text-muted">Created by: {{ content.collaborator.username }}</p>
+                                        <p class="text-muted">Created by: {{ content.creator.display_name }}</p>
                                     </div>
                                 </div>
                                 <div class="col-md-4 d-flex align-items-center">
@@ -63,8 +63,5 @@
             font-size: 0.875rem;
         }
 
-        .row {
-            margin-bottom: 1rem;
-        }
     </style>
 {% endblock %}
