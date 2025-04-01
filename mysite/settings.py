@@ -127,6 +127,7 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'fanlore.utils.context_processors.recommended_friends',
+                'fanlore.utils.context_processors.trending_tags',
             ],
         },
     },

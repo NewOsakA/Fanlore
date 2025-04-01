@@ -45,7 +45,4 @@ class HomeView(ListView):
         context["categories"] = Category.choices
         context["search_query"] = self.request.GET.get("q", "")
         context["current_category"] = self.request.GET.get("category")
-        context["popular_tags"] = Tag.objects.annotate(
-            post_count=models.Count("posts")
-        ).order_by("-post_count")[:3]  # Top 3 tags
         return context

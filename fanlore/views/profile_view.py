@@ -38,7 +38,7 @@ class ProfileView(LoginRequiredMixin, TemplateView):
             "is_friend": is_friend,
             "has_sent_request": sent_request,
             "content_list": Content.objects.filter(
-                Q(creator=user) | Q(collaborators=user)).distinct(),
+                Q(creator=user) | Q(collaborators=user)).distinct().order_by("-create_at"),
             "categories": Category.choices,
             "achievements": UserAchievement.objects.filter(user=user).order_by(
                 "-date_earned"),
