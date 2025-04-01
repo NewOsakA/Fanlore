@@ -120,11 +120,7 @@
 
     <!-- Right side: Stats & Contributors -->
     <div class="content-right">
-<<<<<<< Updated upstream
-        {% if user == content.creator or user in content.collaborators.all %}
-=======
         {% if user == content.collaborator or user == content.creator %}
->>>>>>> Stashed changes
             <a href="{% url 'content_edit' content.id %}" class="edit-button">Edit Content</a>
         {% endif %}
 
