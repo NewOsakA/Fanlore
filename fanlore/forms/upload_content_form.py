@@ -29,11 +29,15 @@ class MultipleFileField(forms.FileField):
 class ContentUploadForm(forms.ModelForm):
     content_files = MultipleFileField(label='Upload Files', required=False)
     description = forms.CharField(widget=PagedownWidget())
+
+    # tags is manually handled, not part of model field binding
     tags = forms.CharField(
         required=False,
         help_text="Enter tags separated by commas",
-        widget=forms.TextInput(attrs={"placeholder": "Enter tags separated by commas"})
+        widget=forms.TextInput(
+            attrs={"placeholder": "Enter tags separated by commas"})
     )
+
     category = forms.ChoiceField(
         choices=Category.choices,
         required=True,
@@ -50,14 +54,14 @@ class ContentUploadForm(forms.ModelForm):
 
     class Meta:
         model = Content
-        fields = ['title', 'description', 'topic_img', 'category', 'tags', 'collaborators']
+        fields = ['title', 'description', 'topic_img', 'category',
+                  'collaborators']
 
     def __init__(self, *args, **kwargs):
         current_user = kwargs.pop('user', None)
         super().__init__(*args, **kwargs)
 
         if current_user:
-            # Assuming user.friends.all() returns the user's friends
             self.fields['collaborators'].queryset = current_user.friends.all()
 
         for name, field in self.fields.items():
@@ -68,19 +72,19 @@ class ContentUploadForm(forms.ModelForm):
 
     def save(self, commit=True):
         content = super().save(commit=False)
+
         if commit:
             content.save()
+
+            tag_input = self.data.get('tags', '')
+            content.tags.clear()
+            if tag_input:
+                tag_names = {t.strip() for t in tag_input.split(',') if t.strip()}
+                for tag_name in tag_names:
+                    tag_obj, _ = Tag.objects.get_or_create(name=tag_name.title())
+                    content.tags.add(tag_obj)
+
             self.save_m2m()
 
-            # Handle tags
-            tag_input = self.cleaned_data['tags']
-            if tag_input:
-                tag_names = {t.strip() for t in tag_input.split(",") if t.strip()}
-                for tag_name in tag_names:
-                    formatted_name = tag_name.title()
-                    tag = Tag.objects.filter(name__iexact=tag_name).first()
-                    if not tag:
-                        tag = Tag.objects.create(name=formatted_name)
-                    content.tags.add(tag)
-
         return content
+

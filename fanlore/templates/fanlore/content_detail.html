@@ -115,7 +115,7 @@
 
     <!-- Right side: Stats & Contributors -->
     <div class="content-right">
-        {% if user == content.collaborator %}
+        {% if user == content.creator or user in content.collaborators.all %}
             <a href="{% url 'content_edit' content.id %}" class="edit-button">Edit Content</a>
         {% endif %}
 
