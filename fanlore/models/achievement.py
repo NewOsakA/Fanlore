@@ -11,7 +11,13 @@ class Achievement(models.Model):
         blank=True,
         null=True
     )
-    condition_code = models.CharField(max_length=100)  # optional: for logic matching
+    event = models.ForeignKey(
+        "fanlore.Event",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="achievements"
+    )
 
     def __str__(self):
         return self.name
