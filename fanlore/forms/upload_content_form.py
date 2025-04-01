@@ -54,7 +54,7 @@ class ContentUploadForm(forms.ModelForm):
 
     class Meta:
         model = Content
-        fields = ['title', 'description', 'topic_img', 'category', 'tags',
+        fields = ['title', 'description', 'topic_img', 'category',
                   'collaborators']
 
     def __init__(self, *args, **kwargs):
@@ -92,11 +92,13 @@ class ContentUploadForm(forms.ModelForm):
 
         if commit:
             content.save()
-            self.save_m2m()  # Save many-to-many fields (collaborators)
-
-            # Handle tags
-            tags = self.cleaned_data['tags']
-            for tag in tags:
-                content.tags.add(tag)
+            tag_input = self.data.get('tags', '')
+            content.tags.clear()
+            if tag_input:
+                tag_names = {t.strip() for t in tag_input.split(',') if t.strip()}
+                for tag_name in tag_names:
+                    tag_obj, _ = Tag.objects.get_or_create(name=tag_name.title())
+                    content.tags.add(tag_obj)
+            self.save_m2m()
         return content
 
