@@ -74,6 +74,13 @@
                 </div>
 
                 <div class="mb-3">
+                    <label for="{{ form.collaborators.id_for_label }}" class="form-label">Collaborators</label>
+                    {{ form.collaborators|add_class:"form-control" }}
+                    <small class="form-text text-muted">Select your friends to collaborate on this content.</small>
+                </div>
+
+
+                <div class="mb-3">
                     <label for="{{ form.tags.id_for_label }}" class="form-label">Tags</label>
                     {{ form.tags|add_class:"form-control" }}
                     <div id="tag-feedback" class="mt-2 d-flex flex-wrap gap-1"></div>

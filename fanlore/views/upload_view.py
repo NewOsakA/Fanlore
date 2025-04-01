@@ -11,6 +11,7 @@ from ..forms.upload_content_form import ContentUploadForm
 
 logger = logging.getLogger(__name__)
 
+
 class ContentUploadView(LoginRequiredMixin, CreateView):
     model = Content
     form_class = ContentUploadForm
@@ -18,10 +19,16 @@ class ContentUploadView(LoginRequiredMixin, CreateView):
     success_url = reverse_lazy('content_list')
     login_url = '/signin'
 
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs['user'] = self.request.user  # Pass current user to the form
+        return kwargs
+
     def form_valid(self, form):
         content = form.save(commit=False)
-        content.collaborator = self.request.user
+        content.creator = self.request.user  # Assign current user as creator
         content.save()
+        form.save_m2m()  # Save collaborators and tags
 
         # Handle topic_img upload
         topic_img = self.request.FILES.get('topic_img')
@@ -35,6 +42,7 @@ class ContentUploadView(LoginRequiredMixin, CreateView):
                     resource_type="image"
                 )
                 content.topic_img = uploaded_image.get("secure_url")
+                content.save()
             except Exception as e:
                 logger.error(f"Error uploading topic image: {e}")
 
