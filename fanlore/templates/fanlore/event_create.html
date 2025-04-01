@@ -5,7 +5,6 @@
 {% block extra_head %}
     {{ form.media }}
     <style>
-        /* Prevent overflow and wrap toolbar buttons nicely */
         .wmd-panel {
             width: 100% !important;
             max-width: 100% !important;
@@ -29,7 +28,6 @@
             box-sizing: border-box;
         }
 
-        /* Optional: Editor body styling */
         .wmd-input {
             background-color: #f4f4f4;
             border-radius: 0 0 6px 6px;
@@ -47,9 +45,16 @@
             display: block;
             margin: 1rem auto;
         }
+
+        .achievement-form {
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            padding: 15px;
+            margin-bottom: 15px;
+            background-color: #fefefe;
+        }
     </style>
 {% endblock %}
-
 
 {% block content %}
 <div class="container mt-4">
@@ -107,9 +112,54 @@
                     <label class="form-check-label" for="{{ form.show_submissions.id_for_label }}">Show Submissions</label>
                 </div>
 
+                <hr>
+                <h5 class="mb-3">🏆 Achievements (up to 5)</h5>
+                {{ achievement_formset.management_form }}
+
+                <div id="achievement-formset">
+                    {% for aform in achievement_formset %}
+                        <div class="achievement-form {% if forloop.counter > 1 %}d-none{% endif %}">
+                            <div class="mb-2">
+                                <label class="form-label">Name</label>
+                                {{ aform.name|add_class:"form-control" }}
+                            </div>
+                            <div class="mb-2">
+                                <label class="form-label">Description</label>
+                                {{ aform.description|add_class:"form-control" }}
+                            </div>
+                            <div class="mb-2">
+                                <label class="form-label">Icon</label>
+                                {{ aform.icon }}
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+
+                <button type="button" class="btn btn-outline-primary w-100 mb-4" id="add-achievement-btn">➕ Add Achievement</button>
+
                 <button type="submit" class="btn btn-success w-100">Create Event</button>
             </form>
         </div>
     </div>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const addBtn = document.getElementById('add-achievement-btn');
+        const forms = document.querySelectorAll('.achievement-form');
+        let visibleCount = 1;
+
+        addBtn.addEventListener('click', () => {
+            if (visibleCount < forms.length) {
+                forms[visibleCount].classList.remove('d-none');
+                visibleCount += 1;
+            }
+
+            if (visibleCount >= forms.length) {
+                addBtn.disabled = true;
+                addBtn.innerText = 'Maximum 5 Achievements Reached';
+            }
+        });
+    });
+</script>
 {% endblock %}

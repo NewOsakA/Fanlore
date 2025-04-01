@@ -44,6 +44,7 @@ class EventCreatorDashboardView(LoginRequiredMixin, ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         submissions = self.get_queryset()
+
         context.update({
             "event": self.event,
             "search_query": self.request.GET.get("search", ""),
@@ -53,3 +54,4 @@ class EventCreatorDashboardView(LoginRequiredMixin, ListView):
             "total_submissions": submissions.count(),
         })
         return context
+

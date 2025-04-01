@@ -22,7 +22,8 @@ urlpatterns = [
          name="profile_edit"),
     path('profile/bookmarks/', views.BookmarkedPostsView.as_view(),
          name='bookmarked_post'),
-    path('content_edit/<uuid:pk>/', views.ContentUpdateView.as_view(), name='content_edit'),
+    path('content_edit/<uuid:pk>/', views.ContentUpdateView.as_view(),
+         name='content_edit'),
     path('upload/', views.ContentUploadView.as_view(), name='upload_content'),
     path('post/<uuid:pk>/', views.ContentDetailView.as_view(),
          name='view_post'),
@@ -48,4 +49,6 @@ urlpatterns = [
     path("event/<int:event_id>/dashboard/",
          views.EventCreatorDashboardView.as_view(),
          name="event-creator-dashboard"),
+    path("achievement/give/", views.GiveAchievementView.as_view(),
+         name="give-achievement"),
 ]

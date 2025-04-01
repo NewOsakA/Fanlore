@@ -22,3 +22,4 @@ from .bookmark_toggle_view import ToggleBookmarkView
 from .event_creator_dashboard_view import EventCreatorDashboardView
 from .event_toggle_reviewed_view import ToggleReviewedView
 from .content_update_view import ContentUpdateView
+from .give_achievement_view import GiveAchievementView

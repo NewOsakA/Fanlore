@@ -180,6 +180,24 @@
         <div class="alert alert-info">Submissions are closed.</div>
     {% endif %}
 
+    {% if achievements.exists %}
+        <hr>
+        <h5 class="mt-5 mb-4">🏆 Achievements</h5>
+        <div class="d-flex flex-wrap gap-4">
+            {% for achievement in achievements %}
+                <div class="card shadow-sm" style="width: 220px;">
+                    {% if achievement.icon %}
+                        <img src="{{ achievement.icon.url }}" class="card-img-top p-3" alt="{{ achievement.name }}">
+                    {% endif %}
+                    <div class="card-body">
+                        <h6 class="card-title mb-2">{{ achievement.name }}</h6>
+                        <p class="card-text small text-muted">{{ achievement.description }}</p>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
     {% if event.show_submissions and event.allow_text or event.show_submissions and event.allow_file %}
         <hr>
         <h5 class="mt-5 mb-4">📥 Submitted Entries</h5>

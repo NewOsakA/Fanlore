@@ -1,6 +1,6 @@
 from django.utils import timezone
 from django.views.generic.detail import DetailView
-from fanlore.models import Event, EventSubmission
+from fanlore.models import Event, EventSubmission, Achievement
 from fanlore.forms.event_submission_form import EventSubmissionForm
 
 
@@ -41,6 +41,8 @@ class EventDetailView(DetailView):
                 # New submission
                 submission_form = EventSubmissionForm(event=event)
 
+        achievements = Achievement.objects.filter(event=event)
+
         context.update({
             "is_open": is_open,
             "can_submit": can_submit,
@@ -51,6 +53,7 @@ class EventDetailView(DetailView):
             "submissions": submissions,
             "submission_form": submission_form,
             "show_submissions": show_submissions,
+            "achievements": achievements,
         })
         return context
 

@@ -131,13 +131,29 @@
                             {% endif %}
                         </div>
 
-                        <!-- Review Button -->
+                        <!-- Review & Achievement Section -->
                         <div class="text-end">
-                            <form method="post" action="{% url 'submission-toggle-reviewed' entry.id %}">
+                            <!-- Review Button -->
+                            <form method="post" action="{% url 'submission-toggle-reviewed' entry.id %}" class="mb-2">
                                 {% csrf_token %}
                                 <button class="btn {% if entry.reviewed %}btn-success{% else %}btn-outline-secondary{% endif %} review-button">
                                     {% if entry.reviewed %}✓ Reviewed{% else %}Mark Reviewed{% endif %}
                                 </button>
+                            </form>
+
+                            <!-- Give Achievement Form -->
+                            <form method="post" action="{% url 'give-achievement' %}">
+                                {% csrf_token %}
+                                <input type="hidden" name="user_id" value="{{ entry.user.id }}">
+                                <input type="hidden" name="event_id" value="{{ event.id }}">
+                                <div class="input-group">
+                                    <select name="achievement_id" class="form-select">
+                                        {% for achievement in event.achievements.all %}
+                                            <option value="{{ achievement.id }}">{{ achievement.name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                    <button class="btn btn-outline-success" type="submit">🏅 Give</button>
+                                </div>
                             </form>
                         </div>
                     </div>

@@ -3,52 +3,100 @@
 {% load widget_tweaks %}
 
 {% block extra_head %}
-    {{ form.media }}
-    <style>
-        .wmd-panel {
-            width: 100% !important;
-            max-width: 100% !important;
-            margin: 0 !important;
-            min-width: unset !important;
-            box-sizing: border-box;
-            overflow-x: hidden;
-        }
+{{ form.media }}
+<style>
+    .wmd-panel {
+        width: 100% !important;
+        max-width: 100% !important;
+        margin: 0 !important;
+        min-width: unset !important;
+        box-sizing: border-box;
+        overflow-x: hidden;
+    }
 
-        .wmd-button-bar {
-            background-color: #f8f9fa;
-            border: 1px solid #ced4da;
-            border-bottom: none;
-            border-radius: 6px 6px 0 0;
-            padding: 6px;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 6px;
-            overflow: hidden;
-            max-width: 100%;
-            box-sizing: border-box;
-        }
+    .wmd-button-bar {
+        background-color: #f8f9fa;
+        border: 1px solid #ced4da;
+        border-bottom: none;
+        border-radius: 6px 6px 0 0;
+        padding: 6px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        overflow: hidden;
+        max-width: 100%;
+        box-sizing: border-box;
+    }
 
-        .wmd-input {
-            background-color: #f4f4f4;
-            border-radius: 0 0 6px 6px;
-            border: 1px solid #ced4da;
-            border-top: none;
-            padding: 10px;
-            font-family: inherit;
-            width: 100%;
-            box-sizing: border-box;
-        }
+    .wmd-input {
+        background-color: #f4f4f4;
+        border-radius: 0 0 6px 6px;
+        border: 1px solid #ced4da;
+        border-top: none;
+        padding: 10px;
+        font-family: inherit;
+        width: 100%;
+        box-sizing: border-box;
+    }
 
-        .wmd-preview img {
-            max-width: 100%;
-            height: auto;
-            display: block;
-            margin: 1rem auto;
-        }
-    </style>
+    .wmd-preview img {
+        max-width: 100%;
+        height: auto;
+        display: block;
+        margin: 1rem auto;
+    }
+
+    .achievement-form {
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        padding: 15px;
+        margin-bottom: 15px;
+        background-color: #fefefe;
+        position: relative;
+    }
+
+    .remove-achievement-btn {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        background: none;
+        border: none;
+        font-size: 18px;
+        color: #888;
+        cursor: pointer;
+    }
+
+    .remove-achievement-btn:hover {
+        color: #dc3545;
+    }
+</style>
 {% endblock %}
 
 {% block content %}
+{% if form.non_field_errors %}
+  <div class="alert alert-danger">
+    {{ form.non_field_errors }}
+  </div>
+{% endif %}
+
+{% for field in form %}
+  {% if field.errors %}
+    <div class="alert alert-danger">
+      <strong>{{ field.label }}:</strong> {{ field.errors|striptags }}
+    </div>
+  {% endif %}
+{% endfor %}
+
+{% for aform in achievement_formset.forms %}
+  {% for field in aform %}
+    {% if field.errors %}
+      <div class="alert alert-danger">
+        <strong>{{ field.label }}:</strong> {{ field.errors|striptags }}
+      </div>
+    {% endif %}
+  {% endfor %}
+{% endfor %}
+
 <div class="container mt-4">
     <div class="card shadow-sm">
         <div class="card-header bg-warning text-dark">
@@ -104,9 +152,86 @@
                     <label class="form-check-label" for="{{ form.show_submissions.id_for_label }}">Show Submissions</label>
                 </div>
 
+                <hr>
+                <h5 class="mb-3">🏆 Achievements (up to 5)</h5>
+                <p class="text-muted small">Note: Once created, achievements cannot be deleted — only edited.</p>
+                {{ achievement_formset.management_form }}
+
+                <div id="achievement-formset">
+                    {% for aform in achievement_formset %}
+                        <div class="achievement-form {% if not aform.instance.pk and forloop.counter > 1 %}d-none{% endif %}">
+                            {{ aform.id }} {# ✅ REQUIRED for editing existing forms #}
+                            {% if not aform.instance.pk %}
+                                <button type="button" class="remove-achievement-btn" title="Remove">✖</button>
+                            {% endif %}
+                            <div class="mb-2">
+                                <label class="form-label">Name</label>
+                                {{ aform.name|add_class:"form-control" }}
+                            </div>
+                            <div class="mb-2">
+                                <label class="form-label">Description</label>
+                                {{ aform.description|add_class:"form-control" }}
+                            </div>
+                            <div class="mb-2">
+                                <label class="form-label">Icon</label>
+                                {{ aform.icon }}
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+
+                <button type="button" class="btn btn-outline-primary w-100 mb-4" id="add-achievement-btn">➕ Add Achievement</button>
+
                 <button type="submit" class="btn btn-warning w-100">Update Event</button>
             </form>
         </div>
     </div>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const addBtn = document.getElementById('add-achievement-btn');
+        const forms = document.querySelectorAll('.achievement-form');
+        let visibleCount = Array.from(forms).filter(f => !f.classList.contains('d-none')).length;
+
+        const updateButtons = () => {
+            if (visibleCount >= forms.length) {
+                addBtn.disabled = true;
+                addBtn.innerText = 'Maximum 5 Achievements Reached';
+            } else {
+                addBtn.disabled = false;
+                addBtn.innerText = '➕ Add Achievement';
+            }
+        };
+
+        addBtn.addEventListener('click', () => {
+            if (visibleCount < forms.length) {
+                forms[visibleCount].classList.remove('d-none');
+                visibleCount += 1;
+                updateButtons();
+            }
+        });
+
+        forms.forEach(form => {
+            const removeBtn = form.querySelector('.remove-achievement-btn');
+            if (removeBtn) {
+                removeBtn.addEventListener('click', () => {
+                    form.classList.add('d-none');
+                    const inputs = form.querySelectorAll('input, textarea');
+                    inputs.forEach(input => {
+                        if (input.type === "file") {
+                            input.value = null;
+                        } else {
+                            input.value = "";
+                        }
+                    });
+                    visibleCount -= 1;
+                    updateButtons();
+                });
+            }
+        });
+
+        updateButtons();
+    });
+</script>
 {% endblock %}
