@@ -5,7 +5,7 @@ from django.urls import reverse_lazy
 from django.views.generic.edit import CreateView
 from django.urls import reverse
 
-from ..models import FriendRequest
+from fanlore.models import FriendRequest
 
 User = get_user_model()
 

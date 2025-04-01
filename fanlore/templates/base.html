@@ -234,11 +234,11 @@
               <div class="d-flex flex-column">
                 {% if user.is_authenticated %}
                   <a href="{% url 'friend-profile' friend.id %}" class="text-decoration-none text-dark">
-                    {{ friend.username }}
+                    {{ friend.display_name }} <p class="text-muted mb-0" style="font-size: 0.75rem; margin-top: -0.25rem;">@{{ friend.username }}</p>
                   </a>
                 {% else %}
                   <a href="{% url 'signin' %}?next=/" class="text-decoration-none fw-semibold text-dark">
-                    {{ friend.username }}
+                    {{ friend.display_name }}
                   </a>
                 {% endif %}
               </div>
