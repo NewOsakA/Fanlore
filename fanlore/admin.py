@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from django.utils.html import mark_safe
 
-from .models import User, Tag, UserAchievement, Achievement
+from .models import User, Tag, UserAchievement, Achievement, Content
 
 
 class CustomUserAdmin(UserAdmin):
@@ -59,6 +59,23 @@ class TagAdmin(admin.ModelAdmin):
     list_display = ("name", "created_at")
     search_fields = ("name",)
     ordering = ("-created_at",)
+
+
+@admin.register(Content)
+class ContentAdmin(admin.ModelAdmin):
+    list_display = ("title", "description", "topic_img", "creator", "display_collaborators",
+                    "vote", "category", "display_tags", "create_at")
+    search_fields = ("title", "creator__display_name")
+    ordering = ("-create_at",)
+
+    def display_tags(self, obj):
+        return ", ".join(tag.name for tag in obj.tags.all())
+
+    def display_collaborators(self, obj):
+        return ", ".join(user.username for user in obj.collaborators.all())
+
+    display_collaborators.short_description = "Collaborators"
+    display_tags.short_description = "Tags"
 
 
 @admin.register(Achievement)

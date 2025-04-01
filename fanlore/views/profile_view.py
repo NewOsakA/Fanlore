@@ -44,4 +44,6 @@ class ProfileView(LoginRequiredMixin, TemplateView):
                 "-date_earned"),
         })
 
+        print(context["content_list"])
+
         return context

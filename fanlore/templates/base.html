@@ -250,8 +250,18 @@
       {% endif %}
     </div>
       <div class="box">
-          <h5>Box 2</h5>
-          <p>Content for the second box.</p>
+          <!-- Trending Tags Section -->
+          <div class="suggestions">
+              <h5 class="mb-3">📈 Trending Tags</h5>
+              {% for tag in popular_tags %}
+                  <div class="suggestion-item">
+                      <p class="mb-1">#{{ tag.name }}</p>
+                      <p class="suggestion-category text-muted" style="margin-top: -0.35rem;">{{ tag.post_count }} posts</p>
+                  </div>
+              {% empty %}
+                  <p class="text-muted">No trending tags found.</p>
+              {% endfor %}
+          </div>
       </div>
   </div>
 
