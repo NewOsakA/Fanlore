@@ -26,10 +26,9 @@ class ContentUpdateForm(forms.ModelForm):
     tags = forms.CharField(
         required=False,
         help_text="Enter tags separated by commas",
-        widget=forms.TextInput(attrs={
-            "placeholder": "Enter tags separated by commas",
-            "class": "form-control"
-        })
+        widget=forms.TextInput(
+            attrs={"placeholder": "Enter tags separated by commas",
+                   "name": "tags"})
     )
     category = forms.ChoiceField(
         choices=Category.choices,
@@ -51,23 +50,25 @@ class ContentUpdateForm(forms.ModelForm):
 
     class Meta:
         model = Content
-        fields = ['title', 'description', 'topic_img', 'category', 'tags',
+        fields = ['title', 'description', 'topic_img', 'category',
                   'collaborators']
 
     def __init__(self, *args, **kwargs):
         self.user = kwargs.pop('user', None)
         super().__init__(*args, **kwargs)
 
-        if self.user:
-            self.fields['collaborators'].queryset = self.user.friends.all()
-
-        if self.instance.pk:
+        if self.instance and self.instance.pk:
             self.initial['tags'] = ', '.join(
                 tag.name for tag in self.instance.tags.all())
 
-        for field in self.fields.values():
+        if self.user and self.instance.creator == self.user:
+            self.fields['collaborators'].queryset = self.user.friends.all()
+        else:
+            self.fields.pop('collaborators', None)
+
+        for name, field in self.fields.items():
             if not isinstance(field.widget, PagedownWidget):
-                field.widget.attrs.setdefault('class', 'form-control')
+                field.widget.attrs['class'] = 'form-control'
 
         self.fields['content_files'].widget.attrs['multiple'] = True
 
@@ -83,15 +84,23 @@ class ContentUpdateForm(forms.ModelForm):
                 tag_names]
 
     def save(self, commit=True):
-        """Save content and handle tags"""
         content = super().save(commit=False)
 
         if commit:
             content.save()
-            self.save_m2m()  # Handles tags and collaborators
 
-            # Ensure tags are properly set (in case save_m2m didn't handle them)
-            if 'tags' in self.cleaned_data:
-                content.tags.set(self.cleaned_data['tags'])
+            # Get tags from the form data
+            tag_input = self.data.get('tags', '').strip()
+
+            if tag_input:
+                content.tags.clear()  # Clear previous tags
+                tag_names = {t.strip() for t in tag_input.split(',') if
+                             t.strip()}
+                for tag_name in tag_names:
+                    tag_obj, created = Tag.objects.get_or_create(
+                        name=tag_name.title())
+                    content.tags.add(tag_obj)
+
+            self.save_m2m()
 
         return content
