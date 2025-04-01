@@ -60,9 +60,15 @@ class ContentUploadForm(forms.ModelForm):
             # Handle tags
             tag_input = self.cleaned_data['tags']
             if tag_input:
-                tag_names = {t.strip() for t in tag_input.split(",") if t.strip()}
+                tag_names = {t.strip() for t in tag_input.split(",") if
+                             t.strip()}
                 for tag_name in tag_names:
-                    tag, _ = Tag.objects.get_or_create(name=tag_name)
+                    formatted_name = tag_name.title()  # Capitalize each word
+                    # Reuse existing tag if name matches case-insensitively
+                    tag = Tag.objects.filter(name__iexact=tag_name).first()
+                    if not tag:
+                        tag = Tag.objects.create(name=formatted_name)
                     content.tags.add(tag)
 
         return content
+

@@ -59,4 +59,5 @@ urlpatterns = [
          name='toggle_bookmark'),
     path("help/", views.HelpView.as_view(), name="help"),
     path("category/<str:category_id>/", views.CategoryContentListView.as_view(), name="category-posts"),
+    path('api/check-tags/', views.check_tag_existence, name='check-tags'),
 ]

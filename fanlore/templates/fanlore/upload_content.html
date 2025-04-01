@@ -76,6 +76,7 @@
                 <div class="mb-3">
                     <label for="{{ form.tags.id_for_label }}" class="form-label">Tags</label>
                     {{ form.tags|add_class:"form-control" }}
+                    <div id="tag-feedback" class="mt-2 d-flex flex-wrap gap-1"></div>
                     <small class="form-text text-muted">Enter tags separated by commas (e.g., fantasy, lore, game)</small>
                 </div>
 
@@ -94,4 +95,41 @@
         </div>
     </div>
 </div>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+$(document).ready(function () {
+    const $tagInput = $('input[name="tags"]');
+    const $feedback = $('#tag-feedback');
+
+    function updateTagStatus() {
+        const tagStr = $tagInput.val();
+        if (!tagStr.trim()) {
+            $feedback.html('');
+            return;
+        }
+
+        $.ajax({
+            url: "{% url 'check-tags' %}",
+            data: {
+                tags: tagStr
+            },
+            success: function (data) {
+                $feedback.html('');
+                data.forEach(tag => {
+                    const color = tag.exists ? 'success' : 'danger';
+                    const label = `<span class="badge bg-${color}">${tag.name}</span>`;
+                    $feedback.append(label + ' ');
+                });
+            }
+        });
+    }
+
+    $tagInput.on('input', function () {
+        updateTagStatus();
+    });
+
+    // Initial load (if user reloads or goes back)
+    updateTagStatus();
+});
+</script>
 {% endblock %}
