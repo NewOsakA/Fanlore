@@ -4,6 +4,7 @@ from django.shortcuts import get_object_or_404
 from fanlore.models import Content, Category
 from django.contrib.auth import get_user_model
 from fanlore.models import UserAchievement, FriendRequest
+from django.db.models import Q
 
 
 User = get_user_model()
@@ -35,10 +36,12 @@ class ProfileView(LoginRequiredMixin, TemplateView):
             "user": user,
             "is_own_profile": is_own_profile,
             "is_friend": is_friend,
-            "has_sent_request": sent_request,  # now the actual object or None
-            "content_list": Content.objects.filter(collaborator=user),
+            "has_sent_request": sent_request,
+            "content_list": Content.objects.filter(
+                Q(creator=user) | Q(collaborators=user)).distinct(),
             "categories": Category.choices,
-            "achievements": UserAchievement.objects.filter(user=user).order_by("-date_earned"),
+            "achievements": UserAchievement.objects.filter(user=user).order_by(
+                "-date_earned"),
         })
 
         return context

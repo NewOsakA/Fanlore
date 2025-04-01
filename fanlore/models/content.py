@@ -22,8 +22,12 @@ class Content(models.Model):
         blank=True,
         null=True
     )
-    collaborator = models.ForeignKey(settings.AUTH_USER_MODEL,
-                                     on_delete=models.CASCADE)
+    creator = models.ForeignKey(settings.AUTH_USER_MODEL,
+                                on_delete=models.CASCADE,
+                                related_name="created_contents")
+    collaborators = models.ManyToManyField(settings.AUTH_USER_MODEL,
+                                           related_name="collaborations",
+                                           blank=True)
     vote = models.IntegerField(default=0)
     category = models.IntegerField(choices=Category.choices, default=Category.GENERIC)
     tags = models.ManyToManyField(Tag, related_name="posts", blank=True)
