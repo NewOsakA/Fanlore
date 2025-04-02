@@ -77,10 +77,12 @@
                                 <p class="text-muted">Created by: {{ content.creator.display_name }}</p>
                             </div>
                         </div>
-                        <div class="col-md-4 d-flex align-items-center">
-                            <img src="{{ content.topic_img.url }}" class="img-fluid rounded-end content-image"
-                                alt="{{ content.title }}">
-                        </div>
+                        {% if content.topic_img.url %}
+                            <div class="col-md-4 d-flex align-items-center">
+                                <img src="{{ content.topic_img.url }}" class="img-fluid rounded-end content-image"
+                                    alt="{{ content.title }}">
+                            </div>
+                        {% endif %}
                     </div>
                 </div>
             </a>
@@ -122,11 +124,13 @@
     {% endif %}
 
     <!-- CTA Section -->
-    <section class="cta mt-5 text-center">
-        <h2>Join the community</h2>
-        <p>Become a part of the FanLore community, share your passion, and explore content from creators around the world!</p>
-        <a href="{% url 'content_list' %}" class="btn btn-success">Sign Up Now</a>
-    </section>
+    {% if not user.is_authenticated %}
+        <section class="cta mt-5 text-center">
+            <h2>Join the community</h2>
+            <p>Become a part of the FanLore community, share your passion, and explore content from creators around the world!</p>
+            <a href="{% url 'signin' %}" class="btn btn-success">Sign Up Now</a>
+        </section>
+    {% endif %}
 </div>
 
 <!-- Styles + Script -->
