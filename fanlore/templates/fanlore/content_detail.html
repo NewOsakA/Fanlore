@@ -190,7 +190,7 @@
         </div>
 
         <!-- Edit Button -->
-        {% if user == content.collaborator or user == content.creator %}
+        {% if user == content.collaborator or user in content.collaborators.all %}
             <div class="text-end mb-4">
                 <a href="{% url 'content_edit' content.id %}" class="btn btn-outline-secondary">✏️ Edit Content</a>
             </div>
