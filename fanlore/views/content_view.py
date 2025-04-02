@@ -19,9 +19,11 @@ class ContentDetailView(DetailView, FormView):
         context["comments"] = Comment.objects.filter(
             content=self.object).order_by("-comment_at")
 
-        # ✅ Check if the user has bookmarked this content
-        context["is_bookmarked"] = Bookmark.objects.filter(
-            user=self.request.user, content=self.object).exists()
+        # Check if the user is authenticated before checking bookmarks
+        context["is_bookmarked"] = False
+        if self.request.user.is_authenticated:
+            context["is_bookmarked"] = Bookmark.objects.filter(
+                user=self.request.user, content=self.object).exists()
 
         # Fetch user profile images for comments
         comments = context.get('comments')
@@ -31,7 +33,6 @@ class ContentDetailView(DetailView, FormView):
             comment.user_profile_image = user.profile_image.url if user and user.profile_image else 'default-avatar-url.jpg'
 
         return context
-
 
     def post(self, request, *args, **kwargs):
         self.object = self.get_object()  # Get the content object

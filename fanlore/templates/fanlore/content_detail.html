@@ -118,11 +118,14 @@
                     <span id="like-count">{{ content.vote }}</span>
                 </button>
 
-                <button id="bookmark-toggle" class="btn btn-outline-primary" data-content-id="{{ content.id }}">
-                    <i id="bookmark-icon"
-                       class="{% if is_bookmarked %}fas text-primary{% else %}far{% endif %} fa-bookmark">
-                    </i>
-                </button>
+                {% if user.is_authenticated %}
+                    <button id="bookmark-toggle" class="btn btn-outline-primary" data-content-id="{{ content.id }}">
+                        <i id="bookmark-icon"
+                           class="{% if is_bookmarked %}fas text-primary{% else %}far{% endif %} fa-bookmark">
+                        </i>
+                    </button>
+                {% endif %}
+
 
                 {% if user.is_authenticated %}
                     <button class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#reportModal">
@@ -259,7 +262,7 @@
                     </div>
                 </form>
             {% else %}
-                <p class="text-muted">Please <a href="{% url 'login' %}">log in</a> to comment.</p>
+                <p class="text-muted">Please <a href="{% url 'signin' %}">log in</a> to comment.</p>
             {% endif %}
         </div>
     </div>
