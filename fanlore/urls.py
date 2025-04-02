@@ -70,5 +70,7 @@ urlpatterns = [
          name="like-content"),
     path("events/<int:pk>/delete/", views.event.EventDeleteView.as_view(),
          name="event-delete"),
+    path('report/<uuid:pk>/', views.ReportContentView.as_view(),
+         name='report-content'),
 
 ]

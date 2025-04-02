@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from django.utils.html import mark_safe
 
-from .models import User, Tag, UserAchievement, Achievement, Content
+from .models import User, Tag, UserAchievement, Achievement, Content, Report
 
 
 class CustomUserAdmin(UserAdmin):
@@ -42,7 +42,6 @@ class CustomUserAdmin(UserAdmin):
     search_fields = ("username", "email", "bio")
 
     def profile_image_preview(self, obj):
-        """Show a small preview of the profile image in Django Admin"""
         if obj.profile_image and obj.profile_image.url:
             return mark_safe(
                 f'<img src="{obj.profile_image.url}" width="50" height="50" '
@@ -91,4 +90,28 @@ class UserAchievementAdmin(admin.ModelAdmin):
     list_filter = ("achievement", "date_earned")
 
 
+@admin.register(Report)
+class ReportAdmin(admin.ModelAdmin):
+    list_display = ("content", "content_creator", "topic", "reported_by", "reported_date")
+    readonly_fields = ("content", "content_creator", "topic", "reason", "reported_by", "reported_date")
+    fieldsets = (
+        (None, {
+            "fields": ("content", "content_creator", "topic", "reason", "reported_by", "reported_date")
+        }),
+    )
+
+    def content_creator(self, obj):
+        return obj.content.creator.username if obj.content and obj.content.creator else "Unknown"
+    content_creator.short_description = "Content Creator"
+
+    def has_add_permission(self, request):
+        return False  # disable add
+
+    def has_change_permission(self, request, obj=None):
+        return False  # disable editing
+
+    def has_delete_permission(self, request, obj=None):
+        return True  # still allow delete if you want
+
+# Register custom UserAdmin
 admin.site.register(User, CustomUserAdmin)

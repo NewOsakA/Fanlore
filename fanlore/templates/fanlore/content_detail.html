@@ -123,6 +123,13 @@
                        class="{% if is_bookmarked %}fas text-primary{% else %}far{% endif %} fa-bookmark">
                     </i>
                 </button>
+
+                {% if user.is_authenticated %}
+                    <button class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#reportModal">
+                        🚩 Report
+                    </button>
+                {% endif %}
+
             </div>
         </div>
 
@@ -255,11 +262,36 @@
                 <p class="text-muted">Please <a href="{% url 'login' %}">log in</a> to comment.</p>
             {% endif %}
         </div>
-
-
     </div>
 </div>
 
+<!-- Report Modal -->
+<div class="modal fade" id="reportModal" tabindex="-1" aria-labelledby="reportModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <form method="POST" action="{% url 'report-content' content.id %}">
+        {% csrf_token %}
+        <div class="modal-header">
+          <h5 class="modal-title text-danger" id="reportModalLabel">🚩 Report Content</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="mb-3">
+            <label for="report-topic" class="form-label">Topic</label>
+            <input type="text" name="topic" id="report-topic" class="form-control" required>
+          </div>
+          <div class="mb-3">
+            <label for="report-reason" class="form-label">Reason</label>
+            <textarea name="reason" id="report-reason" class="form-control" rows="4" required></textarea>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-danger">Submit Report</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
 <!-- Bookmark Script & Like -->
 <script>
 document.addEventListener("DOMContentLoaded", function () {
