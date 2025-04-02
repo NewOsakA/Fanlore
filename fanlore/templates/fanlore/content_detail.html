@@ -110,8 +110,12 @@
 
             <!-- Right: Like & Bookmark -->
             <div class="d-flex align-items-start gap-2 mt-2 mt-md-0">
-                <button class="btn btn-outline-success d-flex align-items-center vote-button">
-                    <i class="fas fa-thumbs-up me-1"></i> {{ content.vote }}
+                <button id="like-button"
+                        class="btn btn-outline-success d-flex align-items-center vote-button {% if is_liked %}btn-success text-white{% endif %}"
+                        data-content-id="{{ content.id }}"
+                        data-liked="{{ is_liked|yesno:"true,false" }}">
+                    <i class="fas fa-thumbs-up me-1"></i>
+                    <span id="like-count">{{ content.vote }}</span>
                 </button>
 
                 <button id="bookmark-toggle" class="btn btn-outline-primary" data-content-id="{{ content.id }}">
@@ -256,38 +260,76 @@
     </div>
 </div>
 
-<!-- Bookmark Script -->
+<!-- Bookmark Script & Like -->
 <script>
 document.addEventListener("DOMContentLoaded", function () {
+    // LIKE BUTTON
+    const likeBtn = document.getElementById("like-button");
+    const likeCount = document.getElementById("like-count");
+
+    if (likeBtn) {
+        likeBtn.addEventListener("click", function () {
+            const contentId = this.getAttribute("data-content-id");
+            const csrfToken = document.querySelector("[name=csrfmiddlewaretoken]").value;
+
+            fetch("{% url 'like-content' %}", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRFToken": csrfToken
+                },
+                body: JSON.stringify({ content_id: contentId })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    likeCount.textContent = data.vote;
+                    if (data.liked) {
+                        likeBtn.classList.add("btn-success", "text-white");
+                        likeBtn.classList.remove("btn-outline-success");
+                        likeBtn.setAttribute("data-liked", "true");
+                    } else {
+                        likeBtn.classList.remove("btn-success", "text-white");
+                        likeBtn.classList.add("btn-outline-success");
+                        likeBtn.setAttribute("data-liked", "false");
+                    }
+                }
+            })
+            .catch(err => console.error("Like Error:", err));
+        });
+    }
+
+    // BOOKMARK BUTTON (unchanged)
     const bookmarkButton = document.getElementById("bookmark-toggle");
     const bookmarkIcon = document.getElementById("bookmark-icon");
 
-    if (!bookmarkButton) return;
+    if (bookmarkButton) {
+        bookmarkButton.addEventListener("click", function () {
+            const contentId = this.getAttribute("data-content-id");
+            const csrfToken = document.querySelector("[name=csrfmiddlewaretoken]").value;
 
-    bookmarkButton.addEventListener("click", function () {
-        const contentId = this.getAttribute("data-content-id");
-        const csrfToken = document.querySelector("[name=csrfmiddlewaretoken]").value;
-
-        fetch("{% url 'toggle_bookmark' %}", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "X-CSRFToken": csrfToken
-            },
-            body: JSON.stringify({ content_id: contentId })
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.bookmarked) {
-                bookmarkIcon.classList.add("fas", "text-primary");
-                bookmarkIcon.classList.remove("far");
-            } else {
-                bookmarkIcon.classList.remove("fas", "text-primary");
-                bookmarkIcon.classList.add("far");
-            }
-        })
-        .catch(error => console.error("Error:", error));
-    });
+            fetch("{% url 'toggle_bookmark' %}", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRFToken": csrfToken
+                },
+                body: JSON.stringify({ content_id: contentId })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.bookmarked) {
+                    bookmarkIcon.classList.add("fas", "text-primary");
+                    bookmarkIcon.classList.remove("far");
+                } else {
+                    bookmarkIcon.classList.remove("fas", "text-primary");
+                    bookmarkIcon.classList.add("far");
+                }
+            })
+            .catch(error => console.error("Error:", error));
+        });
+    }
 });
 </script>
+
 {% endblock %}

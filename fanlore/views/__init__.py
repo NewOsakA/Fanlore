@@ -13,6 +13,7 @@ from .give_achievement_view import GiveAchievementView
 from .help_view import HelpView
 from .category_content_list_view import CategoryContentListView
 from .check_tag_existence import check_tag_existence
+from .like_content_view import LikeContentView
 
 from .event import *
 from .friend import *
