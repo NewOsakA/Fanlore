@@ -68,4 +68,7 @@ urlpatterns = [
     path('api/check-tags/', views.check_tag_existence, name='check-tags'),
     path("like-content/", views.LikeContentView.as_view(),
          name="like-content"),
+    path("events/<int:pk>/delete/", views.event.EventDeleteView.as_view(),
+         name="event-delete"),
+
 ]
