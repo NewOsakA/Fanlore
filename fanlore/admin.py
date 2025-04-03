@@ -13,7 +13,6 @@ class CustomUserAdmin(UserAdmin):
                 "bio",
                 "display_name",
                 "profile_image",
-                "followed_fandoms",
                 "is_creator",
                 "profile_background_image"
             )
@@ -25,7 +24,6 @@ class CustomUserAdmin(UserAdmin):
                 "bio",
                 "display_name",
                 "profile_image",
-                "followed_fandoms",
                 "is_creator",
                 "profile_background_image"
             )
@@ -105,13 +103,14 @@ class ReportAdmin(admin.ModelAdmin):
     content_creator.short_description = "Content Creator"
 
     def has_add_permission(self, request):
-        return False  # disable add
+        return False
 
     def has_change_permission(self, request, obj=None):
-        return False  # disable editing
+        return False
 
     def has_delete_permission(self, request, obj=None):
-        return True  # still allow delete if you want
+        return True
+
 
 # Register custom UserAdmin
 admin.site.register(User, CustomUserAdmin)
