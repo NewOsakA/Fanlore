@@ -3,8 +3,8 @@ from django.views.generic import UpdateView
 from django.contrib import messages
 from django.urls import reverse_lazy
 from django.shortcuts import redirect
-from ..models import User, Category
-from ..forms.profile_edit_view import ProfileUpdateForm
+from fanlore.models import User, Category
+from fanlore.forms.profile_edit_view import ProfileUpdateForm
 from django.contrib.auth import update_session_auth_hash
 
 

@@ -4,8 +4,8 @@ from . import views
 
 urlpatterns = [
     path('', views.HomeView.as_view(), name='content_list'),
-    path("profile/", views.ProfileView.as_view(), name="profile"),
-    path("profile/<int:user_id>/", views.ProfileView.as_view(),
+    path("profile/", views.profile.ProfileView.as_view(), name="profile"),
+    path("profile/<int:user_id>/", views.profile.ProfileView.as_view(),
          name="friend-profile"),
     path('signup/', views.SignUpView.as_view(), name='signup'),
     path('signin/', views.SignInView.as_view(), name="signin"),
@@ -29,7 +29,7 @@ urlpatterns = [
          views.friend.CancelFriendRequestView.as_view(),
          name="cancel-friend-request"),
 
-    path("profile_edit/", views.ProfileEditView.as_view(),
+    path("profile_edit/", views.profile.ProfileEditView.as_view(),
          name="profile_edit"),
     path('profile/bookmarks/', views.BookmarkedPostsView.as_view(),
          name='bookmarked_post'),
@@ -80,6 +80,6 @@ urlpatterns = [
          name="event-delete"),
     path('report/<uuid:pk>/', views.ReportContentView.as_view(),
          name='report-content'),
-    path('user/<int:user_id>/follow/', views.FollowUserView.as_view(), name='follow-user'),
-    path('user/<int:user_id>/unfollow/', views.UnfollowUserView.as_view(), name='unfollow-user'),
+    path('user/<int:user_id>/follow/', views.profile.FollowUserView.as_view(), name='follow-user'),
+    path('user/<int:user_id>/unfollow/', views.profile.UnfollowUserView.as_view(), name='unfollow-user'),
 ]
