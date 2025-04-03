@@ -74,7 +74,7 @@
             <div>
                 <!-- Creator Info -->
                 <div class="d-flex align-items-center mb-2">
-                    <img src="{{ content.creator.profile_image.url|default:'default-avatar-url.jpg' }}"
+                    <img src="{{ content.creator.profile_image.url|default:'user-circle.png' }}"
                          class="rounded-circle me-2" width="45" height="45" alt="Profile">
                     <div>
                         <div class="fw-semibold">
@@ -187,7 +187,7 @@
             <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-3">
                 {% for contributor in content.collaborators.all %}
                 <div class="d-flex align-items-center">
-                    <img src="{{ contributor.profile_image.url|default:'default-avatar-url.jpg' }}"
+                    <img src="{{ contributor.profile_image.url|default:'user-circle.png' }}"
                          class="rounded-circle me-3" width="45" height="45" style="object-fit: cover;" alt="{{ contributor.username }}">
                     <div class="fw-medium">
                         <a href="{% url 'friend-profile' contributor.id %}" class="text-decoration-none text-dark">
@@ -238,7 +238,7 @@
                 {% for release in content.releases.all %}
                     <div class="release-item mb-4">
                         <div class="d-flex align-items-center mb-3">
-                            <img src="{{ release.updated_by.profile_image.url|default:'default-avatar-url.jpg' }}"
+                            <img src="{{ release.updated_by.profile_image.url|default:'user-circle.png' }}"
                                  class="rounded-circle me-2" width="40" height="40" alt="User Profile">
                             <div>
                                 <div class="fw-semibold">
@@ -319,7 +319,7 @@
                 <li class="comment-card mb-3">
                     <div class="d-flex justify-content-between align-items-start mb-2">
                         <div class="d-flex align-items-center">
-                            <img src="{{ comment.user_profile_image }}" alt="Profile"
+                            <img src="{{ comment.user_profile_image }}|default:'user-circle.png'" alt="Profile"
                                  class="rounded-circle me-3" width="40" height="40" style="object-fit: cover;">
                             <div>
                                 <div class="fw-semibold">
