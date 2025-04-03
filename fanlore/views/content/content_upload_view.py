@@ -6,8 +6,8 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
 import cloudinary.uploader
 
-from ..models import Content, ContentFile
-from ..forms.upload_content_form import ContentUploadForm
+from fanlore.models import Content, ContentFile
+from fanlore.forms.upload_content_form import ContentUploadForm
 
 logger = logging.getLogger(__name__)
 

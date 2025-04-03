@@ -2,7 +2,7 @@ import json
 from django.http import JsonResponse
 from django.views import View
 from django.contrib.auth.mixins import LoginRequiredMixin
-from ..models import Bookmark, Content
+from fanlore.models import Bookmark, Content
 
 class ToggleBookmarkView(LoginRequiredMixin, View):
     def post(self, request, *args, **kwargs):

@@ -1,6 +1,6 @@
 from django.views.generic import ListView
 from django.contrib.auth.mixins import LoginRequiredMixin
-from ..models import Bookmark, Content
+from fanlore.models import Bookmark, Content
 
 class BookmarkedPostsView(LoginRequiredMixin, ListView):
     model = Content

@@ -7,8 +7,8 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
 from django.views.generic.edit import UpdateView
 import cloudinary.uploader
-from ..models import Release, ReleaseFile
-from ..forms import ReleaseForm
+from fanlore.models import Release, ReleaseFile
+from fanlore.forms import ReleaseForm
 
 logger = logging.getLogger(__name__)
 

@@ -6,8 +6,8 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic.edit import FormView
 import cloudinary.uploader
 
-from ..models import Content, Release, ReleaseFile  # Ensure ReleaseFile is imported
-from ..forms import ReleaseForm
+from fanlore.models import Content, Release, ReleaseFile  # Ensure ReleaseFile is imported
+from fanlore.forms import ReleaseForm
 
 logger = logging.getLogger(__name__)
 

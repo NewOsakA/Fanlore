@@ -2,8 +2,8 @@ from django.contrib.auth import get_user_model
 from django.views.generic import DetailView, FormView
 from django.shortcuts import redirect
 from django.urls import reverse, reverse_lazy
-from ..models import Content, Comment, Category, Bookmark, Release
-from ..forms import CommentForm
+from fanlore.models import Content, Comment, Category, Bookmark, Release
+from fanlore.forms import CommentForm
 
 class ContentDetailView(DetailView, FormView):
     model = Content
