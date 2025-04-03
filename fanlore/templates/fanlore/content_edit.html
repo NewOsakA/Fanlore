@@ -96,11 +96,14 @@
 
                 <!-- Cover Image Field -->
                 <div class="mb-3">
-                    <label for="{{ form.topic_img.id_for_label }}" class="form-label">Cover Image</label>
                     {% if content.topic_img %}
                         <div class="mb-2">
                             <p>Current Cover Image:</p>
-                            <img src="{{ content.topic_img.url }}" alt="Current Cover" class="img-thumbnail file-preview">
+                            <div class="cover-image-container" style="width: 300px; height: 200px; overflow: hidden; border-radius: 8px; border: 1px solid #ddd;">
+                                <img src="{{ content.topic_img.url }}"
+                                     alt="Current Cover"
+                                     style="width: 100%; height: 100%; object-fit: cover;">
+                            </div>
                         </div>
                     {% endif %}
                     {{ form.topic_img }}
@@ -108,7 +111,6 @@
 
                 <!-- File Uploads -->
                 <div class="mb-3">
-                    <label class="form-label">Files</label>
 
                     <!-- Existing Files -->
                     {% if content.attached_files.exists %}

@@ -2,7 +2,7 @@ from django.contrib.auth import get_user_model
 from django.views.generic import DetailView, FormView
 from django.shortcuts import redirect
 from django.urls import reverse, reverse_lazy
-from ..models import Content, Comment, Category, Bookmark  # Import Bookmark model
+from ..models import Content, Comment, Category, Bookmark, Release
 from ..forms import CommentForm
 
 class ContentDetailView(DetailView, FormView):
@@ -18,6 +18,7 @@ class ContentDetailView(DetailView, FormView):
         context["categories"] = Category.choices
         context["comments"] = Comment.objects.filter(
             content=self.object).order_by("-comment_at")
+        context["releases"] = self.object.releases.all()
 
         # Check if the user is authenticated before checking bookmarks
         context["is_bookmarked"] = False
@@ -31,6 +32,14 @@ class ContentDetailView(DetailView, FormView):
             user = get_user_model().objects.filter(
                 username=comment.commentator_name).first()
             comment.user_profile_image = user.profile_image.url if user and user.profile_image else 'default-avatar-url.jpg'
+
+        # Fetch the releases related to the content
+        context["releases"] = Release.objects.filter(content=self.object).order_by('-create_at')
+
+        # Include release-related information such as updated_by user
+        for release in context["releases"]:
+            release.updated_by_display_name = release.updated_by.username if release.updated_by else "Unknown"
+            release.updated_by_profile_img = release.updated_by.profile_image.url if release.updated_by and release.updated_by.profile_image else 'default-avatar-url.jpg'
 
         return context
 

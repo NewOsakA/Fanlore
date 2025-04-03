@@ -33,9 +33,13 @@ urlpatterns = [
          name="profile_edit"),
     path('profile/bookmarks/', views.BookmarkedPostsView.as_view(),
          name='bookmarked_post'),
+
+    # Content
     path('content_edit/<uuid:pk>/', views.ContentUpdateView.as_view(),
          name='content_edit'),
     path('upload/', views.ContentUploadView.as_view(), name='upload_content'),
+    path("content/<uuid:content_id>/add_release/", views.ReleaseCreateView.as_view(),
+         name="add_release"),
     path('post/<uuid:pk>/', views.ContentDetailView.as_view(),
          name='view_post'),
     path('delete_content/<uuid:content_id>/',

@@ -140,6 +140,21 @@
                         {% endif %}
                     {% endif %}
                 {% endif %}
+
+                <!-- Edit Button -->
+                {% if user == content.creator or user in content.collaborators.all %}
+                    <div class="text-end mb-4">
+                        <a href="{% url 'content_edit' content.id %}" class="btn btn-outline-secondary">✏️ Edit Content</a>
+                    </div>
+                {% endif %}
+
+                <!-- Add Release Button -->
+                {% if user == content.creator or user in content.collaborators.all %}
+                    <div class="text-end mb-4">
+                        <a href="{% url 'add_release' content.id %}" class="btn btn-outline-primary">📥 Add Release</a>
+                    </div>
+                {% endif %}
+
             </div>
         </div>
 
@@ -206,10 +221,61 @@
             {% endif %}
         </div>
 
-        <!-- Edit Button -->
-        {% if user == content.collaborator or user in content.collaborators.all %}
-            <div class="text-end mb-4">
-                <a href="{% url 'content_edit' content.id %}" class="btn btn-outline-secondary">✏️ Edit Content</a>
+        <!-- Release Information -->
+        {% if content.releases %}
+            <div class="mb-5 release-info">
+                <h3>📢 Latest Release</h3>
+                {% for release in content.releases.all %}
+                    <div class="release-item mb-4">
+                        <div class="d-flex align-items-center mb-3">
+                            <img src="{{ release.updated_by.profile_image.url|default:'default-avatar-url.jpg' }}"
+                                 class="rounded-circle me-2" width="40" height="40" alt="User Profile">
+                            <div>
+                                <div class="fw-semibold">
+                                    {% if release.updated_by %}
+                                        <a href="{% url 'friend-profile' release.updated_by.id %}" class="text-decoration-none text-dark">
+                                            {{ release.updated_by.display_name }}
+                                        </a>
+                                    {% else %}
+                                        <span class="text-muted">Unknown User</span>
+                                    {% endif %}
+                                </div>
+                                <div class="text-muted small">{{ release.create_at|date:"F j, Y" }}</div>
+                                <div class="text-muted small">{{ release.time_since_release }}</div>
+                            </div>
+                        </div>
+                        <h4>{{ release.title }}</h4>
+                        <p>{{ release.description }}</p>
+
+                        <!-- Release Files -->
+                        {% if release.release_files.all %}
+                            <div class="row g-3">
+                                {% for file in release.release_files.all %}
+                                    <div class="col-md-6 col-lg-4">
+                                        <div class="card file-card h-100">
+                                            <div class="card-body d-flex align-items-center">
+                                                <i class="fas fa-file fa-2x me-3 text-primary"></i>
+                                                <div class="file-url text-truncate">
+                                                    <a href="{{ file.file.url }}" target="_blank" class="stretched-link text-decoration-none">
+                                                        {% with file_url=file.file.url %}
+                                                            {% if file_url|length > 30 %}
+                                                                {{ file_url|slice:":30" }}...
+                                                            {% else %}
+                                                                {{ file_url }}
+                                                            {% endif %}
+                                                        {% endwith %}
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            <p>No files attached to this release.</p>
+                        {% endif %}
+                    </div>
+                {% endfor %}
             </div>
         {% endif %}
 
@@ -302,6 +368,7 @@
     </div>
   </div>
 </div>
+
 <!-- Bookmark Script & Like -->
 <script>
 document.addEventListener("DOMContentLoaded", function () {

@@ -2,9 +2,8 @@ import os
 import cloudinary.uploader
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.shortcuts import render, get_object_or_404, redirect
-from django.urls import reverse_lazy
 from django.views import View
-from fanlore.models import Content, ContentFile, Tag
+from fanlore.models import Content, ContentFile
 from fanlore.forms import ContentUpdateForm
 
 

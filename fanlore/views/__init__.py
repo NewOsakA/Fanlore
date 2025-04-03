@@ -16,6 +16,7 @@ from .check_tag_existence import check_tag_existence
 from .like_content_view import LikeContentView
 from .report_cotent_view import ReportContentView
 from .follower_view import FollowUserView, UnfollowUserView
+from .add_release_view import ReleaseCreateView
 
 from .event import *
 from .friend import *

@@ -1,41 +1,29 @@
 import uuid
-import cloudinary.models
-from django.utils import timezone
+
 from django.conf import settings
 from django.db import models
-from markdownfield.models import MarkdownField, RenderedMarkdownField
+from markdownfield.models import RenderedMarkdownField, MarkdownField
 from markdownfield.validators import VALIDATOR_STANDARD
+from django.utils import timezone
 
-from .tag import Tag
-from .category import Category
+from fanlore.models import Content
 
 
-class Content(models.Model):
+class Release(models.Model):
     id = models.UUIDField(default=uuid.uuid4, editable=False, unique=True, primary_key=True)
     title = models.CharField(max_length=255)
+    content = models.ForeignKey(
+        Content, related_name="releases", on_delete=models.CASCADE
+    )
     description = MarkdownField(rendered_field='description_rendered',
                                 validator=VALIDATOR_STANDARD)
     description_rendered = RenderedMarkdownField()
-    topic_img = cloudinary.models.CloudinaryField(
-        "image",
-        folder="content_images/",
-        blank=True,
-        null=True
+    create_at = models.DateTimeField(default=timezone.now)
+    updated_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE
     )
-    creator = models.ForeignKey(settings.AUTH_USER_MODEL,
-                                on_delete=models.CASCADE,
-                                null=True,
-                                blank=True,
-                                related_name="created_contents")
-    collaborators = models.ManyToManyField(settings.AUTH_USER_MODEL,
-                                           related_name="collaborations",
-                                           blank=True)
-    vote = models.IntegerField(default=0)
-    category = models.IntegerField(choices=Category.choices, default=Category.GENERIC)
-    tags = models.ManyToManyField(Tag, related_name="posts", blank=True)
-    create_at = models.DateTimeField(default=timezone.now, null=True)
 
-    def time_since_creation(self):
+    def time_since_release(self):
         now = timezone.now()
         diff = now - self.create_at
         total_seconds = diff.total_seconds()
@@ -59,4 +47,4 @@ class Content(models.Model):
         return "Just now"
 
     def __str__(self):
-        return self.title
+        return f"Release for {self.content.title} by {self.updated_by.username}"
