@@ -31,11 +31,15 @@ class ProfileView(LoginRequiredMixin, TemplateView):
         is_friend = user in self.request.user.friends.all()
         sent_request = FriendRequest.objects.filter(from_user=self.request.user, to_user=user).first()
 
+        # Check following status
+        is_following = self.request.user.following.filter(pk=user.pk).exists()
+
         # Add to context
         context.update({
             "user": user,
             "is_own_profile": is_own_profile,
             "is_friend": is_friend,
+            "is_following": is_following,
             "has_sent_request": sent_request,
             "content_list": Content.objects.filter(
                 Q(creator=user) | Q(collaborators=user)).distinct().order_by("-create_at"),

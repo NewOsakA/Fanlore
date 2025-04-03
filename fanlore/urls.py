@@ -72,5 +72,6 @@ urlpatterns = [
          name="event-delete"),
     path('report/<uuid:pk>/', views.ReportContentView.as_view(),
          name='report-content'),
-
+    path('user/<int:user_id>/follow/', views.FollowUserView.as_view(), name='follow-user'),
+    path('user/<int:user_id>/unfollow/', views.UnfollowUserView.as_view(), name='unfollow-user'),
 ]

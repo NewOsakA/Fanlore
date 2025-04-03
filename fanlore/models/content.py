@@ -24,6 +24,8 @@ class Content(models.Model):
     )
     creator = models.ForeignKey(settings.AUTH_USER_MODEL,
                                 on_delete=models.CASCADE,
+                                null=True,
+                                blank=True,
                                 related_name="created_contents")
     collaborators = models.ManyToManyField(settings.AUTH_USER_MODEL,
                                            related_name="collaborations",

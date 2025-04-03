@@ -65,6 +65,14 @@
         transform: scale(1.1);
         box-shadow: 0 0 10px rgba(255, 215, 0, 0.6); /* gold-ish glow */
     }
+     .follower-item {
+    border-radius: 12px;
+    transition: background-color 0.2s ease;
+  }
+
+  .follower-item:hover {
+    background-color: #f1f3f5;
+  }
 
 </style>
 
@@ -100,44 +108,128 @@
                 <!-- Name + Username -->
                 <div class="mt-0 pt-0 mt-md-5 pt-md-4">
                     <h3 class="fw-bold mb-1">{{ user.display_name }}</h3>
-                    <p class="text-muted mb-0" style="font-size: 0.95rem;">@{{ user.username }}</p>
+                    <p class="text-muted mb-0" style="font-size: 0.95rem;">
+                        @{{ user.username }}
+                        • <a class="text-decoration-none text-muted" href="#" data-bs-toggle="modal" data-bs-target="#followersModal">{{ user.followers.count }} followers</a>
+                        • <a class="text-decoration-none text-muted" href="#" data-bs-toggle="modal" data-bs-target="#followingModal">{{ user.following.count }} following</a>
+                    </p>
                 </div>
             </div>
+
+            <!-- Followers Modal -->
+            <div class="modal fade mt-5" id="followersModal" tabindex="-1" aria-labelledby="followersModalLabel" aria-hidden="true">
+              <div class="modal-dialog modal-dialog-scrollable">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="followersModalLabel">Followers <span class="text-muted">({{ user.followers.count }})</span></h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  </div>
+                  <div class="modal-body">
+                    {% if user.followers.all %}
+                      <ul class="px-0">
+                        {% for follower in user.followers.all %}
+                          <a href="{% url 'friend-profile' user_id=follower.id %}" class="text-decoration-none text-dark">
+                              <li class="follower-item d-flex align-items-center gap-2 px-3 py-2 mb-1">
+                                  <img src="{% if follower.profile_image %}{{ follower.profile_image.url }}{% else %}{% static 'fanlore/images/user-circle.png' %}{% endif %}"
+                                       class="rounded-circle" width="45" height="45" style="object-fit: cover;">
+                                  <div>
+                                    <div class="fw-semibold">{{ follower.display_name|default:follower.username }}</div>
+                                    <div class="text-muted" style="font-size: 0.85rem;">@{{ follower.username }}</div>
+                                  </div>
+                              </li>
+                          </a>
+                        {% endfor %}
+                      </ul>
+                    {% else %}
+                      <p class="text-muted">No followers yet.</p>
+                    {% endif %}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Following Modal -->
+            <div class="modal fade mt-5" id="followingModal" tabindex="-1" aria-labelledby="followingModalLabel" aria-hidden="true">
+              <div class="modal-dialog modal-dialog-scrollable">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="followingModalLabel">Following <span class="text-muted">({{ user.following.count }})</span></h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  </div>
+                  <div class="modal-body">
+                    {% if user.following.all %}
+                      <ul class="px-0">
+                        {% for followee in user.following.all %}
+                          <a href="{% url 'friend-profile' user_id=followee.id %}" class="text-decoration-none text-dark">
+                              <li class="follower-item d-flex align-items-center gap-2 px-3 py-1 mb-2">
+                                <img src="{% if followee.profile_image %}{{ followee.profile_image.url }}{% else %}{% static 'fanlore/images/user-circle.png' %}{% endif %}"
+                                     class="rounded-circle" width="45" height="45" style="object-fit: cover;">
+                                <div>
+                                  <div class="fw-semibold">{{ followee.display_name|default:followee.username }}</div>
+                                  <div class="text-muted" style="font-size: 0.85rem;">@{{ followee.username }}</div>
+                                </div>
+                              </li>
+                          </a>
+
+                        {% endfor %}
+                      </ul>
+                    {% else %}
+                      <p class="text-muted">Not following anyone yet.</p>
+                    {% endif %}
+                  </div>
+                </div>
+              </div>
+            </div>
+
 
             <!-- Right side: Button -->
             <div class="text-center text-md-end mt-0 pt-0 mt-md-5 pt-md-5">
                 {% if is_own_profile %}
                     <a href="{% url 'profile_edit' %}" class="btn btn-dark mt-2 mt-md-0">Edit Profile</a>
                 {% else %}
-                    {% if is_friend %}
-                        <div class="dropdown">
-                            <button class="btn btn-light border dropdown-toggle d-flex align-items-center gap-2"
-                                    type="button"
-                                    id="friendDropdown"
-                                    data-bs-toggle="dropdown"
-                                    aria-expanded="false">
-                                <i class="fas fa-user-check"></i> Friend
-                            </button>
-                            <ul class="dropdown-menu" aria-labelledby="friendDropdown">
-                                <li>
-                                    <form method="post" action="{% url 'remove-friend' user.id %}">
-                                        {% csrf_token %}
-                                        <button type="submit" class="dropdown-item text-danger">Remove Friend</button>
-                                    </form>
-                                </li>
-                            </ul>
-                        </div>
-                    {% elif has_sent_request %}
-                        <form method="post" action="{% url 'cancel-friend-request' has_sent_request.pk %}">
-                            {% csrf_token %}
-                            <button type="submit" class="btn btn-outline-danger">Cancel Request</button>
-                        </form>
-                    {% else %}
-                        <form method="post" action="{% url 'add-friend' user.id %}">
-                            {% csrf_token %}
-                            <button type="submit" class="btn btn-success">Add Friend</button>
-                        </form>
-                    {% endif %}
+                    <div class="d-flex justify-content-center justify-content-md-end gap-2">
+                        {% if is_following %}
+                            <form method="post" action="{% url 'unfollow-user' user.id %}">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-outline-danger">Unfollow</button>
+                            </form>
+                        {% else %}
+                            <form method="post" action="{% url 'follow-user' user.id %}">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-primary">Follow</button>
+                            </form>
+                        {% endif %}
+
+                        {% if is_friend %}
+                            <div class="dropdown">
+                                <button class="btn btn-light border dropdown-toggle d-flex align-items-center gap-2"
+                                        type="button"
+                                        id="friendDropdown"
+                                        data-bs-toggle="dropdown"
+                                        aria-expanded="false">
+                                    <i class="fas fa-user-check"></i> Friend
+                                </button>
+                                <ul class="dropdown-menu" aria-labelledby="friendDropdown">
+                                    <li>
+                                        <form method="post" action="{% url 'remove-friend' user.id %}">
+                                            {% csrf_token %}
+                                            <button type="submit" class="dropdown-item text-danger">Remove Friend</button>
+                                        </form>
+                                    </li>
+                                </ul>
+                            </div>
+                        {% elif has_sent_request %}
+                            <form method="post" action="{% url 'cancel-friend-request' has_sent_request.pk %}">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-outline-danger">Cancel Request</button>
+                            </form>
+                        {% else %}
+                            <form method="post" action="{% url 'add-friend' user.id %}">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-success">Add Friend</button>
+                            </form>
+                        {% endif %}
+                    </div>
                 {% endif %}
             </div>
         </div>
