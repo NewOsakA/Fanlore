@@ -244,6 +244,16 @@
                                 <div class="text-muted small">{{ release.time_since_release }}</div>
                             </div>
                         </div>
+                        {% if user == content.creator or user in content.collaborators.all %}
+                            <div>
+                                <a href="{% url 'release_edit' release.pk %}" class="btn btn-outline-secondary btn-sm me-2">
+                                    📝 Edit
+                                </a>
+                                <button class="btn btn-outline-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteReleaseModal{{ release.id }}">
+                                    🗑️ Delete
+                                </button>
+                            </div>
+                        {% endif %}
                         <h4>{{ release.title }}</h4>
                         <p>{{ release.description }}</p>
 
@@ -273,21 +283,6 @@
                             </div>
                         {% else %}
                             <p>No files attached to this release.</p>
-                        {% endif %}
-
-                        {% if user == content.creator or user in content.collaborators.all %}
-                            <!-- Delete Button -->
-                            <div class="text-end mb-4">
-                                <button class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteReleaseModal{{ release.id }}">
-                                    🗑️ Delete Release
-                                </button>
-                            </div>
-                            <!-- Edit Button -->
-                            <div class="text-end mb-4">
-                                <a href="{% url 'release_edit' release.pk %}" class="btn btn-outline-secondary">
-                                    📝 Edit Release
-                                </a>
-                            </div>
                         {% endif %}
 
                     </div>

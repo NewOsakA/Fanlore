@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 class ContentUploadView(LoginRequiredMixin, CreateView):
     model = Content
     form_class = ContentUploadForm
-    template_name = 'fanlore/upload_content.html'
+    template_name = 'fanlore/content_upload.html'
     success_url = reverse_lazy('content_list')
     login_url = '/signin'
 
