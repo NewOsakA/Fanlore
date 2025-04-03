@@ -6,12 +6,20 @@ from datetime import datetime, time
 
 
 class EventListView(ListView):
+    """
+    Displays a list of all events.
+    Supports optional filtering by start and end date range.
+    """
     model = Event
     template_name = "fanlore/event_list.html"
     context_object_name = "events"
     ordering = ['-created_at']
 
     def get_queryset(self):
+        """
+        Option for filter events by a start and end date range.
+        Filters events whose submission period falls within the range.
+        """
         queryset = Event.objects.all()
 
         start_date_str = self.request.GET.get("start_date")
@@ -22,7 +30,6 @@ class EventListView(ListView):
             end_date = parse_date(end_date_str)
 
             if start_date and end_date:
-                # Start at 00:00:00 and End at 23:59:59
                 start_datetime = timezone.make_aware(
                     datetime.combine(start_date, time.min))
                 end_datetime = timezone.make_aware(
@@ -36,6 +43,9 @@ class EventListView(ListView):
         return queryset
 
     def get_context_data(self, **kwargs):
+        """
+        Add current time to the template context.
+        """
         context = super().get_context_data(**kwargs)
         context["now"] = timezone.now()
         return context

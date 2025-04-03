@@ -5,6 +5,14 @@ from fanlore.forms.event_submission_form import EventSubmissionForm
 
 
 class EventDetailView(DetailView):
+    """
+    Display the details of a specific event, including:
+    - Whether the event is open
+    - If the current user can submit
+    - The user’s existing submission (if any)
+    - Submissions
+    - Achievements
+    """
     model = Event
     template_name = "fanlore/event_detail.html"
     context_object_name = "event"
@@ -30,15 +38,12 @@ class EventDetailView(DetailView):
         submissions = event.submissions.all() if show_submissions else []
 
         submission_form = None
-        # views/event_detail_view.py
 
         if can_submit and user.is_authenticated:
             if user_submission:
-                # Pass instance to pre-fill the form for editing
                 submission_form = EventSubmissionForm(instance=user_submission,
                                                       event=event)
             else:
-                # New submission
                 submission_form = EventSubmissionForm(event=event)
 
         achievements = Achievement.objects.filter(event=event)
@@ -56,9 +61,3 @@ class EventDetailView(DetailView):
             "achievements": achievements,
         })
         return context
-
-    def form_valid(self, form):
-        form.instance.creator = self.request.user
-        show_sub = form.cleaned_data.get('show_submissions', False)
-        form.instance.show_submissions = show_sub
-        return super().form_valid(form)
