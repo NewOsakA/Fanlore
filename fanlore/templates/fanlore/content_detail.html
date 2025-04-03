@@ -155,34 +155,6 @@
                     </div>
                 {% endif %}
 
-                <!-- Edit Button -->
-                {% if user == content.creator or user in content.collaborators.all %}
-                    <div class="text-end mb-4">
-                        <a href="{% url 'content_edit' content.id %}" class="btn btn-outline-secondary">✏️ Edit Content</a>
-                    </div>
-                {% endif %}
-
-                <!-- Add Release Button -->
-                {% if user == content.creator or user in content.collaborators.all %}
-                    <div class="text-end mb-4">
-                        <a href="{% url 'add_release' content.id %}" class="btn btn-outline-primary">📥 Add Release</a>
-                    </div>
-                {% endif %}
-
-                <!-- Edit Button -->
-                {% if user == content.creator or user in content.collaborators.all %}
-                    <div class="text-end mb-4">
-                        <a href="{% url 'content_edit' content.id %}" class="btn btn-outline-secondary">✏️ Edit Content</a>
-                    </div>
-                {% endif %}
-
-                <!-- Add Release Button -->
-                {% if user == content.creator or user in content.collaborators.all %}
-                    <div class="text-end mb-4">
-                        <a href="{% url 'add_release' content.id %}" class="btn btn-outline-primary">📥 Add Release</a>
-                    </div>
-                {% endif %}
-
             </div>
         </div>
 
