@@ -6,7 +6,7 @@ class CategoryContentListView(ListView):
     model = Content
     template_name = "fanlore/category_contents.html"
     context_object_name = "content_list"
-    paginate_by = 5
+    paginate_by = 10
 
     def get_queryset(self):
         category_id = self.kwargs.get("category_id")

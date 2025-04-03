@@ -7,6 +7,8 @@ from .models import User, Tag, UserAchievement, Achievement, Content, Report
 
 class CustomUserAdmin(UserAdmin):
     model = User
+
+    # Additional fields for user detail/edit pages
     fieldsets = UserAdmin.fieldsets + (
         ("Additional Info", {
             "fields": (
@@ -18,6 +20,8 @@ class CustomUserAdmin(UserAdmin):
             )
         }),
     )
+
+    # Additional fields for user creation form
     add_fieldsets = UserAdmin.add_fieldsets + (
         ("Additional Info", {
             "fields": (
@@ -29,6 +33,7 @@ class CustomUserAdmin(UserAdmin):
             )
         }),
     )
+
     list_display = (
         "username",
         "email",
@@ -37,9 +42,13 @@ class CustomUserAdmin(UserAdmin):
         "bio",
         "profile_image_preview",
     )
+
     search_fields = ("username", "email", "bio")
 
     def profile_image_preview(self, obj):
+        """
+        Show a circular preview of the user's profile image in the admin list.
+        """
         if obj.profile_image and obj.profile_image.url:
             return mark_safe(
                 f'<img src="{obj.profile_image.url}" width="50" height="50" '
@@ -61,20 +70,23 @@ class TagAdmin(admin.ModelAdmin):
 
 @admin.register(Content)
 class ContentAdmin(admin.ModelAdmin):
-    list_display = ("title", "description", "topic_img", "creator",
-                    "display_collaborators", "vote", "category",
-                    "display_tags", "create_at")
+    list_display = (
+        "title", "description", "topic_img", "creator",
+        "display_collaborators", "vote", "category",
+        "display_tags", "create_at"
+    )
     search_fields = ("title", "creator__display_name")
     ordering = ("-create_at",)
 
     def display_tags(self, obj):
         return ", ".join(tag.name for tag in obj.tags.all())
 
+    display_tags.short_description = "Tags"
+
     def display_collaborators(self, obj):
         return ", ".join(user.username for user in obj.collaborators.all())
 
     display_collaborators.short_description = "Collaborators"
-    display_tags.short_description = "Tags"
 
 
 @admin.register(Achievement)
@@ -92,22 +104,23 @@ class UserAchievementAdmin(admin.ModelAdmin):
 
 @admin.register(Report)
 class ReportAdmin(admin.ModelAdmin):
-    list_display = ("content", "content_creator", "topic",
-                    "reported_by", "reported_date")
-    readonly_fields = ("content", "content_creator", "topic",
-                       "reason", "reported_by", "reported_date")
+    list_display = (
+    "content", "content_creator", "topic", "reported_by", "reported_date")
+    readonly_fields = (
+    "content", "content_creator", "topic", "reason", "reported_by",
+    "reported_date")
+
     fieldsets = (
         (None, {
-            "fields": ("content", "content_creator", "topic",
-                       "reason", "reported_by", "reported_date")
+            "fields": (
+            "content", "content_creator", "topic", "reason", "reported_by",
+            "reported_date")
         }),
     )
 
     def content_creator(self, obj):
-        if obj.content:
-            return obj.content.creator.username
-        else:
-            return "Unknown"
+        return obj.content.creator.username if obj.content else "Unknown"
+
     content_creator.short_description = "Content Creator"
 
     def has_add_permission(self, request):
@@ -120,5 +133,5 @@ class ReportAdmin(admin.ModelAdmin):
         return True
 
 
-# Register custom UserAdmin
+# Register the customized User admin
 admin.site.register(User, CustomUserAdmin)

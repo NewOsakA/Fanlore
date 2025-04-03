@@ -16,6 +16,7 @@ class Content(models.Model):
                           unique=True,
                           primary_key=True)
     title = models.CharField(max_length=255)
+    short_description = models.CharField(max_length=300, blank=True)
     description = MarkdownField(rendered_field='description_rendered',
                                 validator=VALIDATOR_STANDARD)
     description_rendered = RenderedMarkdownField()

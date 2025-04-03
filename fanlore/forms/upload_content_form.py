@@ -1,6 +1,7 @@
 from django import forms
-from pagedown.widgets import PagedownWidget
 from django.contrib.auth import get_user_model
+from pagedown.widgets import PagedownWidget
+
 from ..models import Content, Tag, Category
 
 User = get_user_model()
@@ -28,6 +29,15 @@ class MultipleFileField(forms.FileField):
 
 class ContentUploadForm(forms.ModelForm):
     content_files = MultipleFileField(label='Upload Files', required=False)
+    short_description = forms.CharField(
+        required=False,
+        help_text="A brief summary of your content.",
+        widget=forms.Textarea(attrs={
+            'rows': 2,
+            'placeholder': 'Enter a short summary (optional)'
+        }),
+        max_length=300
+    )
     description = forms.CharField(widget=PagedownWidget())
 
     # tags is manually handled, not part of model field binding
@@ -54,8 +64,8 @@ class ContentUploadForm(forms.ModelForm):
 
     class Meta:
         model = Content
-        fields = ['title', 'description', 'topic_img', 'category',
-                  'collaborators']
+        fields = ['title', 'short_description', 'description', 'topic_img',
+                  'category', 'collaborators']
 
     def __init__(self, *args, **kwargs):
         current_user = kwargs.pop('user', None)

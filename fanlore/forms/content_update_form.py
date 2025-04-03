@@ -1,5 +1,6 @@
 from django import forms
 from pagedown.widgets import PagedownWidget
+
 from fanlore.models import Content, User, Category, Tag
 
 
@@ -22,6 +23,15 @@ class MultipleFileField(forms.FileField):
 
 class ContentUpdateForm(forms.ModelForm):
     content_files = MultipleFileField(label='Upload Files', required=False)
+    short_description = forms.CharField(
+        required=False,
+        help_text="A brief summary of your content.",
+        widget=forms.Textarea(attrs={
+            'rows': 2,
+            'placeholder': 'Enter a short summary (optional)'
+        }),
+        max_length=300
+    )
     description = forms.CharField(widget=PagedownWidget())
     tags = forms.CharField(
         required=False,
@@ -51,8 +61,8 @@ class ContentUpdateForm(forms.ModelForm):
 
     class Meta:
         model = Content
-        fields = ['title', 'description', 'topic_img', 'category', 'tags',
-                  'collaborators']
+        fields = ['title', 'short_description', 'description', 'topic_img',
+                  'category', 'tags', 'collaborators']
 
     def __init__(self, *args, **kwargs):
         self.user = kwargs.pop('user', None)

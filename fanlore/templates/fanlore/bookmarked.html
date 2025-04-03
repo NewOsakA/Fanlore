@@ -14,7 +14,7 @@
                                 <div class="col-md-8">
                                     <div class="card-body">
                                         <h5 class="card-title">{{ content.title }}</h5>
-                                        <p class="card-text">{{ content.description|truncatewords:20 }}</p>
+                                        <p class="card-text">{{ content.short_description|default:"No summary provided." }}</p>
                                         <p class="text-muted">
                                             <i class="bi bi-clock"></i> {{ content.time_since_creation }} |
                                             <i class="bi bi-hand-thumbs-up"></i> {{ content.vote }} votes
