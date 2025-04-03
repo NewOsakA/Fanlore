@@ -110,14 +110,19 @@
 
             <!-- Right: Like & Bookmark -->
             <div class="d-flex align-items-start gap-2 mt-2 mt-md-0">
-                <button id="like-button"
-                        class="btn btn-outline-success d-flex align-items-center vote-button {% if is_liked %}btn-success text-white{% endif %}"
-                        data-content-id="{{ content.id }}"
-                        data-liked="{{ is_liked|yesno:"true,false" }}">
-                    <i class="fas fa-thumbs-up me-1"></i>
-                    <span id="like-count">{{ content.vote }}</span>
-                </button>
-
+                {% if user.is_authenticated %}
+                    {% if user != content.collaborator %}
+                        {% if not user in content.collaborators.all %}
+                            <button id="like-button"
+                                    class="btn btn-outline-success d-flex align-items-center vote-button {% if is_liked %}btn-success text-white{% endif %}"
+                                    data-content-id="{{ content.id }}"
+                                    data-liked="{{ is_liked|yesno:"true,false" }}">
+                                <i class="fas fa-thumbs-up me-1"></i>
+                                <span id="like-count">{{ content.vote }}</span>
+                            </button>
+                        {% endif %}
+                    {% endif %}
+                {% endif %}
                 {% if user.is_authenticated %}
                     <button id="bookmark-toggle" class="btn btn-outline-primary" data-content-id="{{ content.id }}">
                         <i id="bookmark-icon"
@@ -126,13 +131,15 @@
                     </button>
                 {% endif %}
 
-
                 {% if user.is_authenticated %}
-                    <button class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#reportModal">
-                        🚩 Report
-                    </button>
+                    {% if user != content.collaborator %}
+                        {% if not user in content.collaborators.all %}
+                            <button class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#reportModal">
+                                🚩 Report
+                            </button>
+                        {% endif %}
+                    {% endif %}
                 {% endif %}
-
             </div>
         </div>
 
