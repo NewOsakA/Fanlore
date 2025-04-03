@@ -90,7 +90,8 @@ class ContentUpdateForm(forms.ModelForm):
             content.save()
             self.save_m2m()  # Handles tags and collaborators
 
-            # Ensure tags are properly set (in case save_m2m didn't handle them)
+            # Ensure tags are properly set
+            # (in case save_m2m didn't handle them)
             if 'tags' in self.cleaned_data:
                 content.tags.set(self.cleaned_data['tags'])
 

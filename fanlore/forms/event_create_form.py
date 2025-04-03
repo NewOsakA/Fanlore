@@ -15,13 +15,19 @@ class EventCreateForm(forms.ModelForm):
     class Meta:
         model = Event
         fields = ['title', 'short_description', 'banner_image', 'description',
-                  'submission_start', 'submission_end', 'allow_text', 'allow_file', 'show_submissions']
+                  'submission_start', 'submission_end', 'allow_text',
+                  'allow_file', 'show_submissions']
         widgets = {
             'description': PagedownWidget(),
-            'submission_start': forms.DateTimeInput(attrs={'type': 'datetime-local', 'class': 'form-control'}),
-            'submission_end': forms.DateTimeInput(attrs={'type': 'datetime-local', 'class': 'form-control'}),
+            'submission_start': forms.DateTimeInput(attrs={
+                'type': 'datetime-local',
+                'class': 'form-control'}),
+            'submission_end': forms.DateTimeInput(attrs={
+                'type': 'datetime-local',
+                'class': 'form-control'}),
             'title': forms.TextInput(attrs={'class': 'form-control'}),
-            'short_description': forms.TextInput(attrs={'class': 'form-control'}),
+            'short_description': forms.TextInput(attrs={
+                'class': 'form-control'}),
         }
 
     def save(self, commit=True):

@@ -95,10 +95,14 @@ class ContentUploadForm(forms.ModelForm):
             tag_input = self.data.get('tags', '')
             content.tags.clear()
             if tag_input:
-                tag_names = {t.strip() for t in tag_input.split(',') if t.strip()}
+                tag_names = {
+                    t.strip() for t in tag_input.split(',')
+                    if t.strip()
+                }
                 for tag_name in tag_names:
-                    tag_obj, _ = Tag.objects.get_or_create(name=tag_name.title())
+                    tag_obj, _ = Tag.objects.get_or_create(
+                        name=tag_name.title()
+                    )
                     content.tags.add(tag_obj)
             self.save_m2m()
         return content
-

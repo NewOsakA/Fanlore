@@ -3,6 +3,7 @@ from django.urls import reverse_lazy
 from django.views.generic import DeleteView
 from fanlore.models import Release
 
+
 class ReleaseDeleteView(LoginRequiredMixin, DeleteView):
     model = Release
 

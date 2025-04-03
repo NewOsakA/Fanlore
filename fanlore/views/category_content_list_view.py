@@ -10,10 +10,12 @@ class CategoryContentListView(ListView):
 
     def get_queryset(self):
         category_id = self.kwargs.get("category_id")
-        return Content.objects.filter(category=category_id).order_by("-create_at")
+        return Content.objects.filter(
+            category=category_id).order_by("-create_at")
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         category_id = self.kwargs.get("category_id")
-        context["category_name"] = dict(Category.choices).get(int(category_id), "Unknown Category")
+        context["category_name"] = dict(Category.choices).get(
+            int(category_id), "Unknown Category")
         return context

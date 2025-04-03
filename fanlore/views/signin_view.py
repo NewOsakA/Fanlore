@@ -16,5 +16,6 @@ class SignInView(LoginView):
         """Add success message after login"""
         response = super().form_valid(form)
         messages.success(self.request,
-                         f"Successfully signed in! Welcome back, {self.request.user.username}.")
+                         f"Successfully signed in! Welcome back, "
+                         f"{self.request.user.username}.")
         return response

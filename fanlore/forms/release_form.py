@@ -3,6 +3,7 @@ from pagedown.widgets import PagedownWidget
 
 from ..models import Release
 
+
 class MultipleFileInput(forms.ClearableFileInput):
     allow_multiple_selected = True
 

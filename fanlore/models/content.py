@@ -11,7 +11,10 @@ from .category import Category
 
 
 class Content(models.Model):
-    id = models.UUIDField(default=uuid.uuid4, editable=False, unique=True, primary_key=True)
+    id = models.UUIDField(default=uuid.uuid4,
+                          editable=False,
+                          unique=True,
+                          primary_key=True)
     title = models.CharField(max_length=255)
     description = MarkdownField(rendered_field='description_rendered',
                                 validator=VALIDATOR_STANDARD)
@@ -31,7 +34,8 @@ class Content(models.Model):
                                            related_name="collaborations",
                                            blank=True)
     vote = models.IntegerField(default=0)
-    category = models.IntegerField(choices=Category.choices, default=Category.GENERIC)
+    category = models.IntegerField(choices=Category.choices,
+                                   default=Category.GENERIC)
     tags = models.ManyToManyField(Tag, related_name="posts", blank=True)
     create_at = models.DateTimeField(default=timezone.now, null=True)
 

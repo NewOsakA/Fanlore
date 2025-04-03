@@ -38,7 +38,8 @@ class ContentUpdateView(LoginRequiredMixin, UserPassesTestMixin, View):
         self._handle_file_operations(request, content)
 
         content.save()
-        form.save_m2m()  # Saves many-to-many relationships (including tags from the form)
+        # Saves many-to-many relationships (including tags from the form)
+        form.save_m2m()
 
         return redirect('view_post', pk=content.pk)
 

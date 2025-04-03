@@ -36,6 +36,6 @@ class FriendListView(LoginRequiredMixin, ListView):
                 from_user=self.request.user).values_list("to_user_id",
                                                          flat=True)),
         })
-        context["categories"] = Category.choices  # Pass the categories to the template
+        context["categories"] = Category.choices
 
         return context

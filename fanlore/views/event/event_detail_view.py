@@ -25,14 +25,17 @@ class EventDetailView(DetailView):
 
         is_open = event.is_open()
         can_submit = is_open and (event.allow_text or event.allow_file)
-        has_started = event.submission_start is None or event.submission_start <= now
-        has_ended = event.submission_end is not None and event.submission_end < now
+        has_started = event.submission_start \
+            is None or event.submission_start <= now
+        has_ended = event.submission_end \
+            is not None and event.submission_end < now
         is_creator = user.is_authenticated and user == event.creator
 
         user_submission = None
         if user.is_authenticated:
-            user_submission = EventSubmission.objects.filter(event=event,
-                                                             user=user).first()
+            user_submission = EventSubmission.objects.filter(
+                event=event,
+                user=user).first()
 
         show_submissions = event.show_submissions or is_creator
         submissions = event.submissions.all() if show_submissions else []

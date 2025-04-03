@@ -44,7 +44,8 @@ class CustomUserAdmin(UserAdmin):
             return mark_safe(
                 f'<img src="{obj.profile_image.url}" width="50" height="50" '
                 f'style="border-radius:50%; object-fit: cover;" '
-                f'onerror="this.onerror=null; this.src=\'/static/fanlore/images/user-circle.png\'" />'
+                f'onerror="this.onerror=null; '
+                f'this.src=\'/static/fanlore/images/user-circle.png\'" />'
             )
         return "No Image"
 
@@ -60,8 +61,9 @@ class TagAdmin(admin.ModelAdmin):
 
 @admin.register(Content)
 class ContentAdmin(admin.ModelAdmin):
-    list_display = ("title", "description", "topic_img", "creator", "display_collaborators",
-                    "vote", "category", "display_tags", "create_at")
+    list_display = ("title", "description", "topic_img", "creator",
+                    "display_collaborators", "vote", "category",
+                    "display_tags", "create_at")
     search_fields = ("title", "creator__display_name")
     ordering = ("-create_at",)
 
@@ -90,16 +92,22 @@ class UserAchievementAdmin(admin.ModelAdmin):
 
 @admin.register(Report)
 class ReportAdmin(admin.ModelAdmin):
-    list_display = ("content", "content_creator", "topic", "reported_by", "reported_date")
-    readonly_fields = ("content", "content_creator", "topic", "reason", "reported_by", "reported_date")
+    list_display = ("content", "content_creator", "topic",
+                    "reported_by", "reported_date")
+    readonly_fields = ("content", "content_creator", "topic",
+                       "reason", "reported_by", "reported_date")
     fieldsets = (
         (None, {
-            "fields": ("content", "content_creator", "topic", "reason", "reported_by", "reported_date")
+            "fields": ("content", "content_creator", "topic",
+                       "reason", "reported_by", "reported_date")
         }),
     )
 
     def content_creator(self, obj):
-        return obj.content.creator.username if obj.content and obj.content.creator else "Unknown"
+        if obj.content:
+            return obj.content.creator.username
+        else:
+            return "Unknown"
     content_creator.short_description = "Content Creator"
 
     def has_add_permission(self, request):

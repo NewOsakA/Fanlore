@@ -6,10 +6,11 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic.edit import FormView
 import cloudinary.uploader
 
-from fanlore.models import Content, Release, ReleaseFile  # Ensure ReleaseFile is imported
+from fanlore.models import Content, Release, ReleaseFile
 from fanlore.forms import ReleaseForm
 
 logger = logging.getLogger(__name__)
+
 
 class ReleaseCreateView(LoginRequiredMixin, FormView):
     template_name = "fanlore/add_release.html"
@@ -20,7 +21,8 @@ class ReleaseCreateView(LoginRequiredMixin, FormView):
         """Ensure only creators or collaborators can access this view"""
         self.content = get_object_or_404(Content, pk=self.kwargs['content_id'])
 
-        if request.user != self.content.creator and request.user not in self.content.collaborators.all():
+        if request.user != self.content.creator and request.user \
+                not in self.content.collaborators.all():
             return redirect("view_post", pk=self.content.id)
 
         return super().dispatch(request, *args, **kwargs)

@@ -5,6 +5,7 @@ from django.urls import reverse, reverse_lazy
 from fanlore.models import Content, Comment, Category, Bookmark, Release
 from fanlore.forms import CommentForm
 
+
 class ContentDetailView(DetailView, FormView):
     model = Content
     template_name = 'fanlore/content_detail.html'
@@ -31,15 +32,23 @@ class ContentDetailView(DetailView, FormView):
         for comment in comments:
             user = get_user_model().objects.filter(
                 username=comment.commentator_name).first()
-            comment.user_profile_image = user.profile_image.url if user and user.profile_image else 'default-avatar-url.jpg'
+            if user and user.profile_image:
+                comment.user_profile_image = user.profile_image.url
+            else:
+                comment.user_profile_image = 'default-avatar-url.jpg'
 
         # Fetch the releases related to the content
-        context["releases"] = Release.objects.filter(content=self.object).order_by('-create_at')
+        context["releases"] = Release.objects.filter(
+            content=self.object).order_by('-create_at')
 
         # Include release-related information such as updated_by user
-        for release in context["releases"]:
-            release.updated_by_display_name = release.updated_by.username if release.updated_by else "Unknown"
-            release.updated_by_profile_img = release.updated_by.profile_image.url if release.updated_by and release.updated_by.profile_image else 'default-avatar-url.jpg'
+        for r in context["releases"]:
+            r.updated_by_display_name = r.updated_by.username \
+                if r.updated_by \
+                else "Unknown"
+            r.updated_by_profile_img = r.updated_by.profile_image.url \
+                if r.updated_by and r.updated_by.profile_image \
+                else 'default-avatar-url.jpg'
 
         return context
 
@@ -49,7 +58,7 @@ class ContentDetailView(DetailView, FormView):
 
         if form.is_valid():
             comment = form.save(commit=False)
-            comment.commentator_name = request.user.username  # Auto-assign username
+            comment.commentator_name = request.user.username
             comment.content = self.object  # Link to the content
             comment.save()
             return redirect(

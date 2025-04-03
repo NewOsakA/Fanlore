@@ -26,7 +26,8 @@ class ProfileEditView(LoginRequiredMixin, UpdateView):
             update_session_auth_hash(self.request, user)
 
         user.save()
-        messages.success(self.request, "Your profile has been updated successfully.")
+        messages.success(self.request,
+                         "Your profile has been updated successfully.")
         return redirect(self.success_url)
 
     def form_invalid(self, form):
@@ -39,5 +40,5 @@ class ProfileEditView(LoginRequiredMixin, UpdateView):
         Add categories to the context data to pass them into the template.
         """
         context = super().get_context_data(**kwargs)
-        context["categories"] = Category.choices  # Pass the categories to the template
+        context["categories"] = Category.choices
         return context

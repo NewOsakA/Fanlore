@@ -4,6 +4,7 @@ from django.views import View
 from django.contrib.auth.mixins import LoginRequiredMixin
 from fanlore.models import Bookmark, Content
 
+
 class ToggleBookmarkView(LoginRequiredMixin, View):
     def post(self, request, *args, **kwargs):
         try:
@@ -11,11 +12,15 @@ class ToggleBookmarkView(LoginRequiredMixin, View):
             content_id = data.get("content_id")
 
             if not content_id:
-                return JsonResponse({"error": "Content ID is required."}, status=400)
+                return JsonResponse({"error": "Content ID is required."},
+                                    status=400)
 
             content = Content.objects.get(id=content_id)
 
-            bookmark, created = Bookmark.objects.get_or_create(user=request.user, content=content)
+            bookmark, created = Bookmark.objects.get_or_create(
+                user=request.user,
+                content=content
+            )
 
             if not created:
                 bookmark.delete()

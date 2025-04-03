@@ -5,7 +5,10 @@ from django.utils import timezone
 
 
 class File(models.Model):
-    id = models.UUIDField(default=uuid.uuid4, editable=False, unique=True, primary_key=True)
+    id = models.UUIDField(default=uuid.uuid4,
+                          editable=False,
+                          unique=True,
+                          primary_key=True)
     file = cloudinary.models.CloudinaryField(
         "file",
         folder="content_files/",
@@ -40,4 +43,5 @@ class ReleaseFile(File):
     )
 
     def __str__(self):
-        return f"File {self.file.name} for release {self.release.title}"
+        return f"File {self.file.name} for release " \
+               f"{self.release.title}"

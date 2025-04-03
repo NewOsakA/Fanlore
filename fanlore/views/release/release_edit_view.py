@@ -2,8 +2,6 @@ import logging
 import os
 
 from django.contrib import messages
-from django.shortcuts import redirect, get_object_or_404
-from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
 from django.views.generic.edit import UpdateView
 import cloudinary.uploader
@@ -65,5 +63,3 @@ class ReleaseEditView(UpdateView):
         context = super().get_context_data(**kwargs)
         context['content'] = self.object.content
         return context
-
-

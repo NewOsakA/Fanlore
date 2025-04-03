@@ -36,6 +36,7 @@ class EventUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
         else:
             context['achievement_formset'] = AchievementFormSet(
                 queryset=Achievement.objects.filter(event=self.object))
+
         return context
 
     def form_valid(self, form):

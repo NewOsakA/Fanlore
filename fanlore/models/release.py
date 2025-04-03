@@ -10,7 +10,10 @@ from fanlore.models import Content
 
 
 class Release(models.Model):
-    id = models.UUIDField(default=uuid.uuid4, editable=False, unique=True, primary_key=True)
+    id = models.UUIDField(default=uuid.uuid4,
+                          editable=False,
+                          unique=True,
+                          primary_key=True)
     title = models.CharField(max_length=255)
     content = models.ForeignKey(
         Content, related_name="releases", on_delete=models.CASCADE
@@ -47,4 +50,5 @@ class Release(models.Model):
         return "Just now"
 
     def __str__(self):
-        return f"Release for {self.content.title} by {self.updated_by.username}"
+        return f"Release for {self.content.title} " \
+               f"by {self.updated_by.username}"

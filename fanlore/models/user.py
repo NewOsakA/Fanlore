@@ -25,13 +25,18 @@ class User(AbstractUser):
         related_name="following",
         blank=True
     )
-    friends = models.ManyToManyField("self", symmetrical=True, blank=True)
+    friends = models.ManyToManyField("self",
+                                     symmetrical=True,
+                                     blank=True)
 
-    groups = models.ManyToManyField(Group, related_name="fanlore_user_groups",
+    groups = models.ManyToManyField(Group,
+                                    related_name="fanlore_user_groups",
                                     blank=True)
-    user_permissions = models.ManyToManyField(Permission,
-                                              related_name="fanlore_user_permissions",
-                                              blank=True)
+    user_permissions = models.ManyToManyField(
+        Permission,
+        related_name="fanlore_user_permissions",
+        blank=True
+    )
 
     def save(self, *args, **kwargs):
         if not self.display_name and self.first_name:

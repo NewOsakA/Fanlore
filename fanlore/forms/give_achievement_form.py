@@ -17,11 +17,15 @@ class GiveAchievementForm(forms.Form):
         event_id = cleaned_data.get("event_id")
 
         # Check achievement exists for this event
-        if not Achievement.objects.filter(id=achievement_id, event__id=event_id).exists():
+        if not Achievement.objects.filter(id=achievement_id,
+                                          event__id=event_id).exists():
             raise forms.ValidationError("Invalid achievement for this event.")
 
         # Prevent duplicate achievements
-        if UserAchievement.objects.filter(user_id=user_id, achievement_id=achievement_id).exists():
-            raise forms.ValidationError("This user already has that achievement.")
+        if UserAchievement.objects.filter(user_id=user_id,
+                                          achievement_id=achievement_id)\
+                .exists():  # Flake8
+            text = "This user already has that achievement."
+            raise forms.ValidationError(text)
 
         return cleaned_data

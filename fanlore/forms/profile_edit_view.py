@@ -4,7 +4,8 @@ from ..models import User
 
 class ProfileUpdateForm(forms.ModelForm):
     """
-    Form for updating user profile, including optional password change and image uploads.
+    Form for updating user profile,
+    including optional password change and image uploads.
     """
 
     old_password = forms.CharField(
@@ -50,7 +51,8 @@ class ProfileUpdateForm(forms.ModelForm):
     class Meta:
         model = User
         fields = [
-            "display_name", "first_name", "last_name", "email", "username", "bio",
+            "display_name", "first_name", "last_name",
+            "email", "username", "bio",
             "profile_image", "profile_background_image"
         ]
         widgets = {
@@ -62,7 +64,8 @@ class ProfileUpdateForm(forms.ModelForm):
 
     def save(self, commit=True):
         """
-        Saves the user profile. Image fields are handled automatically by CloudinaryField.
+        Saves the user profile.
+        Image fields are handled automatically by CloudinaryField.
         """
         user = super().save(commit=False)
         new_password1 = self.cleaned_data.get("new_password1")

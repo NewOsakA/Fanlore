@@ -9,8 +9,10 @@ class AchievementForm(forms.ModelForm):
         fields = ['name', 'description', 'icon']
         widgets = {
             'name': forms.TextInput(attrs={'class': 'form-control'}),
-            'description': forms.Textarea(attrs={'class': 'form-control', 'rows': 2}),
+            'description': forms.Textarea(attrs={'class': 'form-control',
+                                                 'rows': 2}),
         }
+
 
 AchievementFormSet = modelformset_factory(
     Achievement,

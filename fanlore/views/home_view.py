@@ -1,7 +1,6 @@
 from django.views.generic import ListView
 from django.db.models import Q
-from ..models import Content, Category, Tag
-from django.db import models
+from ..models import Content, Category
 
 
 class HomeView(ListView):
@@ -15,7 +14,8 @@ class HomeView(ListView):
 
     def get_queryset(self):
         """
-        Fetch content ordered by most recent, optionally filtered by a search query.
+        Fetch content ordered by most recent,
+        optionally filtered by a search query.
         """
         queryset = Content.objects.all().order_by('-create_at')
         query = self.request.GET.get("q")
