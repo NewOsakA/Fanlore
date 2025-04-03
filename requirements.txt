@@ -17,3 +17,4 @@ django-markdownfield
 markdown
 django-pagedown
 django-markdownx
+pytest-playwright

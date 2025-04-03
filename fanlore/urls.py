@@ -53,7 +53,7 @@ urlpatterns = [
          name='release_edit'),
     path('post/<uuid:pk>/', views.ContentDetailView.as_view(),
          name='view_post'),
-    path('delete_content/<uuid:content_id>/',
+    path('post/<uuid:content_id>/delete',
          views.ContentDeleteView.as_view(),
          name='content_delete'),
 
