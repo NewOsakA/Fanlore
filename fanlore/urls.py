@@ -42,6 +42,8 @@ urlpatterns = [
          name="add_release"),
     path('release/<uuid:release_id>/delete/', views.ReleaseDeleteView.as_view(),
          name='delete_release'),
+    path('release/<uuid:pk>/edit/', views.ReleaseEditView.as_view(),
+         name='release_edit'),
     path('post/<uuid:pk>/', views.ContentDetailView.as_view(),
          name='view_post'),
     path('delete_content/<uuid:content_id>/',

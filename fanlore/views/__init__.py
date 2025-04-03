@@ -18,5 +18,6 @@ from .report_cotent_view import ReportContentView
 from .follower_view import FollowUserView, UnfollowUserView
 from .add_release_view import ReleaseCreateView
 from .release_delete_view import ReleaseDeleteView
+from .release_edit_view import ReleaseEditView
 from .event import *
 from .friend import *

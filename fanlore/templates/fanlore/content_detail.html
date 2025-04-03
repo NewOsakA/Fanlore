@@ -275,14 +275,21 @@
                             <p>No files attached to this release.</p>
                         {% endif %}
 
-                        <!-- Delete Button -->
                         {% if user == content.creator or user in content.collaborators.all %}
+                            <!-- Delete Button -->
                             <div class="text-end mb-4">
                                 <button class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteReleaseModal{{ release.id }}">
                                     🗑️ Delete Release
                                 </button>
                             </div>
+                            <!-- Edit Button -->
+                            <div class="text-end mb-4">
+                                <a href="{% url 'release_edit' release.pk %}" class="btn btn-outline-secondary">
+                                    📝 Edit Release
+                                </a>
+                            </div>
                         {% endif %}
+
                     </div>
                 {% endfor %}
             </div>
