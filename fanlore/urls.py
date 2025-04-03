@@ -40,6 +40,8 @@ urlpatterns = [
     path('upload/', views.ContentUploadView.as_view(), name='upload_content'),
     path("content/<uuid:content_id>/add_release/", views.ReleaseCreateView.as_view(),
          name="add_release"),
+    path('release/<uuid:release_id>/delete/', views.ReleaseDeleteView.as_view(),
+         name='delete_release'),
     path('post/<uuid:pk>/', views.ContentDetailView.as_view(),
          name='view_post'),
     path('delete_content/<uuid:content_id>/',
