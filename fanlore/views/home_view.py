@@ -1,24 +1,48 @@
 from django.views.generic import ListView
-from django.http import HttpResponse
-from ..models import Content
+from django.db.models import Q
+from ..models import Content, Category
 
 
 class HomeView(ListView):
     """
     A view to display the homepage with a list of content.
     """
-    model = Content  # Reference to the Content model
-    template_name = "fanlore/home.html"  # Path to the template
-    context_object_name = "content_list"  # Name of the context variable to be passed to the template
+    model = Content
+    template_name = "fanlore/home.html"
+    context_object_name = "content_list"
+    paginate_by = 10
 
     def get_queryset(self):
         """
-        Optionally filter or modify the queryset. By default, it fetches all content.
+        Fetch content ordered by most recent,
+        optionally filtered by a search query.
         """
-        return Content.objects.all()  # Fetch all Content objects for now
+        queryset = Content.objects.all().order_by('-create_at')
+        query = self.request.GET.get("q")
+        category = self.request.GET.get("category")
 
-    def home(request):
+        if query:
+            if query.startswith("#"):
+                tag_name = query[1:]  # Remove the hash #
+                queryset = queryset.filter(tags__name__iexact=tag_name)
+            else:
+                queryset = queryset.filter(
+                    Q(title__icontains=query) |
+                    Q(description__icontains=query) |
+                    Q(tags__name__icontains=query)
+                ).distinct()
+
+        if category:
+            queryset = queryset.filter(category=category)
+
+        return queryset
+
+    def get_context_data(self, **kwargs):
         """
-        A simple view to return a message or redirect to the homepage.
+        Add categories and search query to the context.
         """
-        return HttpResponse("Welcome to FanLore!")
+        context = super().get_context_data(**kwargs)
+        context["categories"] = Category.choices
+        context["search_query"] = self.request.GET.get("q", "")
+        context["current_category"] = self.request.GET.get("category")
+        return context

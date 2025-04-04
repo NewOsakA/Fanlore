@@ -1,9 +1,14 @@
 from django import forms
-from ..models import Content
+from django.contrib.auth import get_user_model
+from pagedown.widgets import PagedownWidget
+
+from ..models import Content, Tag, Category
+
+User = get_user_model()
 
 
 class MultipleFileInput(forms.ClearableFileInput):
-    allow_multiple_selected = True  # Enable multiple file selection
+    allow_multiple_selected = True
 
 
 class MultipleFileField(forms.FileField):
@@ -13,22 +18,101 @@ class MultipleFileField(forms.FileField):
 
     def clean(self, data, initial=None):
         single_file_clean = super().clean
+        if data is None:
+            return []
         if isinstance(data, (list, tuple)):
             result = [single_file_clean(d, initial) for d in data]
         else:
-            result = single_file_clean(data, initial)
+            result = [single_file_clean(data, initial)]
         return result
 
 
 class ContentUploadForm(forms.ModelForm):
     content_files = MultipleFileField(label='Upload Files', required=False)
+    short_description = forms.CharField(
+        required=False,
+        help_text="A brief summary of your content.",
+        widget=forms.Textarea(attrs={
+            'rows': 2,
+            'placeholder': 'Enter a short summary (optional)'
+        }),
+        max_length=300
+    )
+    description = forms.CharField(widget=PagedownWidget())
+
+    # tags is manually handled, not part of model field binding
+    tags = forms.CharField(
+        required=False,
+        help_text="Enter tags separated by commas",
+        widget=forms.TextInput(
+            attrs={"placeholder": "Enter tags separated by commas"})
+    )
+
+    category = forms.ChoiceField(
+        choices=Category.choices,
+        required=True,
+        widget=forms.Select()
+    )
+    collaborators = forms.ModelMultipleChoiceField(
+        queryset=User.objects.none(),
+        required=False,
+        widget=forms.SelectMultiple(attrs={
+            "class": "form-control",
+            "style": "height: auto;",
+        })
+    )
 
     class Meta:
         model = Content
-        fields = ['title', 'description', 'topic_img', 'content_files']
+        fields = ['title', 'short_description', 'description', 'topic_img',
+                  'category', 'collaborators']
 
     def __init__(self, *args, **kwargs):
+        current_user = kwargs.pop('user', None)
         super().__init__(*args, **kwargs)
-        # Add 'form-control' class to all fields
-        for field in self.fields.values():
-            field.widget.attrs['class'] = 'form-control'
+
+        if current_user:
+            self.fields['collaborators'].queryset = current_user.friends.all()
+
+        for name, field in self.fields.items():
+            if not isinstance(field.widget, PagedownWidget):
+                field.widget.attrs['class'] = 'form-control'
+
+        self.fields['content_files'].widget.attrs['multiple'] = True
+
+    def clean_tags(self):
+        """
+        Clean and process the tags input. Return a list of tag names (strings).
+        """
+        tag_input = self.cleaned_data.get('tags', '')
+        if not tag_input:
+            return []
+
+        # Split the tags by commas, strip extra spaces, and avoid empty tags
+        tag_names = {tag.strip() for tag in tag_input.split(",") if
+                     tag.strip()}
+
+        return tag_names
+
+    def save(self, commit=True):
+        """
+        Save the form data to the database, including tags.
+        """
+        content = super().save(commit=False)
+
+        if commit:
+            content.save()
+            tag_input = self.data.get('tags', '')
+            content.tags.clear()
+            if tag_input:
+                tag_names = {
+                    t.strip() for t in tag_input.split(',')
+                    if t.strip()
+                }
+                for tag_name in tag_names:
+                    tag_obj, _ = Tag.objects.get_or_create(
+                        name=tag_name.title()
+                    )
+                    content.tags.add(tag_obj)
+            self.save_m2m()
+        return content

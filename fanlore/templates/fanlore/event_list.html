@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="container mt-4">
+  <h2 class="mb-4">All Events</h2>
+
+  <!-- Filter Form -->
+  <form method="get" class="row g-3 align-items-end mb-4">
+    <div class="col-md-4">
+      <label for="start_date" class="form-label fw-semibold">📅 Start Date</label>
+      <input type="date" id="start_date" name="start_date" class="form-control" value="{{ request.GET.start_date }}">
+    </div>
+    <div class="col-md-4">
+      <label for="end_date" class="form-label fw-semibold">📅 End Date</label>
+      <input type="date" id="end_date" name="end_date" class="form-control" value="{{ request.GET.end_date }}">
+    </div>
+    <div class="col-md-4 d-grid">
+      <label class="invisible">Filter</label>
+      <button type="submit" class="btn btn-dark btn-md">Filter</button>
+    </div>
+  </form>
+  <hr>
+
+  {% if events %}
+    <div class="d-flex flex-column gap-4">
+      {% for event in events %}
+        <a href="{% url 'event-detail' event.id %}" class="text-decoration-none text-dark">
+          <div class="card shadow-sm border-0">
+            <div class="row g-0">
+              <div class="col-md-8">
+                <div class="card-body h-100 d-flex flex-column justify-content-between">
+                  <div>
+                    <h5 class="card-title fw-bold">📣 {{ event.title }}</h5>
+                    <p class="card-text text-muted">{{ event.short_description }}</p>
+                    <small class="text-muted">By {{ event.creator.display_name }}</small>
+                  </div>
+                  <small class="text-secondary mt-2">
+                    {% if event.submission_start and event.submission_end %}
+                      {% if event.submission_end < now %}
+                        Submissions: Closed
+                      {% elif event.submission_start > now %}
+                        Submissions: Opens {{ event.submission_start|date:"M d, Y H:i" }} – Closes {{ event.submission_end|date:"M d, Y H:i" }}
+                      {% else %}
+                        Submissions: Open now – Closes {{ event.submission_end|date:"M d, Y H:i" }}
+                      {% endif %}
+                    {% elif event.submission_start %}
+                      Submissions: Opens {{ event.submission_start|date:"M d, Y H:i" }}
+                    {% elif event.submission_end %}
+                      Submissions: Closes {{ event.submission_end|date:"M d, Y H:i" }}
+                    {% else %}
+                      Submissions: Open now
+                    {% endif %}
+                  </small>
+                </div>
+              </div>
+
+              {% if event.banner_image %}
+                <div class="col-md-4">
+                  <img src="{{ event.banner_image.url }}"
+                       alt="Banner"
+                       class="img-fluid rounded-end h-100"
+                       style="object-fit: cover;">
+                </div>
+              {% endif %}
+            </div>
+          </div>
+        </a>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="alert alert-warning mt-4">No events available.</div>
+  {% endif %}
+
+</div>
+
+{% endblock %}

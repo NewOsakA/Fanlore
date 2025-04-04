@@ -1,0 +1,6 @@
+from .accept_friend_request_view import FriendRequestAcceptView
+from .cancel_friend_request_view import CancelFriendRequestView
+from .friendlist_view import FriendListView
+from .reject_friend_request_view import FriendRequestRejectView
+from .remove_friends_view import RemoveFriendView
+from .sent_friend_request_view import FriendRequestCreateView

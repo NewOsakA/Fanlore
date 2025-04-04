@@ -1,0 +1,202 @@
+{% extends "base.html" %}
+{% load static %}
+{% load widget_tweaks %}
+
+{% block extra_head %}
+  {{ form.media }}
+  <style>
+    .wmd-panel {
+        width: 100%;
+        max-width: 100%;
+        margin: 0;
+        box-sizing: border-box;
+    }
+    .wmd-button-bar {
+        background-color: #f8f9fa;
+        border: 1px solid #ced4da;
+        border-bottom: none;
+        border-radius: 6px 6px 0 0;
+        padding: 6px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+    }
+    .wmd-input {
+        background-color: #f4f4f4;
+        border-radius: 0 0 6px 6px;
+        border: 1px solid #ced4da;
+        border-top: none;
+        padding: 10px;
+        width: 100%;
+        box-sizing: border-box;
+    }
+    .wmd-preview img {
+        max-width: 100%;
+        height: auto;
+        margin: 1rem auto;
+        display: block;
+    }
+    .tag-badge {
+        margin-right: 0.5rem;
+        margin-bottom: 0.5rem;
+    }
+    .file-preview {
+        max-width: 100px;
+        display: block;
+        margin: 5px 0;
+    }
+  </style>
+{% endblock %}
+
+{% block content %}
+<!-- Posting Rules -->
+<div class="border p-3 rounded bg-light mb-5">
+    <h6>📌 Posting Rules</h6>
+    <ul class="mb-0">
+        <li><strong>1. Use verifiable sources only.</strong> Link to trustworthy and recognized sources (e.g. official publications, academic journals).</li>
+        <li><strong>2. No personal opinions or anecdotes.</strong> Stick to factual, evidence-based information.</li>
+        <li><strong>3. No recent sources.</strong> Only use sources that are older than 2 months to ensure historical perspective.</li>
+        <li><strong>4. Avoid duplicate posts.</strong> Check if the topic has already been posted before contributing.</li>
+        <li><strong>6. No clickbait or misleading information.</strong> Be honest and accurate in your descriptions.</li>
+        <li><strong>7. Be respectful and constructive.</strong> Critique ideas, not people.</li>
+    </ul>
+</div>
+
+<div class="container mt-4">
+    <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white">
+            <h4 class="mb-0">Edit Your Content</h4>
+        </div>
+        <div class="card-body">
+            <form method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+
+                <!-- Title Field -->
+                <div class="mb-3">
+                    <label for="{{ form.title.id_for_label }}" class="form-label">Title</label>
+                    {{ form.title|add_class:"form-control" }}
+                </div>
+
+                <!-- Short Description Field -->
+                <div class="mb-3">
+                    <label for="{{ form.short_description.id_for_label }}" class="form-label">Short Description</label>
+                    {{ form.short_description|add_class:"form-control" }}
+                    <small class="form-text text-muted">A brief summary shown on previews (max 300 characters)</small>
+                </div>
+
+                <!-- Description Field -->
+                <div class="mb-3">
+                    <label for="{{ form.description.id_for_label }}" class="form-label">Description</label>
+                    {{ form.description }}
+                </div>
+
+                <!-- Category Field -->
+                <div class="mb-3">
+                    <label for="{{ form.category.id_for_label }}" class="form-label">Category</label>
+                    {{ form.category|add_class:"form-control" }}
+                </div>
+
+                <!-- Collaborators Field -->
+                <div class="mb-3">
+                    <label for="{{ form.collaborators.id_for_label }}" class="form-label">Collaborators</label>
+                    {{ form.collaborators|add_class:"form-control" }}
+                    <small class="form-text text-muted">Select friends to collaborate on this content</small>
+                </div>
+
+                <!-- Tags Field -->
+                <!-- Tags -->
+                 <div class="mb-3">
+                     <label for="{{ form.tags.id_for_label }}" class="form-label">Tags</label>
+                     {{ form.tags|add_class:"form-control" }}
+                     <div id="tag-feedback" class="mt-2 d-flex flex-wrap gap-1"></div>
+                     <small class="form-text text-muted">Enter tags separated by commas (e.g., fantasy, lore, game)</small>
+                 </div>
+
+                <!-- Cover Image Field -->
+                <div class="mb-3">
+                    <label for="{{ form.topic_img.id_for_label }}" class="form-label">Upload Cover Image</label>
+                    {% if content.topic_img %}
+                        <div class="mb-2 d-flex justify-content-center">
+                            <div class="cover-image-container" style="width: 300px; height: 200px; overflow: hidden; border-radius: 8px; border: 1px solid #ddd;">
+                                <img src="{{ content.topic_img.url }}"
+                                     alt="Current Cover"
+                                     style="width: 100%; height: 100%; object-fit: cover;">
+                            </div>
+                        </div>
+                    {% endif %}
+                    {{ form.topic_img }}
+                </div>
+
+                <!-- File Uploads -->
+                <div class="mb-3">
+
+                    <!-- Existing Files -->
+                    {% if content.attached_files.exists %}
+                    <div class="mb-2">
+                        <label class="form-label">Remove Existing Files</label>
+                        {% for file in content.attached_files.all %}
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox"
+                                       name="delete_files" value="{{ file.id }}"
+                                       id="delete_{{ file.id }}">
+                                <label class="form-check-label" for="delete_{{ file.id }}">
+                                    <img src="{{ file.file.url }}" alt="{{ file.file.name }}"
+                                         class="file-preview">
+                                    {{ file.file.name|truncatechars:50 }}
+                                </label>
+                            </div>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+
+                    <!-- New Files -->
+                    <div class="mt-3">
+                        <label for="{{ form.content_files.id_for_label }}" class="form-label">Add New Files</label>
+                        {{ form.content_files }}
+                    </div>
+                </div>
+
+                <!-- Submit Button -->
+                <button type="submit" class="btn btn-primary w-100">Save Changes</button>
+            </form>
+        </div>
+    </div>
+</div>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+ <script>
+ $(document).ready(function () {
+     const $tagInput = $('input[name="tags"]');
+     const $feedback = $('#tag-feedback');
+
+     function updateTagStatus() {
+         const tagStr = $tagInput.val();
+         if (!tagStr.trim()) {
+             $feedback.html('');
+             return;
+         }
+
+         $.ajax({
+             url: "{% url 'check-tags' %}",
+             data: {
+                 tags: tagStr
+             },
+             success: function (data) {
+                 $feedback.html('');
+                 data.forEach(tag => {
+                     const color = tag.exists ? 'success' : 'danger';
+                     const label = `<span class="badge bg-${color}">${tag.name}</span>`;
+                     $feedback.append(label + ' ');
+                 });
+             }
+         });
+     }
+
+     $tagInput.on('input', function () {
+         updateTagStatus();
+     });
+
+     // Run on load
+     updateTagStatus();
+ });
+ </script>
+{% endblock %}

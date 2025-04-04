@@ -22,7 +22,8 @@ class SignUpForm(UserCreationForm):
         """
         username = self.cleaned_data.get('username')
         if User.objects.filter(username=username).exists():
-            raise ValidationError("This username is already taken. Please choose a different one.")
+            raise ValidationError("This username is already taken. "
+                                  "Please choose a different one.")
         return username
 
     def clean_email(self):
@@ -32,7 +33,8 @@ class SignUpForm(UserCreationForm):
         """
         email = self.cleaned_data.get('email')
         if User.objects.filter(email=email).exists():
-            raise ValidationError("This email is already registered. Please use a different email.")
+            raise ValidationError("This email is already registered. "
+                                  "Please use a different email.")
         return email
 
     def clean(self):

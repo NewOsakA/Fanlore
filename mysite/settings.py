@@ -62,7 +62,8 @@ INSTALLED_APPS = [
 
     'cloudinary',
     'cloudinary_storage',
-
+    "markdownfield",
+    'pagedown',
     'widget_tweaks',
 ]
 
@@ -71,7 +72,7 @@ AUTHENTICATION_BACKENDS = [
     'allauth.account.auth_backends.AuthenticationBackend',
 ]
 
-SITE_ID = 3
+SITE_ID = 4
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = 'signin'
 SOCIALACCOUNT_LOGIN_ON_GET = True
@@ -125,6 +126,8 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'fanlore.utils.context_processors.recommended_friends',
+                'fanlore.utils.context_processors.trending_tags',
             ],
         },
     },
@@ -195,6 +198,7 @@ DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 # Media Files
 MEDIA_URL = '/media/'
 
-
 # Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+LOGIN_URL = '/signin/'

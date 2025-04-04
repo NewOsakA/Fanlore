@@ -1,0 +1,147 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="mb-4">Friends Management</h2>
+
+    <!-- Bootstrap Tabs -->
+    <ul class="nav nav-tabs" id="friendTabs">
+        <li class="nav-item">
+            <a class="nav-link {% if not search_query %}active{% endif %}" id="friends-tab" data-bs-toggle="tab" href="#friends-list">My Friends</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link {% if search_query %}active{% endif %}" id="search-tab" data-bs-toggle="tab" href="#search-users">Find New Friends</a>
+        </li>
+    </ul>
+
+    <div class="tab-content mt-3">
+        <!-- Friends List Tab -->
+        <div class="tab-pane fade {% if not search_query %}show active{% endif %}" id="friends-list">
+
+            {% if incoming_requests %}
+                <h3>Friend Requests</h3>
+                <ul class="list-group mb-4">
+                    {% for req in incoming_requests %}
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <a href="{% url 'friend-profile' user.id %}" class="d-flex align-items-center text-decoration-none text-dark">
+                                {% if user.profile_image %}
+                                    <img src="{{ user.profile_image.url }}" class="rounded-circle me-2" width="40" height="40" style="object-fit: cover;">
+                                {% else %}
+                                    <img src="{% static 'fanlore/images/user-circle.png' %}" class="rounded-circle me-2" width="40" height="40">
+                                {% endif %}
+                                <div class="d-flex flex-column">
+                                    <span class="fw-bold">{{ user.display_name }}</span>
+                                    <small class="text-muted">@{{ user.username }}</small>
+                                </div>
+                            </a>
+                            <div>
+                                <form method="post" action="{% url 'accept-friend' req.id %}" class="d-inline">
+                                    {% csrf_token %}
+                                    <button class="btn btn-success btn-sm">Accept</button>
+                                </form>
+                                <form method="post" action="{% url 'reject-friend' req.id %}" class="d-inline">
+                                    {% csrf_token %}
+                                    <button class="btn btn-secondary btn-sm">Reject</button>
+                                </form>
+                            </div>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+
+            {% if sent_requests %}
+                <h3>Sent Requests</h3>
+                <ul class="list-group mb-4">
+                    {% for req in sent_requests %}
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <a href="{% url 'friend-profile' req.to_user.id %}" class="d-flex align-items-center text-decoration-none text-dark">
+                                {% if req.to_user.profile_image %}
+                                    <img src="{{ req.to_user.profile_image.url }}" class="rounded-circle me-2" width="40" height="40" style="object-fit: cover;">
+                                {% else %}
+                                    <img src="{% static 'fanlore/images/user-circle.png' %}" class="rounded-circle me-2" width="40" height="40">
+                                {% endif %}
+                                <div class="d-flex flex-column">
+                                    <span class="fw-bold">{{ req.to_user.display_name }}</span>
+                                    <small class="text-muted" style="font-size: 0.75rem; margin-top: -0.25rem;">@{{ req.to_user.username }}</small>
+                                </div>
+                            </a>
+                            <form method="post" action="{% url 'cancel-friend-request' req.id %}">
+                                {% csrf_token %}
+                                <button class="btn btn-outline-danger btn-sm">Cancel Request</button>
+                            </form>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+
+            <h3>My Friends</h3>
+            <ul class="list-group">
+                {% for friend in added_friends %}
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <a href="{% url 'friend-profile' friend.id %}" class="d-flex align-items-center text-decoration-none text-dark">
+                            {% if friend.profile_image %}
+                                <img src="{{ friend.profile_image.url }}" class="rounded-circle me-2" width="40" height="40" style="object-fit: cover;">
+                            {% else %}
+                                <img src="{% static 'fanlore/images/user-circle.png' %}" class="rounded-circle me-2" width="40" height="40">
+                            {% endif %}
+                            <div class="d-flex flex-column">
+                                <span class="fw-bold">{{ friend.display_name }}</span>
+                                <small class="text-muted" style="font-size: 0.75rem; margin-top: -0.25rem;">@{{ friend.username }}</small>
+                            </div>
+                        </a>
+                        <form action="{% url 'remove-friend' friend.id %}" method="post">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-danger btn-sm">Remove Friend</button>
+                        </form>
+                    </li>
+                {% empty %}
+                    <li class="list-group-item text-muted">You have no friends yet.</li>
+                {% endfor %}
+            </ul>
+        </div>
+
+        <!-- Find New Friends Tab -->
+        <div class="tab-pane fade {% if search_query %}show active{% endif %}" id="search-users">
+            <form method="GET" action="{% url 'friends-list' %}" class="mb-3">
+                <div class="input-group">
+                    <input type="text" name="q" class="form-control" placeholder="Search for new friends..." value="{{ search_query }}">
+                    <button type="submit" class="btn btn-primary">Search</button>
+                </div>
+            </form>
+
+            <h3>People You May Know</h3>
+            <ul class="list-group">
+                {% for user in non_friends %}
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <a href="{% url 'friend-profile' user.id %}" class="d-flex align-items-center text-decoration-none text-dark">
+                            {% if user.profile_image %}
+                                <img src="{{ user.profile_image.url }}" class="rounded-circle me-2" width="40" height="40" style="object-fit: cover;">
+                            {% else %}
+                                <img src="{% static 'fanlore/images/user-circle.png' %}" class="rounded-circle me-2" width="40" height="40">
+                            {% endif %}
+                            <div class="d-flex flex-column">
+                                <span class="fw-bold">{{ user.display_name }}</span>
+                                <small class="text-muted" style="font-size: 0.75rem; margin-top: -0.25rem;">@{{ user.username }}</small>
+                            </div>
+                        </a>
+
+                        {% if user.id in sent_user_ids %}
+                            <button class="btn btn-warning btn-sm" disabled>Request Sent</button>
+                        {% else %}
+                            <form action="{% url 'add-friend' user.id %}" method="post">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-success btn-sm">Add Friend</button>
+                            </form>
+                        {% endif %}
+                    </li>
+                {% empty %}
+                    <li class="list-group-item text-muted">
+                        {% if search_query %} No new users found for "{{ search_query }}" {% else %} Start searching to add new friends! {% endif %}
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+</div>
+{% endblock %}
