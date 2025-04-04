@@ -1,76 +1,132 @@
 # FanLore
-FanLore is a web-based community platform dedicated to fan-based content where users can share, create, and collaborate on their favorite fandoms.
 
-## 1. Clone the repository
-Run this in your terminal
+**FanLore** is a web-based community platform for fandom lovers to create,
+share, and collaborate on fan-based content.  
+Users can create events, post creative works, earn achievements, and explore
+fandoms together.
+
+---
+
+## Getting Started
+
+Follow these steps to set up the project locally.
+
+---
+
+### 1. Clone the Repository
+
+```bash
+git clone https://github.com/KunKid-cmd/FanLore.git
 ```
-https://github.com/KunKid-cmd/FanLore.git
-```
-## 2. Navigate to the project directory
-```commandline
+
+### 2. Navigate to the project directory
+
+```bash
 cd Fanlore
 ```
-## 3. Create a virtual environment
-```commandline
+
+### 3. Create a virtual environment
+
+```bash
 python -m venv myenv
 ```
-## 4. Activate the Virtual environment
+
+### 4. Activate the Virtual environment
+
 For Mac/Linux
-```commandline
+
+```bash
 source myenv/bin/activate
 ```
+
 For Windows
-```commandline
+
+```bash
 .\myenv\Scripts\activate
 ```
-## 5. Install requirements
-```
+
+### 5. Install Dependencies
+
+```bash
 pip install -r requirements.txt
 ```
-## 6. Create your own .env file
-In the `sample.env` file, we have provided everything necessary to run the file,
-So you can duplicate and rename it to `.env`
+
+### 6. Environment Setup
+
+We provide a `sample.env` file with all necessary environment variables.
+Create your own .env file by copying it:
+
 ### To create a .env file in terminal
+
 For Mac/Linux
-```commandline
+
+```bash
 cp sample.env .env
 ```
+
 For windows
-```commandline
+
+```bash
 copy sample.env .env
 ```
 
-<br>You'll have to create your own neon.tech Postgre database and Cloudinary to connect with the application<br>
-You'll also have to create a API and Service credential in Google Cloud Console to be able to use the OAuth system<br>
-Follow these tutorial, you only have to get values for your .env <br>
-[neon.tech Postgre database](https://www.youtube.com/watch?v=kvIK2NpuF2I) <br>
-[Cloudinary tutorial]() <br><br>
-Google OAuth Admin Setting:
+### 7. Setup Required Services
 
-* Go to admin page and add this sites
-```
+You'll need the following services to run the app properly:
+
+* A PostgreSQL database
+  via [neon.tech Postgre database](https://www.youtube.com/watch?v=kvIK2NpuF2I)
+* A Cloudinary account for media
+  uploads [Cloudinary tutorial](https://cloudinary.com/documentation/python_quickstart)
+* A Google Cloud Console project to enable OAuth login
+
+---
+
+[Google OAuth Setup](https://dev.to/odhiambo/integrate-google-oauth2-social-authentication-into-your-django-web-app-1bk5)
+
+1) Go to your Google Cloud Console and set the authorized domain to:
+
+```cpp
 http://127.0.0.1:8000
 ```
-* Open your setting file and make sure that ```SITE_ID``` match the Sites ID in the database <br><br>
 
-* Then add Social Application with these value
+2) In your Django Admin panel:
+
+* Set ```SITE_ID``` in your ```settings.py``` to match the `Site ID` shown in
+  the Sites model in the database.
+
+* Add a new Social Application with the following values:
     * Provider : ```Google```
     * Name : ```Google API```
     * Client id : ```{YOUR_CLIENT_ID}```
     * Secret key: ```{YOUR_CLIENT_SECRET}```
-    * Sites: ```http://127.0.0.1:8000```<br>
-  
-## 7. Migrate
-```commandline
+    * Sites: ```http://127.0.0.1:8000```
+
+### 8. Database Setup (first time only)
+
+Run the following commands to set up your database for the first time:
+
+```bash
+python manage.py makemigrations
+```
+
+and then
+
+```bash
 python manage.py migrate
 ```
 
-## 8. Run tests
+### 9. Run tests
+
 ```commandline
 python manage.py test
 ```
 
-## 9. Run Application
+### 10. Start the Development Server
+
 ```commandline
 python manage.py runserver
 ```
+
+Then open your browser and go to:
+[http://127.0.0.1:8000](http://127.0.0.1:8000)
