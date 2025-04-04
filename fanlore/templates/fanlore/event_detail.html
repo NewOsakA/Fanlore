@@ -94,7 +94,7 @@
         {% endif %}
     </div>
 
-    <p class="text-muted">Created by {{ event.creator.username }}</p>
+    <p class="text-muted">Created by {{ event.creator.display_name }}</p>
 
     {% if event.submission_start or event.submission_end %}
         <p class="text-secondary">
@@ -211,7 +211,7 @@
                                  alt="{{ entry.user.username }}'s profile">
                             <div class="fw-bold">
                                 <a href="{% url 'friend-profile' entry.user.id %}" class="text-dark text-decoration-none">
-                                    {{ entry.user.username }}
+                                    {{ entry.user.display_name }}
                                 </a>
                             </div>
                             <div class="text-muted small">

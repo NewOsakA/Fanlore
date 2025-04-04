@@ -32,7 +32,7 @@
                   <div>
                     <h5 class="card-title fw-bold">📣 {{ event.title }}</h5>
                     <p class="card-text text-muted">{{ event.short_description }}</p>
-                    <small class="text-muted">By {{ event.creator.username }}</small>
+                    <small class="text-muted">By {{ event.creator.display_name }}</small>
                   </div>
                   <small class="text-secondary mt-2">
                     {% if event.submission_start and event.submission_end %}
