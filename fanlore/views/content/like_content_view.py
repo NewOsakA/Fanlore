@@ -1,11 +1,18 @@
 import json
+
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.views import View
 from django.http import JsonResponse
+from django.views import View
+
 from fanlore.models import Content, ContentLike
 
 
 class LikeContentView(LoginRequiredMixin, View):
+    """
+    Handle POST requests to like or unlike a content item.
+    A user can like a content only once.
+    """
+
     def post(self, request, *args, **kwargs):
         try:
             data = json.loads(request.body)

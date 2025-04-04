@@ -5,6 +5,10 @@ from fanlore.models import Tag
 
 
 def check_tag_existence(request):
+    """
+    view that checks if a list of tag names already exist in the database.
+    Case-insensitive comparison is used.
+    """
     tag_names = request.GET.get('tags', '')
     tag_list = [tag.strip() for tag in tag_names.split(',') if tag.strip()]
     lower_tag_list = [tag.lower() for tag in tag_list]

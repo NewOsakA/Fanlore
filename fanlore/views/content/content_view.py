@@ -1,12 +1,17 @@
 from django.contrib.auth import get_user_model
-from django.views.generic import DetailView, FormView
 from django.shortcuts import redirect
 from django.urls import reverse, reverse_lazy
-from fanlore.models import Content, Comment, Category, Bookmark, Release
+from django.views.generic import DetailView, FormView
+
 from fanlore.forms import CommentForm
+from fanlore.models import Content, Comment, Category, Bookmark, Release
 
 
 class ContentDetailView(DetailView, FormView):
+    """
+    Combines DetailView and FormView to display content details and
+    handle comment submissions.
+    """
     model = Content
     template_name = 'fanlore/content_detail.html'
     context_object_name = 'content'
@@ -14,6 +19,13 @@ class ContentDetailView(DetailView, FormView):
     success_url = reverse_lazy('content_list')
 
     def get_context_data(self, **kwargs):
+        """
+        Add extra context for the template:
+        - Categories
+        - Comments and commenter images
+        - Bookmark status
+        - Associated releases
+        """
         context = super().get_context_data(**kwargs)
         context['form'] = self.get_form()
         context["categories"] = Category.choices
@@ -53,6 +65,9 @@ class ContentDetailView(DetailView, FormView):
         return context
 
     def post(self, request, *args, **kwargs):
+        """
+        Handle comment form submission on the content detail page.
+        """
         self.object = self.get_object()  # Get the content object
         form = self.get_form()
 

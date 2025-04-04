@@ -7,6 +7,11 @@ from fanlore.models import Content, Report
 
 
 class ReportContentView(LoginRequiredMixin, View):
+    """
+    Handle the submission of a report on a specific content item.
+    Users must be logged in to report content.
+    """
+
     def post(self, request, pk, *args, **kwargs):
         content = get_object_or_404(Content, pk=pk)
         topic = request.POST.get('topic')

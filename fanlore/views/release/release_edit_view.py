@@ -12,15 +12,26 @@ logger = logging.getLogger(__name__)
 
 
 class ReleaseEditView(UpdateView):
+    """
+    View to handle editing an existing release.
+    Allows content creators or collaborators to update release details.
+    """
     model = Release
     form_class = ReleaseForm
     template_name = 'fanlore/release_edit.html'
     context_object_name = 'release'
 
     def get_success_url(self):
+        """
+        Redirect to the content detail page after successful form submission.
+        """
         return reverse_lazy('view_post', kwargs={'pk': self.object.content.pk})
 
     def form_valid(self, form):
+        """
+        Process valid form submission, upload new files to Cloudinary,
+        and create corresponding ReleaseFile entries.
+        """
         if not self.request.user.is_authenticated:
             form.add_error(None, "You must be logged in to edit releases.")
             return self.form_invalid(form)
@@ -60,6 +71,9 @@ class ReleaseEditView(UpdateView):
         return response  # Return after processing files
 
     def get_context_data(self, **kwargs):
+        """
+        Pass the parent content to the template context.
+        """
         context = super().get_context_data(**kwargs)
         context['content'] = self.object.content
         return context

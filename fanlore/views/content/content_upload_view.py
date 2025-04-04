@@ -1,18 +1,22 @@
-import os
 import logging
+import os
 
-from django.views.generic.edit import CreateView
+import cloudinary.uploader
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
-import cloudinary.uploader
+from django.views.generic.edit import CreateView
 
-from fanlore.models import Content, ContentFile
 from fanlore.forms.upload_content_form import ContentUploadForm
+from fanlore.models import Content, ContentFile
 
 logger = logging.getLogger(__name__)
 
 
 class ContentUploadView(LoginRequiredMixin, CreateView):
+    """
+    View for uploading new content.
+    Only authenticated users can access this page.
+    """
     model = Content
     form_class = ContentUploadForm
     template_name = 'fanlore/content_upload.html'
@@ -20,11 +24,21 @@ class ContentUploadView(LoginRequiredMixin, CreateView):
     login_url = '/signin'
 
     def get_form_kwargs(self):
+        """
+        Inject the current user into the form's kwargs.
+        Useful for filtering available collaborators or tags based on user.
+        """
         kwargs = super().get_form_kwargs()
         kwargs['user'] = self.request.user  # Pass current user to the form
         return kwargs
 
     def form_valid(self, form):
+        """
+        Process the form if valid:
+        - Assign creator
+        - Upload optional topic image
+        - Upload optional attached files
+        """
         content = form.save(commit=False)
         content.creator = self.request.user  # Assign current user as creator
         content.save()

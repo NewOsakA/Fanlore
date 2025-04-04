@@ -13,6 +13,9 @@ logger = logging.getLogger(__name__)
 
 
 class ReleaseCreateView(LoginRequiredMixin, FormView):
+    """
+    View to handle the creation of a new Release under a specific Content.
+    """
     template_name = "fanlore/add_release.html"
     model = Release
     form_class = ReleaseForm

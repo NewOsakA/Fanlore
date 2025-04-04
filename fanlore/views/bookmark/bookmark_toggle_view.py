@@ -1,11 +1,19 @@
 import json
+
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import JsonResponse
 from django.views import View
-from django.contrib.auth.mixins import LoginRequiredMixin
+
 from fanlore.models import Bookmark, Content
 
 
 class ToggleBookmarkView(LoginRequiredMixin, View):
+    """
+    Toggle the bookmark status for a content item.
+    If already bookmarked, it removes the bookmark.
+    If not bookmarked, it adds a new bookmark.
+    """
+
     def post(self, request, *args, **kwargs):
         try:
             data = json.loads(request.body)

@@ -1,30 +1,47 @@
 import os
+
 import cloudinary.uploader
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.shortcuts import render, get_object_or_404, redirect
 from django.views import View
-from fanlore.models import Content, ContentFile
+
 from fanlore.forms import ContentUpdateForm
+from fanlore.models import Content, ContentFile
 
 
 class ContentUpdateView(LoginRequiredMixin, UserPassesTestMixin, View):
+    """
+    View to handle updating existing content.
+    """
     template_name = 'fanlore/content_edit.html'
 
     def get_object(self):
+        """
+        Retrieve the Content object based on the pk from the URL.
+        """
         return get_object_or_404(Content, pk=self.kwargs['pk'])
 
     def test_func(self):
+        """
+        Check if the current user is either the creator or a collaborator.
+        """
         obj = self.get_object()
         return obj.creator == self.request.user or obj.collaborators.filter(
             id=self.request.user.id).exists()
 
     def get(self, request, *args, **kwargs):
+        """
+        Render the content edit form with the current content instance.
+        """
         obj = self.get_object()
         form = ContentUpdateForm(instance=obj, user=request.user)
         return render(request, self.template_name,
                       {'form': form, 'content': obj})
 
     def post(self, request, *args, **kwargs):
+        """
+        Handle form submission for content update, including image and file handling.
+        """
         obj = self.get_object()
         form = ContentUpdateForm(request.POST, request.FILES, instance=obj,
                                  user=request.user)
