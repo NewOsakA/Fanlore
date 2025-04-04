@@ -69,7 +69,11 @@ class ContentUpdateForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
 
         if self.user:
-            self.fields['collaborators'].queryset = self.user.friends.all()
+            # Combine current friends + existing collaborators
+            current_friends = self.user.friends.all()
+            existing_collaborators = self.instance.collaborators.all()
+            self.fields['collaborators'].queryset = (
+                        current_friends | existing_collaborators).distinct()
 
         if self.instance.pk:
             self.initial['tags'] = ', '.join(
@@ -93,16 +97,24 @@ class ContentUpdateForm(forms.ModelForm):
                 tag_names]
 
     def save(self, commit=True):
-        """Save content and handle tags"""
+        """Save content and handle tags and collaborators properly"""
         content = super().save(commit=False)
 
         if commit:
             content.save()
-            self.save_m2m()  # Handles tags and collaborators
+            self.save_m2m()
 
-            # Ensure tags are properly set
-            # (in case save_m2m didn't handle them)
+            # Handle tags
             if 'tags' in self.cleaned_data:
                 content.tags.set(self.cleaned_data['tags'])
 
+            # Preserve collaborators if the list is accidentally empty
+            submitted_collaborators = self.cleaned_data.get('collaborators')
+            if submitted_collaborators:
+                content.collaborators.set(submitted_collaborators)
+            else:
+                # Optionally: Keep current collaborators or add current user
+                content.collaborators.add(self.user)
+
         return content
+

@@ -80,7 +80,7 @@
                     <div>
                         <div class="fw-semibold">
                             <a href="{% url 'friend-profile' content.creator.id %}" class="text-decoration-none text-dark">
-                                👥 {{ content.creator.username }}
+                                👥 {{ content.creator.display_name }}
                             </a>
                         </div>
                         <div class="text-muted small">{{ content.time_since_creation }}</div>
@@ -195,7 +195,7 @@
                              alt="{{ contributor.username }}">
                         <div class="fw-medium">
                             <a href="{% url 'friend-profile' contributor.id %}" class="text-decoration-none text-dark">
-                                {{ contributor.username }}
+                                {{ contributor.display_name }}
                             </a>
                         </div>
                     </div>
