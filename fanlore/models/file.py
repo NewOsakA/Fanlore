@@ -21,7 +21,7 @@ class File(models.Model):
         abstract = True
 
     def __str__(self):
-        return f"File {self.file.name} uploaded at {self.uploaded_at}"
+        return f"File {self.file.public_id if self.file else 'No file'} uploaded at {self.uploaded_at}"
 
 
 class ContentFile(File):
@@ -32,7 +32,7 @@ class ContentFile(File):
     )
 
     def __str__(self):
-        return f"File {self.file.name} for {self.content.title}"
+        return f"File {self.file.public_id if self.file else 'No file'} for {self.content.title}"
 
 
 class ReleaseFile(File):
@@ -43,5 +43,4 @@ class ReleaseFile(File):
     )
 
     def __str__(self):
-        return f"File {self.file.name} for release " \
-               f"{self.release.title}"
+        return f"File {self.file.public_id if self.file else 'No file'} for release {self.release.title}"

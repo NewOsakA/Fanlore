@@ -71,7 +71,7 @@ class TagAdmin(admin.ModelAdmin):
 @admin.register(Content)
 class ContentAdmin(admin.ModelAdmin):
     list_display = (
-        "title", "description", "topic_img", "creator",
+        "title", "short_description", "description", "topic_img", "creator",
         "display_collaborators", "vote", "category",
         "display_tags", "create_at"
     )
