@@ -6,6 +6,10 @@ from fanlore.models import FriendRequest
 
 
 class FriendRequestAcceptView(LoginRequiredMixin, View):
+    """
+    Handles accepting a friend request.
+    """
+
     def post(self, request, *args, **kwargs):
         friend_request = get_object_or_404(FriendRequest, pk=kwargs['pk'])
 

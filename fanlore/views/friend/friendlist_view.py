@@ -8,6 +8,13 @@ User = get_user_model()
 
 
 class FriendListView(LoginRequiredMixin, ListView):
+    """
+    Displays the friend list page, including:
+    - Added friends
+    - Users not yet added
+    - Incoming friend requests
+    - Search functionality
+    """
     model = User
     template_name = "fanlore/friends_list.html"
     context_object_name = "all_users"

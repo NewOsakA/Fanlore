@@ -10,10 +10,18 @@ User = get_user_model()
 
 
 class FriendRequestCreateView(LoginRequiredMixin, CreateView):
+    """
+    View for sending a friend request from the logged-in user to another user.
+    It prevents duplicate requests and requests to already-added friends.
+    """
     model = FriendRequest
     fields = []
 
     def form_valid(self, form):
+        """
+        Called when the form is valid.
+        Ensures the request is not duplicated, or to an existing friend.
+        """
         to_user = get_object_or_404(User, id=self.kwargs["user_id"])
         if to_user != self.request.user and not FriendRequest.objects.filter(
                 from_user=self.request.user, to_user=to_user
@@ -25,6 +33,8 @@ class FriendRequestCreateView(LoginRequiredMixin, CreateView):
         return super().form_invalid(form)
 
     def get_success_url(self):
-        # Redirect back to where the request came from (if possible)
+        """
+        Redirect to the referring page, or fallback to the friends list.
+        """
         referer = self.request.META.get("HTTP_REFERER")
         return referer or reverse("friends-list")  # fallback just in case

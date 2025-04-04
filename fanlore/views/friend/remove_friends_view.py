@@ -7,6 +7,11 @@ User = get_user_model()
 
 
 class RemoveFriendView(LoginRequiredMixin, View):
+    """
+    View to remove a relationship between the current user and another user.
+    Both users will be removed from each other's friend lists.
+    """
+
     def post(self, request, *args, **kwargs):
         user_to_remove = get_object_or_404(User, id=kwargs['user_id'])
 

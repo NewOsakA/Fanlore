@@ -6,6 +6,9 @@ from fanlore.models import FriendRequest
 
 
 class FriendRequestRejectView(LoginRequiredMixin, DeleteView):
+    """
+    View to reject an incoming friend request.
+    """
     model = FriendRequest
     success_url = reverse_lazy("friends-list")
 

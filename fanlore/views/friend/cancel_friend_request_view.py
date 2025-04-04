@@ -5,6 +5,10 @@ from fanlore.models import FriendRequest
 
 
 class CancelFriendRequestView(LoginRequiredMixin, DeleteView):
+    """
+    Allows a user to cancel a friend request they have sent.
+    """
+
     model = FriendRequest
 
     def get_queryset(self):
