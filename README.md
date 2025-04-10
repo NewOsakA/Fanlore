@@ -116,13 +116,7 @@ and then
 python manage.py migrate
 ```
 
-### 9. Run tests
-
-```commandline
-python manage.py test
-```
-
-### 10. Start the Development Server
+### 9. Start the Development Server
 
 ```commandline
 python manage.py runserver
