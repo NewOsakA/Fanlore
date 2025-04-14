@@ -3,7 +3,7 @@ from fanlore.models import Content, Category, Tag
 from fanlore.tests.base import BaseTestCase
 
 
-class HomeViewTests(BaseTestCase):
+class SearchAndFilterTests(BaseTestCase):
     """Test cases for the home page content listing and filtering functionality."""
 
     def setUp(self):

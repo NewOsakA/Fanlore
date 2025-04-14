@@ -3,7 +3,7 @@ from fanlore.models import Content, Comment
 from fanlore.tests.base import BaseTestCase
 
 
-class ContentDetailViewTests(BaseTestCase):
+class CommentPostTests(BaseTestCase):
     """Test cases for content detail view and comment functionality."""
 
     def setUp(self):

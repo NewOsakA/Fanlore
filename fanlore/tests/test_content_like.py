@@ -6,7 +6,7 @@ from fanlore.models import Content, ContentLike
 from fanlore.tests.base import BaseTestCase
 
 
-class LikeContentViewTests(BaseTestCase):
+class LikeContentTests(BaseTestCase):
     """Test cases for liking and unliking content."""
 
     def setUp(self):
